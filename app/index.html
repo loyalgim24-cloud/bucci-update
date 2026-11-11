@@ -2224,7 +2224,37 @@ async function doLoad(kw) {
     let merged = mergePortalData(res.data||{}, kw)
     merged = await mergePcData(merged, kw)
     renderResults(merged, kw)
+    showSearchMeta(res.meta)
   } catch(e) { setSt('오류: '+e.message,'danger') }
+}
+// 키워드 검색 결과 위에 "검색어를 어떻게 해석했는지"를 한 줄로 보여줌.
+// 관련 앱이나 다른 방식으로 다시 찾는 버튼이 있으면 함께 표시.
+function showSearchMeta(meta) {
+  if (!meta || !meta.text) return
+  const inner = document.getElementById('result-inner')
+  if (!inner) return
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]))
+  const top = document.createElement('div')
+  top.innerHTML = approxBannerHtml(esc(meta.text), 'info')
+  const chips = []
+  ;(meta.apps || []).forEach(name => chips.push({ label: name, kw: name }))
+  if (meta.alt && meta.alt.kw) chips.push({ label: meta.alt.label || meta.alt.kw, kw: meta.alt.kw })
+  if (chips.length) {
+    const row = document.createElement('div')
+    row.className = 'nl-suggest'
+    if ((meta.apps || []).length) {
+      const lab = document.createElement('span'); lab.className = 'nl-suggest-label'; lab.textContent = '관련 앱'
+      row.appendChild(lab)
+    }
+    chips.forEach(c => {
+      const b = document.createElement('button')
+      b.className = 'nl-suggest-chip'; b.textContent = c.label
+      b.onclick = () => doSearch2(c.kw)
+      row.appendChild(b)
+    })
+    top.appendChild(row)
+  }
+  inner.insertBefore(top, inner.firstChild)
 }
 async function loadBySlug(slug, name) {
   pushNav({ type:'slug', slug, name })

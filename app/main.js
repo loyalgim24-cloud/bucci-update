@@ -783,8 +783,9 @@ function appMatchScore(query, appName) {
   const q = query.toLowerCase(), a = appName.toLowerCase()
   if (a === q) return 100
   if (a.startsWith(q) || q.startsWith(a)) return 80
-  const qCho = getChosung(q), aCho = getChosung(a)
-  if (aCho.startsWith(qCho) && qCho.length >= 2) return 70  // 초성 검색
+  // 초성 검색은 초성만 입력했을 때만 적용 (예: "ㅋㅋㅇ"). 완성된 글자를 넣었는데
+  // 초성이 같다는 이유로 다른 앱이 걸리던 문제("롯데온"→"런데이") 방지
+  if (/^[ㄱ-ㅎ]{2,}$/.test(q) && getChosung(a).startsWith(q)) return 70
   if (a.includes(q) || q.includes(a)) return 60
   if (q.length >= 3 && editDistance(q, a) <= 1) return 40   // 오타 1개 허용
   if (q.length >= 4 && editDistance(q, a) <= 2) return 20   // 오타 2개 허용
@@ -835,7 +836,108 @@ function mergeUpaImages(data, appNames) {
   return data
 }
 
+// ── 검색어 전체를 앱 이름으로 먼저 해석 ─────────────────────────────
+// 띄어쓰기·점·대소문자를 무시하고 비교하고("v live" = "V LIVE", "l point" = "L.POINT"),
+// 영문 이름을 한글 발음으로 적은 경우도 찾음("엘포인트" → "lpoint", "브이라이브" → "vlive").
+// 이 단계가 없으면 "v live"는 두 단어로 쪼개져 앱을 못 찾고,
+// "엘포인트"는 '포인트'라는 화면 패턴으로 먼저 걸려 앱 검색까지 가지 못함.
+function normAppKey(s) { return String(s || '').toLowerCase().replace(/[^0-9a-z가-힣]/g, '') }
+
+const KO_LATIN = [
+  // 자주 쓰는 외래어 (긴 것부터 맞춰봄)
+  ['포인트','point'],['라이브','live'],['페이','pay'],['뱅크','bank'],['뱅킹','banking'],['카드','card'],['마켓','market'],
+  ['스토어','store'],['뮤직','music'],['클럽','club'],['패스','pass'],['플러스','plus'],['모바일','mobile'],['샵','shop'],
+  ['숍','shop'],['북','book'],['티비','tv'],['홈','home'],['픽','pick'],['링크','link'],['월렛','wallet'],['머니','money'],
+  ['쇼핑','shopping'],['푸드','food'],['플레이','play'],['게임','game'],['뉴스','news'],['맵','map'],['택시','taxi'],
+  ['바이크','bike'],['드라이브','drive'],['클라우드','cloud'],['메일','mail'],['캘린더','calendar'],['노트','note'],
+  ['워크','work'],['스타','star'],['킹','king'],['헬스','health'],['케어','care'],['핏','fit'],['데이','day'],['타임','time'],
+  ['스타일','style'],['온','on'],['원','one'],['톡','talk'],['앱','app'],['웹툰','webtoon'],['멤버스','members'],
+  ['멤버십','membership'],['오더','order'],['딜','deal'],['박스','box'],['라운지','lounge'],['스마트','smart'],['월드','world'],
+  ['시티','city'],['에어','air'],['투어','tour'],['트립','trip'],['티켓','ticket'],['무비','movie'],['시네마','cinema'],
+  ['라이프','life'],['프렌즈','friends'],['키즈','kids'],['스쿨','school'],['클래스','class'],['잡','job'],['솔','sol'],
+  // 알파벳 읽는 소리
+  ['더블유','w'],['에이치','h'],['에이','a'],['에프','f'],['에스','s'],['엑스','x'],['와이','y'],['제이','j'],['케이','k'],
+  ['브이','v'],['아이','i'],['제트','z'],['엘','l'],['엠','m'],['엔','n'],['큐','q'],['알','r'],['비','b'],['씨','c'],
+  ['디','d'],['이','e'],['지','g'],['오','o'],['피','p'],['티','t'],['유','u'],
+].sort((a, b) => b[0].length - a[0].length)
+
+// 한글로 적은 영문 이름을 알파벳으로.
+// partial=false: 전부 바꿀 수 있을 때만 결과를 돌려줌 ("엘포인트" → "lpoint")
+// partial=true : 바꿀 수 없는 글자는 그대로 둠 ("롯데온" → "롯데on")
+function koToLatin(s, partial) {
+  let out = '', i = 0, changed = false
+  while (i < s.length) {
+    const ch = s[i]
+    if (/[0-9a-z]/.test(ch)) { out += ch; i++; continue }
+    const hit = KO_LATIN.find(([ko]) => s.startsWith(ko, i))
+    if (!hit) { if (!partial) return null; out += ch; i++; continue }
+    out += hit[1]; i += hit[0].length; changed = true
+  }
+  return changed && out !== s ? out : null
+}
+
+// 검색어 전체가 가리키는 앱 찾기 → { wwit:[앱], slugs:[{slug,name}], upa:[이름] } 또는 null
+function findAppsByWholeQuery(kw) {
+  const nq = normAppKey(kw)
+  if (nq.length < 2) return null
+  const variants = [nq]
+  if (/[가-힣]/.test(nq)) {
+    const latin = koToLatin(nq, false), mixed = koToLatin(nq, true)
+    if (latin && latin.length >= 3) variants.push(latin)
+    if (mixed && mixed !== latin && mixed.length >= 3) variants.push(mixed)
+  }
+  const matches = name => {
+    const n = normAppKey(name)
+    if (!n) return 0
+    for (const v of variants) {
+      if (n === v) return 2                                  // 완전히 같음
+      if (v.length >= 4 && n.startsWith(v)) return 1         // 앞부분이 같음 (4글자 이상일 때만)
+    }
+    return 0
+  }
+  const found = { wwit: [], slugs: [], upa: [] }
+  let best = 0
+  const consider = (score, add) => {
+    if (!score) return
+    if (score > best) { best = score; found.wwit = []; found.slugs = []; found.upa = [] }
+    if (score === best) add()
+  }
+  WWIT_APPS.forEach(app => consider(Math.max(matches(app.name), matches(app.slug)), () => found.wwit.push(app)))
+  Object.entries(slug2name).forEach(([slug, name]) => {
+    if (WWIT_APPS.some(a => a.slug === slug)) return
+    consider(Math.max(matches(name), matches(slug)), () => found.slugs.push({ slug, name }))
+  })
+  const upaNames = new Set()
+  for (const apps of Object.values(UPA_APP_CATEGORIES)) for (const n of apps) upaNames.add(n)
+  ucCache.forEach(uc => { if (uc && uc.appName) upaNames.add(uc.appName) })
+  upaNames.forEach(n => consider(matches(n), () => { if (!found.upa.includes(n)) found.upa.push(n) }))
+  if (!best) return null
+  found.exact = best === 2
+  return found
+}
+
+function resolveWholeAppQuery(kw) {
+  const f = findAppsByWholeQuery(kw)
+  if (!f) return null
+  // 같은 앱이 WWIT와 UPA 양쪽에 있으면 합쳐서 보여줌
+  if (f.wwit.length === 1) {
+    const same = new Set(f.upa)
+    const key = normAppKey(f.wwit[0].name)
+    for (const apps of Object.values(UPA_APP_CATEGORIES)) for (const n of apps) if (normAppKey(n) === key) same.add(n)
+    ucCache.forEach(uc => { if (uc && uc.appName && normAppKey(uc.appName) === key) same.add(uc.appName) })
+    return same.size ? { type:'mixed_app', wwit:f.wwit[0], upaNames:[...same] } : { type:'wwit_app', app:f.wwit[0] }
+  }
+  if (f.wwit.length > 1) return { type:'wwit_multi', apps:f.wwit }
+  if (f.upa.length) return { type:'upa_app', appNames:f.upa }
+  if (f.slugs.length) return { type:'slug_search', slug:f.slugs[0].slug, name:f.slugs[0].name }
+  return null
+}
+
 function resolveKw(kw) {
+  // "#지도"처럼 #으로 시작하면 앱 이름 해석 없이 태그에서만 찾음
+  const rawKw = String(kw || '').trim()
+  if (rawKw.startsWith('#') && rawKw.length > 1) return { type:'screen_tag', keyword: rawKw.slice(1).trim().toLowerCase(), forced: true }
+
   const kl = normalizeQuery(kw)
   const words = kl.split(/\s+/).filter(Boolean)
 
@@ -849,10 +951,28 @@ function resolveKw(kw) {
 
   // 복합 쿼리: 첫 단어가 앱이름이면 AND, 아니면 OR
   if (words.length >= 2) {
-    const firstIsApp = isAppName(words[0])
+    // 여러 단어 전체가 하나의 앱 이름인 경우 ("v live", "카카오 뱅크") → 그 앱으로
+    const wholeApp = resolveWholeAppQuery(kl)
+    if (wholeApp) return wholeApp
+
+    // 앞쪽 몇 단어가 앱 이름이고 나머지가 화면 조건인 경우 ("v live 홈")
+    for (let k = words.length - 1; k >= 2; k--) {
+      const f = findAppsByWholeQuery(words.slice(0, k).join(' '))
+      const canon = f && f.exact && ((f.wwit[0] && f.wwit[0].name) || f.upa[0] || (f.slugs[0] && f.slugs[0].name))
+      if (canon) return { type:'app_and_pattern', appWord:canon.toLowerCase(), patternWords:words.slice(k) }
+    }
+
+    let appWord = words[0]
+    let firstIsApp = isAppName(appWord)
+    if (!firstIsApp) {
+      // 목록에 없는 UPA 앱이거나 한글 발음으로 적은 경우 ("엘포인트 결제") → 등록된 이름으로 바꿔서 검색
+      const f = findAppsByWholeQuery(appWord)
+      const canon = f && ((f.wwit[0] && f.wwit[0].name) || f.upa[0] || (f.slugs[0] && f.slugs[0].name))
+      if (canon) { firstIsApp = true; appWord = canon.toLowerCase() }
+    }
     if (firstIsApp) {
       // AND: 특정 앱의 특정 화면
-      return { type:'app_and_pattern', appWord:words[0], patternWords:words.slice(1) }
+      return { type:'app_and_pattern', appWord, patternWords:words.slice(1) }
     } else {
       // OR: 각 단어 결과 합치기
       return { type:'multi_or', words }
@@ -868,13 +988,48 @@ function resolveKw(kw) {
       return { type:'wwit_path', path:p }
   }
 
+  // 화면 종류를 뜻하는 단어는 앱보다 화면 태그를 먼저 (이름이 정확히 그 단어인 앱이 있으면 앱 우선)
+  if (SCREEN_WORDS.has(w)) {
+    const sameNameApp = findAppsByWholeQuery(w)
+    if (!(sameNameApp && sameNameApp.exact)) {
+      // 그 태그가 붙은 화면이 충분히 있을 때만 (거의 없으면 기존 방식대로 앱·패턴에서 찾음)
+      let n = 0
+      for (const url in tagsDb) {
+        const tags = tagsDb[url]
+        if (Array.isArray(tags) && tags.some(t => { const tl = String(t).toLowerCase(); return tl === w || tl.includes(w) })) { if (++n >= 8) break }
+      }
+      if (n >= 8) return { type:'screen_tag', keyword: w }
+    }
+  }
+
   // WWIT 앱 매칭 (스코어 기반 - 오타/초성/영문 허용)
   const scored = WWIT_APPS.map(app => {
     const nameScore = appMatchScore(w, app.name)
     const kwScore = app.kw.reduce((best, k) => Math.max(best, appMatchScore(w, k)), 0)
     return { app, score: Math.max(nameScore, kwScore) }
   }).filter(x => x.score > 0).sort((a,b) => b.score-a.score)
-  const matched = scored.map(x => x.app)
+  // 이름이 정확히 같은 UPA 앱이 있으면(띄어쓰기·점 무시, 한글 발음 표기 포함) 그 앱을 먼저.
+  // 이전에는 오타 보정이 먼저 적용되어 "엘포인트"가 "엘리펀트"로 연결되는 식의 오류가 있었음.
+  // (WWIT 앱과 정확히 같은 경우는 아래 기존 흐름이 그대로 처리)
+  const exactApp = findAppsByWholeQuery(w)
+  if (exactApp && exactApp.exact && !exactApp.wwit.length && exactApp.upa.length) {
+    const nq = normAppKey(w)
+    // 같은 이름으로 시작하는 형제 앱도 함께 ("유튜브" → 유튜브 + 유튜브 뮤직, "네이버" → 네이버 + 네이버페이)
+    const upaSet = new Set(exactApp.upa)
+    for (const apps of Object.values(UPA_APP_CATEGORIES)) for (const n of apps) if (normAppKey(n).startsWith(nq)) upaSet.add(n)
+    ucCache.forEach(uc => { if (uc && uc.appName && normAppKey(uc.appName).startsWith(nq)) upaSet.add(uc.appName) })
+    const wwitSiblings = scored.filter(x => x.score >= 80 &&
+      (normAppKey(x.app.name).startsWith(nq) || x.app.kw.some(k => normAppKey(k) === nq)))
+    if (wwitSiblings.length) return { type:'wwit_upa_merged', slugs:wwitSiblings.map(x => x.app.slug), upaNames:[...upaSet] }
+    return { type:'upa_app', appNames:[...upaSet] }
+  }
+  if (exactApp && exactApp.exact && !exactApp.wwit.length) {
+    const r0 = resolveWholeAppQuery(w)
+    if (r0) return r0
+  }
+  // 확실한 일치(정확·앞부분·포함)가 있으면 오타 수준의 약한 일치는 버림
+  const strongOnly = scored.length && scored[0].score >= 60 ? scored.filter(x => x.score >= 60) : scored
+  const matched = strongOnly.map(x => x.app)
   if (matched.length === 1) {
     const upaAlso = new Set()
     for (const apps of Object.values(UPA_APP_CATEGORIES)) {
@@ -889,6 +1044,11 @@ function resolveKw(kw) {
     return { type:'wwit_app', app:matched[0] }
   }
   if (matched.length > 1)  return { type:'wwit_multi', apps:matched }
+
+  // 앱 이름과 정확히 일치하면(띄어쓰기·점 무시, 한글 발음 표기 포함) 아래의 느슨한 패턴·태그 매칭보다 먼저 처리.
+  // 예: "엘포인트"가 '포인트' 패턴으로 잘못 걸리지 않고 L.POINT 앱으로 연결됨
+  const wholeApp = resolveWholeAppQuery(w)
+  if (wholeApp) return wholeApp
 
   // 패턴 부분 매칭
   for (const [k, p] of Object.entries(WWIT_PATHS)) {
@@ -1137,8 +1297,120 @@ app.whenReady().then(() => {
 // ── IPC ──────────────────────────────────────────────────────────────
 
 ipcMain.handle('search', async (_, kw) => {
+  const res = await searchCore(kw)
+  try { if (res && !res.meta) res.meta = describeSearch(kw, res) } catch {}
+  // 결과가 없으면 "~로 찾았어요" 설명은 붙이지 않음 (다시 찾는 버튼이 있는 경우만 남김)
+  try { if (res && res.meta && !Object.keys(res.data || {}).length && !res.meta.alt) res.meta = null } catch {}
+  return res
+})
+
+// 화면 종류를 뜻하는 일반 단어. 이런 단어는 앱보다 화면 태그를 먼저 찾음
+// (예: "지도" → '네이버 지도' 앱이 아니라 지도가 있는 화면들, "송금" → 토스 앱이 아니라 송금 화면들)
+const SCREEN_WORDS = new Set(['지도','송금','이체','결제','채팅','로그인','회원가입','검색','필터','장바구니','주문','알림','설정',
+  '마이페이지','프로필','리뷰','후기','온보딩','스플래시','인증','약관','쿠폰','포인트','적립','혜택','멤버십','통계','차트','그래프',
+  '캘린더','달력','피드','상세','목록','리스트','카드','탭바','바텀시트','팝업','모달','토글','체크박스','드롭다운','버튼','입력폼',
+  '로딩','에러','오류','빈상태','완료','성공','예약','배송','공유','업로드','추천','랭킹','배너','이벤트','공지','영상','플레이어',
+  '카메라','권한','비밀번호','자산','잔액','투자','주식','대출','보험','충전','환불','취소','픽업','탈퇴','문의','상담','고객센터',
+  '다크모드','라이트모드','일정','댓글'])
+
+// 그 단어와 이름·키워드가 겹치는 앱 (태그 결과 아래 "관련 앱"으로 안내)
+function relatedAppsFor(w) {
+  const nq = normAppKey(w)
+  const names = []
+  const add = n => { if (n && !names.includes(n)) names.push(n) }
+  WWIT_APPS.forEach(app => {
+    if (normAppKey(app.name).includes(nq) || app.kw.some(k => normAppKey(k) === nq)) add(app.name)
+  })
+  for (const apps of Object.values(UPA_APP_CATEGORIES)) for (const n of apps) if (normAppKey(n).includes(nq)) add(n)
+  ucCache.forEach(uc => { if (uc && uc.appName && normAppKey(uc.appName).includes(nq)) add(uc.appName) })
+  return names.slice(0, 6)
+}
+
+// 검색어를 어떻게 해석했는지 사용자에게 보여줄 설명
+//   text: 한 줄 설명 / apps: 눌러서 이동할 관련 앱 / alt: 다른 방식으로 다시 찾는 버튼 {label, kw}
+function describeSearch(kw, res) {
+  const r = resolveKw(kw)
+  if (!r) return null
+  const shown = String(kw).trim()
+  const nq = normAppKey(shown)
+  const tagAlt = { label: `'${shown}' 태그로 찾기`, kw: '#' + shown }
+  const sameName = names => names.some(n => normAppKey(n) === nq || (findAppsByWholeQuery(shown) || {}).exact)
+  const appMeta = names => {
+    names = names.filter(Boolean)
+    if (!names.length) return null
+    const list = names.slice(0, 4).map(n => `'${n}'`).join(', ') + (names.length > 4 ? ` 외 ${names.length - 4}개` : '')
+    if (sameName(names)) return { text: `${list} 앱 화면이에요.` }
+    return { text: `'${shown}'에 가장 가까운 앱 ${list}의 화면이에요.`, alt: tagAlt }
+  }
+  switch (r.type) {
+    case 'screen_tag':
+      return r.forced
+        ? { text: `'${r.keyword}' 태그가 붙은 화면이에요.` }
+        : { text: `'${r.keyword}' 화면을 태그로 찾았어요.`, apps: relatedAppsFor(r.keyword) }
+    case 'wwit_app':        return appMeta([r.app.name])
+    case 'mixed_app':       return appMeta([r.wwit.name])
+    case 'wwit_multi':      return appMeta(r.apps.map(a => a.name))
+    case 'upa_app':         return appMeta(r.appNames)
+    case 'slug_search':     return appMeta([r.name])
+    case 'wwit_upa_merged': return appMeta([...r.upaNames, ...r.slugs.map(s => slug2name[s] || s)])
+    case 'app_and_pattern': return { text: `'${r.appWord}' 앱에서 '${r.patternWords.join(' ')}' 화면을 찾았어요.` }
+    case 'cat_slugs':       return { text: `'${r.label}' 분야의 앱이에요.` }
+    case 'wwit_path':       return { text: `'${shown}' 화면 패턴으로 찾았어요.` }
+    case 'tag_search':      return { text: `'${r.label}' 컴포넌트가 있는 화면이에요.`, alt: normAppKey(r.label) === nq ? null : tagAlt }
+    case 'multi_or':        return { text: `'${r.words.join("', '")}' 중 하나라도 맞는 화면이에요. 모두 맞는 화면은 아직 없어요.` }
+    case 'global_tag_keyword': return { text: `'${r.keyword}' 태그로 찾았어요.` }
+  }
+  return null
+}
+
+// 여러 단어가 모두 태그로 붙은 화면 찾기. 하나도 없으면 null (호출한 쪽에서 OR 검색으로 넘어감)
+function multiWordAndSearch(words) {
+  const wordsL = words.map(w => String(w).toLowerCase())
+  const andData = {}
+  let upaMeta = {}
+  try { upaMeta = upaAppMeta() } catch {}
+  Object.entries(tagsDb).forEach(([url, tags]) => {
+    if (!Array.isArray(tags) || !url.startsWith('http')) return
+    const tagStrs = tags.map(t => String(t).toLowerCase())
+    if (!wordsL.every(w => tagStrs.some(t => t === w || (w.length >= 2 && t.includes(w))))) return
+    const m = url.match(/\/images\/posts\/([^/]+)\//)
+    const appName = m ? (slug2name[m[1]] || m[1]) : ((upaMeta[url] || [])[0] || '기타 레퍼런스')
+    if (!andData[appName]) andData[appName] = []
+    andData[appName].push({ type:'image', src:url, thumbnail:url, source: m ? 'wwit' : 'upa', tags })
+  })
+  if (!Object.keys(andData).length) return null
+  return { data: filterVideoItems(andData), source:'mixed', meta: { text: `'${words.join("' + '")}' 조건이 모두 맞는 화면이에요.` } }
+}
+
+async function searchCore(kw) {
   const _searchKw = kw
   const r = resolveKw(kw)
+
+  // 화면 종류 단어 / "#단어": 태그가 붙은 화면을 직접 찾음 (WWIT + UPA 모두)
+  if (r?.type === 'screen_tag') {
+    const kl = r.keyword.toLowerCase()
+    const data = {}
+    let upaMeta = {}
+    try { upaMeta = upaAppMeta() } catch {}
+    Object.entries(tagsDb).forEach(([url, tags]) => {
+      if (!Array.isArray(tags) || !url.startsWith('http')) return
+      if (!tags.some(t => { const tl = String(t).toLowerCase(); return tl === kl || (kl.length >= 2 && tl.includes(kl)) })) return
+      const m = url.match(/\/images\/posts\/([^/]+)\//)
+      const appName = m ? (slug2name[m[1]] || m[1]) : ((upaMeta[url] || [])[0] || '기타 레퍼런스')
+      if (!data[appName]) data[appName] = []
+      data[appName].push({ type:'image', src:url, thumbnail:url, source: m ? 'wwit' : 'upa', tags })
+    })
+    // UPA: 화면 묶음 제목에 그 단어가 있는 경우도 포함
+    ucCache.forEach(uc => {
+      if (!uc.appName || !uc.images.length) return
+      if (!String(uc.title || '').toLowerCase().includes(kl)) return
+      if (!data[uc.appName]) data[uc.appName] = []
+      const have = new Set(data[uc.appName].map(i => i.src))
+      uc.images.forEach(img => { if (!have.has(img.src)) data[uc.appName].push({
+        type:'image', src:img.src, thumbnail:img.src, screenName:img.screenName, source:'upa', ucTitle:uc.title, ucUrl:uc.url }) })
+    })
+    return { data: sortDataByRelevance(filterVideoItems(data), r.keyword), source:'mixed' }
+  }
 
   // AND 검색: 앱 + 패턴 (예: "토스 홈화면")
   if (r?.type === 'app_and_pattern') {
@@ -1172,11 +1444,32 @@ ipcMain.handle('search', async (_, kw) => {
     return { data: filterVideoItems(data), source:'mixed' }
   }
 
+  // 여러 단어 검색: 모든 단어가 태그로 붙은 화면이 있으면 그것만 (AND 우선)
+  if (r?.type === 'multi_or') {
+    const andRes = multiWordAndSearch(r.words)
+    if (andRes) return andRes
+  }
+
   // OR 검색: 여러 키워드 각각 검색 후 합치기
   if (r?.type === 'multi_or') {
     const data = {}
     await Promise.all(r.words.map(async w => {
       const sub = resolveKw(w)
+      if (sub && sub.type === 'screen_tag') {
+        // 화면 종류 단어: 그 태그가 붙은 화면
+        const kl = sub.keyword.toLowerCase()
+        let upaMeta = {}
+        try { upaMeta = upaAppMeta() } catch {}
+        Object.entries(tagsDb).forEach(([url, imgTags]) => {
+          if (!Array.isArray(imgTags) || !url.startsWith('http')) return
+          if (!imgTags.some(t => { const tl = String(t).toLowerCase(); return tl === kl || (kl.length >= 2 && tl.includes(kl)) })) return
+          const sm = url.match(/\/images\/posts\/([^\/]+)\//)
+          const appName = sm ? (slug2name[sm[1]] || sm[1]) : ((upaMeta[url] || [])[0] || '기타 레퍼런스')
+          if (!data[appName]) data[appName] = []
+          data[appName].push({ type:'image', src:url, thumbnail:url, source: sm ? 'wwit' : 'upa', tags:imgTags })
+        })
+        return
+      }
       if (!sub) {
         // UPA 직접 검색
         const wl = w.toLowerCase()
@@ -1579,7 +1872,7 @@ ipcMain.handle('search', async (_, kw) => {
     })
     // AND로 하나라도 찾았으면 그 결과만 정확하게 반환 (엉뚱한 단어만 매칭된 화면 섞지 않음)
     if (Object.keys(andData).length) {
-      return { data: filterVideoItems(andData), source:'mixed' }
+      return { data: filterVideoItems(andData), source:'mixed', meta: { text: `'${r.words.join("' + '")}' 조건이 모두 맞는 화면이에요.` } }
     }
 
     const data = {}
@@ -1617,7 +1910,7 @@ ipcMain.handle('search', async (_, kw) => {
   }
 
   return { data: {} }
-})
+}
 
 // slug 직접 검색 (apps + paths 모두 검색)
 ipcMain.handle('search-by-slug', async (_, slug) => {
