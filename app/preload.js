@@ -61,4 +61,6 @@ contextBridge.exposeInMainWorld('api', {
   r2UpdateBrandCategory: (opts) => ipcRenderer.invoke('r2-update-brand-category', opts),
   r2DeleteBrand:   (opts)       => ipcRenderer.invoke('r2-delete-brand', opts),
   r2DeleteImage:   (opts)       => ipcRenderer.invoke('r2-delete-image', opts),
+  getVersion:      ()           => ipcRenderer.invoke('get-version'),
+  checkUpdate:     ()           => ipcRenderer.invoke('check-update'),
 })

@@ -144,31 +144,51 @@ async function apply(root, base, remote, onProgress) {
   } finally { cleanup() }
 }
 
-// 앱에서 호출: 확인 → 묻기 → 받기 → 다시 시작
+// 새 버전을 알리고, 사용자가 고르면 받아서 적용한 뒤 다시 시작
+async function promptAndApply(ctx, c) {
+  const win = ctx.getWindow()
+  if (!win || win.isDestroyed()) return 'no-window'
+  const ask = await ctx.dialog.showMessageBox(win, {
+    type: 'info', title: '부찌 업데이트', buttons: ['지금 업데이트', '나중에'], defaultId: 0, cancelId: 1, noLink: true,
+    message: `새 버전 ${c.remote.version} 이 있습니다. (현재 ${c.local})`,
+    detail: (c.remote.notes ? c.remote.notes + '\n\n' : '') + '바뀐 파일만 받아서 적용한 뒤 부찌를 다시 시작합니다.'
+  })
+  if (ask.response !== 0) return 'later'
+  try {
+    const r = await apply(ROOT, BASE, c.remote, (d, t) => { try { if (!win.isDestroyed()) { win.setProgressBar(t ? d / t : 1); win.setTitle(`부찌 — 업데이트 받는 중 ${d}/${t}`) } } catch {} })
+    try { win.setProgressBar(-1) } catch {}
+    await ctx.dialog.showMessageBox(win, { type: 'info', title: '부찌 업데이트', buttons: ['다시 시작'], message: `버전 ${c.remote.version} 으로 업데이트했습니다.`, detail: `파일 ${r.updated}개를 교체했습니다. 부찌를 다시 시작합니다.` })
+    ctx.app.relaunch()
+    ctx.app.exit(0)
+    return 'updated'
+  } catch (e) {
+    try { win.setProgressBar(-1) } catch {}
+    await ctx.dialog.showMessageBox(win, { type: 'warning', title: '부찌 업데이트', buttons: ['확인'], message: '업데이트를 적용하지 못했습니다.', detail: '기존 버전 그대로 계속 사용할 수 있습니다. 다음에 켤 때 다시 시도합니다.\n\n(' + (e && e.message ? e.message : e) + ')' })
+    return 'failed'
+  }
+}
+
+// 켜질 때 자동 확인: 새 버전이 없거나 인터넷이 안 되면 아무 표시 없이 넘어감
 async function start(ctx) {
   try {
     if (isDevFolder(ROOT)) return
     const c = await check()
-    if (!c.available) return
-    const win = ctx.getWindow()
-    if (!win || win.isDestroyed()) return
-    const ask = await ctx.dialog.showMessageBox(win, {
-      type: 'info', title: '부찌 업데이트', buttons: ['지금 업데이트', '나중에'], defaultId: 0, cancelId: 1, noLink: true,
-      message: `새 버전 ${c.remote.version} 이 있습니다. (현재 ${c.local})`,
-      detail: (c.remote.notes ? c.remote.notes + '\n\n' : '') + '바뀐 파일만 받아서 적용한 뒤 부찌를 다시 시작합니다.'
-    })
-    if (ask.response !== 0) return
-    try {
-      const r = await apply(ROOT, BASE, c.remote, (d, t) => { try { if (!win.isDestroyed()) { win.setProgressBar(t ? d / t : 1); win.setTitle(`부찌 — 업데이트 받는 중 ${d}/${t}`) } } catch {} })
-      try { win.setProgressBar(-1) } catch {}
-      await ctx.dialog.showMessageBox(win, { type: 'info', title: '부찌 업데이트', buttons: ['다시 시작'], message: `버전 ${c.remote.version} 으로 업데이트했습니다.`, detail: `파일 ${r.updated}개를 교체했습니다. 부찌를 다시 시작합니다.` })
-      ctx.app.relaunch()
-      ctx.app.exit(0)
-    } catch (e) {
-      try { win.setProgressBar(-1) } catch {}
-      await ctx.dialog.showMessageBox(win, { type: 'warning', title: '부찌 업데이트', buttons: ['확인'], message: '업데이트를 적용하지 못했습니다.', detail: '기존 버전 그대로 계속 사용할 수 있습니다. 다음에 켤 때 다시 시도합니다.\n\n(' + (e && e.message ? e.message : e) + ')' })
-    }
-  } catch { /* 인터넷 없음 등: 조용히 넘어감 */ }
+    if (c.available) await promptAndApply(ctx, c)
+  } catch { /* 인터넷 없음 등 */ }
 }
 
-module.exports = { start, check, apply, cmpVer, safeDest, isDevFolder }
+// 화면의 "업데이트 확인"을 눌렀을 때: 결과를 항상 알려줌
+// 반환 status: latest(최신) | later(나중에) | updated | failed | offline(확인 실패) | dev(작업 폴더)
+async function manual(ctx) {
+  const local = localVersion(ROOT)
+  if (isDevFolder(ROOT)) return { status: 'dev', version: local }
+  let c
+  try { c = await check() } catch (e) { return { status: 'offline', version: local, error: String(e && e.message || e) } }
+  if (!c.available) return { status: 'latest', version: local }
+  const status = await promptAndApply(ctx, c)
+  return { status, version: local, latest: c.remote.version }
+}
+
+function info() { return { version: localVersion(ROOT), dev: isDevFolder(ROOT) } }
+
+module.exports = { start, manual, info, check, apply, cmpVer, safeDest, isDevFolder }

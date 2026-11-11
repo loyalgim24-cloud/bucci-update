@@ -1115,6 +1115,15 @@ app.whenReady().then(async () => {
 
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
 
+// 화면에서 쓰는 버전 조회 / 수동 업데이트 확인
+ipcMain.handle('get-version', () => {
+  try { return require('./updater').info() } catch { return { version: '', dev: false } }
+})
+ipcMain.handle('check-update', async () => {
+  try { return await require('./updater').manual({ app, dialog, getWindow: () => win }) }
+  catch (e) { return { status: 'offline', error: String(e && e.message || e) } }
+})
+
 // 자동 업데이트: 창이 뜨고 잠시 뒤 새 버전 확인 (실패해도 앱 동작에는 영향 없음)
 app.whenReady().then(() => {
   setTimeout(() => {

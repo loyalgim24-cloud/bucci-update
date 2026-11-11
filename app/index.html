@@ -588,6 +588,10 @@ img[src=""], img:not([src]) { background: var(--g10) }
         <div>• <a href="https://krds.go.kr" target="_blank" style="color:var(--g05);text-decoration:none">KRDS</a> — 행정안전부</div>
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
       </div>
+      <div id="ver-row" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--g09);font-size:10px;color:var(--g06);align-items:center;justify-content:space-between;gap:6px">
+        <span id="ver-text">부찌</span>
+        <button id="ver-check-btn" onclick="checkUpdateNow()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">업데이트 확인</button>
+      </div>
     </div>
   </nav>
   <main id="main">
@@ -3651,6 +3655,37 @@ function eggShow(q) {
   renderResults(data, EGG_NAME)
   return true
 }
+
+// ── 버전 표시 / 업데이트 확인 ───────────────────────────────
+async function initVersionRow() {
+  const row = document.getElementById('ver-row')
+  if (!row || !window.api || typeof window.api.getVersion !== 'function') return
+  try {
+    const v = await window.api.getVersion()
+    if (!v) return
+    document.getElementById('ver-text').textContent = '부찌 v' + (v.version && v.version !== '0.0.0' ? v.version : '?') + (v.dev ? ' (작업 폴더)' : '')
+    row.style.display = 'flex'
+  } catch {}
+}
+async function checkUpdateNow() {
+  const btn = document.getElementById('ver-check-btn')
+  if (!btn || btn.disabled) return
+  btn.disabled = true; btn.textContent = '확인 중…'
+  try {
+    const r = await window.api.checkUpdate()
+    const msg = {
+      latest: `최신 버전입니다 (v${r.version})`,
+      later: `새 버전 v${r.latest} 은 다음에 켤 때 다시 알려드릴게요`,
+      failed: '업데이트를 적용하지 못했습니다',
+      offline: '인터넷에 연결되지 않아 확인하지 못했습니다',
+      dev: '작업 폴더에서는 업데이트를 받지 않습니다 (설치된 부찌에서 확인하세요)'
+    }[r && r.status]
+    if (msg) showToast(msg)
+  } catch { showToast('업데이트를 확인하지 못했습니다') }
+  btn.disabled = false; btn.textContent = '업데이트 확인'
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initVersionRow)
+else setTimeout(initVersionRow, 0)
 
 // 검색 결과가 전혀 없을 때 보여줄 빈 상태 화면 (제공된 마스코트 아이콘 사용)
 function emptyResultHtml(title, desc) {
