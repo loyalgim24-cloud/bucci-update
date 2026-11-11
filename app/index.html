@@ -357,6 +357,18 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
   82%{transform:translate3d(-2px,1px,0)} 92%{transform:translate3d(2px,0,0)}
 }
 @keyframes eggWobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) scale(1.15)}75%{transform:rotate(14deg) scale(1.15)}}
+/* 업데이트 내역 창 */
+#cl-overlay{position:fixed;inset:0;background:rgba(10,16,35,.45);z-index:9000;display:flex;align-items:center;justify-content:center}
+.cl-box{width:420px;max-width:calc(100vw - 40px);max-height:70vh;background:#fff;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+.cl-title{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;font-size:15px;font-weight:700;color:var(--g01)}
+.cl-close{border:none;background:none;font-size:14px;color:var(--g05);cursor:pointer;padding:4px 6px}
+.cl-list{overflow-y:auto;padding:0 18px 18px}
+.cl-item{padding:12px 0;border-top:1px solid var(--g09)}
+.cl-head{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--g01)}
+.cl-now{font-size:10px;padding:1px 7px;border-radius:9px;background:var(--sel-bg);color:var(--p600);font-weight:600}
+.cl-date{margin-left:auto;font-size:11px;color:var(--g06)}
+.cl-notes{margin-top:6px;font-size:12.5px;line-height:1.6;color:var(--g04,#555);white-space:pre-line}
+.cl-empty{padding:26px 0;text-align:center;font-size:13px;color:var(--g05)}
 /* PC 기능 숨김 */
 body.pc-off #r2-btn, body.pc-off #sb-mode-toggle{display:none !important}
 /* 아이콘팩 아이콘 (글자 크기에 맞춰 커짐) */
@@ -605,7 +617,7 @@ img[src=""], img:not([src]) { background: var(--g10) }
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
       </div>
       <div id="ver-row" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--g09);font-size:10px;color:var(--g06);align-items:center;justify-content:space-between;gap:6px">
-        <span id="ver-text">부찌</span>
+        <span id="ver-text" onclick="openChangelog()" title="업데이트 내역 보기" style="cursor:pointer">부찌</span>
         <button id="ver-check-btn" onclick="checkUpdateNow()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">업데이트 확인</button>
       </div>
     </div>
@@ -3706,12 +3718,37 @@ function eggShow(q) {
 }
 
 // ── 버전 표시 / 업데이트 확인 ───────────────────────────────
+let _verInfo = null
+// 버전 글자를 누르면 지금까지의 업데이트 내역을 보여줌
+async function openChangelog() {
+  try { _verInfo = await window.api.getVersion() || _verInfo } catch {}
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]))
+  const list = (_verInfo && Array.isArray(_verInfo.history)) ? _verInfo.history : []
+  const cur = _verInfo && _verInfo.version
+  const body = list.length
+    ? list.map(e => `<div class="cl-item"><div class="cl-head"><b>v${esc(e.version)}</b>${e.version === cur ? '<span class="cl-now">사용 중</span>' : ''}<span class="cl-date">${esc(e.date || '')}</span></div>${e.notes ? `<div class="cl-notes">${esc(e.notes)}</div>` : ''}</div>`).join('')
+    : '<div class="cl-empty">아직 기록된 업데이트 내역이 없어요.</div>'
+  closeChangelog()
+  const ov = document.createElement('div')
+  ov.id = 'cl-overlay'
+  ov.innerHTML = `<div class="cl-box" role="dialog" aria-label="업데이트 내역"><div class="cl-title"><span>업데이트 내역</span><button class="cl-close" onclick="closeChangelog()" aria-label="닫기">✕</button></div><div class="cl-list">${body}</div></div>`
+  ov.addEventListener('click', e => { if (e.target === ov) closeChangelog() })
+  document.body.appendChild(ov)
+  document.addEventListener('keydown', _clEsc)
+}
+function _clEsc(e) { if (e.key === 'Escape') closeChangelog() }
+function closeChangelog() {
+  const ov = document.getElementById('cl-overlay')
+  if (ov) ov.remove()
+  document.removeEventListener('keydown', _clEsc)
+}
 async function initVersionRow() {
   const row = document.getElementById('ver-row')
   if (!row || !window.api || typeof window.api.getVersion !== 'function') return
   try {
     const v = await window.api.getVersion()
     if (!v) return
+    _verInfo = v
     document.getElementById('ver-text').textContent = '부찌 v' + (v.version && v.version !== '0.0.0' ? v.version : '?') + (v.dev ? ' (작업 폴더)' : '')
     row.style.display = 'flex'
   } catch {}
@@ -4318,6 +4355,62 @@ function sqAppNames() {
   return _sqAppNames
 }
 
+// ── 앱 이름 인식 보강 (키워드 검색과 같은 규칙) ──
+// 띄어쓰기·점·대소문자를 무시하고 비교하고, 영문 이름을 한글 발음으로 적은 것도 알아봄
+// 예) "v live" = "V LIVE", "엘포인트" → "L.POINT", "케이비페이" → "KBPay", "롯데온" → "롯데ON"
+const SQ_KO_LATIN = [
+  // 자주 쓰는 외래어 (긴 것부터 맞춰봄)
+  ['포인트','point'],['라이브','live'],['페이','pay'],['뱅크','bank'],['뱅킹','banking'],['카드','card'],['마켓','market'],
+  ['스토어','store'],['뮤직','music'],['클럽','club'],['패스','pass'],['플러스','plus'],['모바일','mobile'],['샵','shop'],
+  ['숍','shop'],['북','book'],['티비','tv'],['홈','home'],['픽','pick'],['링크','link'],['월렛','wallet'],['머니','money'],
+  ['쇼핑','shopping'],['푸드','food'],['플레이','play'],['게임','game'],['뉴스','news'],['맵','map'],['택시','taxi'],
+  ['바이크','bike'],['드라이브','drive'],['클라우드','cloud'],['메일','mail'],['캘린더','calendar'],['노트','note'],
+  ['워크','work'],['스타','star'],['킹','king'],['헬스','health'],['케어','care'],['핏','fit'],['데이','day'],['타임','time'],
+  ['스타일','style'],['온','on'],['원','one'],['톡','talk'],['앱','app'],['웹툰','webtoon'],['멤버스','members'],
+  ['멤버십','membership'],['오더','order'],['딜','deal'],['박스','box'],['라운지','lounge'],['스마트','smart'],['월드','world'],
+  ['시티','city'],['에어','air'],['투어','tour'],['트립','trip'],['티켓','ticket'],['무비','movie'],['시네마','cinema'],
+  ['라이프','life'],['프렌즈','friends'],['키즈','kids'],['스쿨','school'],['클래스','class'],['잡','job'],['솔','sol'],
+  // 알파벳 읽는 소리
+  ['더블유','w'],['에이치','h'],['에이','a'],['에프','f'],['에스','s'],['엑스','x'],['와이','y'],['제이','j'],['케이','k'],
+  ['브이','v'],['아이','i'],['제트','z'],['엘','l'],['엠','m'],['엔','n'],['큐','q'],['알','r'],['비','b'],['씨','c'],
+  ['디','d'],['이','e'],['지','g'],['오','o'],['피','p'],['티','t'],['유','u'],
+].sort((a, b) => b[0].length - a[0].length)
+function sqNormApp(s) { return String(s || '').toLowerCase().replace(/[^0-9a-z가-힣]/g, '') }
+function sqKoToLatin(s, partial) {
+  let out = '', i = 0, changed = false
+  while (i < s.length) {
+    const ch = s[i]
+    if (/[0-9a-z]/.test(ch)) { out += ch; i++; continue }
+    const hit = SQ_KO_LATIN.find(([ko]) => s.startsWith(ko, i))
+    if (!hit) { if (!partial) return null; out += ch; i++; continue }
+    out += hit[1]; i += hit[0].length; changed = true
+  }
+  return changed && out !== s ? out : null
+}
+let _sqAppIndex = null
+function sqAppIndex() {
+  const names = sqAppNames()
+  if (_sqAppIndex && _sqAppIndex._n === names.length) return _sqAppIndex
+  const map = new Map()
+  names.forEach(n => { const k = sqNormApp(n); if (k.length >= 2 && !map.has(k)) map.set(k, n) })
+  map._n = names.length
+  _sqAppIndex = map
+  return map
+}
+// 단어 묶음 하나가 가리키는 앱 이름 (없으면 null)
+function sqLookupApp(text) {
+  const nk = sqNormApp(text)
+  if (nk.length < 2) return null
+  const idx = sqAppIndex()
+  if (idx.has(nk)) return idx.get(nk)
+  if (!/[가-힣]/.test(nk)) return null
+  for (const v of [sqKoToLatin(nk, false), sqKoToLatin(nk, true)]) {
+    if (v && v.length >= 3 && idx.has(v)) return idx.get(v)
+  }
+  return null
+}
+const SQ_APP_TAIL_RE = /(같은|같이|처럼|비슷한|비슷하게|스타일|느낌|류의|닮은|풍|앱|어플|이랑|에서|의|랑|과|와)$/
+
 // 문장 → { apps:[앱이름], similar:bool, labels:[대표어], leftover:'이해 못한 부분' }
 function sqParse(query) {
   const raw = String(query || '').toLowerCase().trim()
@@ -4345,6 +4438,34 @@ function sqParse(query) {
   }
   Object.entries(SQ_APP_ALIAS).forEach(([alias, name]) => { tryApp(alias, name) })
   sqAppNames().forEach(name => { tryApp(name, name) })
+
+  // 위에서 못 찾았으면: 띄어 쓴 이름("v live")이나 한글 발음 표기("엘포인트")로 다시 찾아봄.
+  // 문장의 단어를 1~3개씩 묶어 앱 이름과 비교 (긴 묶음부터)
+  if (!apps.length) {
+    const toks = q.trim().split(' ').filter(Boolean)
+    outer:
+    for (let n = Math.min(3, toks.length); n >= 1; n--) {
+      for (let s = 0; s + n <= toks.length; s++) {
+        const group = toks.slice(s, s + n)
+        const last = group[n - 1]
+        const tail = (last.match(SQ_APP_TAIL_RE) || [''])[0]
+        const core = tail && last.length > tail.length ? last.slice(0, -tail.length) : last
+        const text = [...group.slice(0, -1), core].join(' ')
+        // 조건 단어(지도, 결제 등)는 앱 이름 후보로 보지 않음
+        if (n === 1 && SQ_SAY.some(([say]) => say === sqNormApp(text))) continue
+        const name = sqLookupApp(text)
+        if (!name) continue
+        const next = toks[s + n] || ''
+        const pointsToApp = SQ_SIMILAR_RE.test(tail) || /^(앱|어플)/.test(tail) || SQ_SIMILAR_RE.test(next.slice(0, 5))
+        if ((SQ_AMBIGUOUS_APPS.has(name) || sqNormApp(text).length < 2) && !pointsToApp) continue
+        apps.push(name)
+        // 찾은 부분을 문장에서 지움 (꼬리말 '같은' 등은 남겨서 뒤에서 처리)
+        toks.splice(s, n, ...(tail ? [tail] : []))
+        q = ' ' + toks.join(' ') + ' '
+        break outer
+      }
+    }
+  }
 
   // 조건 표현 매칭: 공백 없이 붙여서, 긴 표현부터 소비
   let flat = q.replace(/\s+/g, '\u0001')  // 단어 경계 보존용 구분자

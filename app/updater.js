@@ -189,6 +189,13 @@ async function manual(ctx) {
   return { status, version: local, latest: c.remote.version }
 }
 
-function info() { return { version: localVersion(ROOT), dev: isDevFolder(ROOT) } }
+// 업데이트 내역 (app/changelog.json — 올릴 때마다 한 줄씩 쌓이고 업데이트로 함께 배포됨)
+function history() {
+  try {
+    const list = JSON.parse(fs.readFileSync(path.join(__dirname, 'changelog.json'), 'utf8'))
+    return Array.isArray(list) ? list.filter(e => e && e.version).slice(0, 50) : []
+  } catch { return [] }
+}
+function info() { return { version: localVersion(ROOT), dev: isDevFolder(ROOT), history: history() } }
 
 module.exports = { start, manual, info, check, apply, cmpVer, safeDest, isDevFolder }
