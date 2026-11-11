@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0D1B40;color:#fff;
+  font-family:'Pretendard',-apple-system,'Malgun Gothic',sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100vh;-webkit-font-smoothing:antialiased;
+  -webkit-app-region:drag;user-select:none;overflow:hidden;
+}
+img{width:80px;height:80px;object-fit:contain;margin-bottom:16px}
+h1{font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:20px}
+#msg{font-size:13px;color:#8BA3D4;margin-bottom:14px;height:20px;transition:all .3s;text-align:center}
+.prog-wrap{width:300px;height:4px;background:#162050;border-radius:2px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:#1270FC;border-radius:2px;width:0%;transition:width .3s ease}
+#pct{font-size:11px;color:#5A7FC0}
+.tip{font-size:11px;color:#3A5480;margin-top:20px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<img src="assets/icon.png" alt="">
+<h1>부찌 🍲</h1>
+<div id="msg">부대찌개 끓이는 중...</div>
+<div class="prog-wrap"><div class="prog-fill" id="fill"></div></div>
+<div id="pct">0%</div>
+<div class="tip">처음 실행 시 1회만 수집합니다<br>이후 실행은 즉시 시작돼요 ⚡</div>
+<script>
+window.api?.onSplashProgress?.(({ pct, msg }) => {
+  document.getElementById('fill').style.width = pct + '%'
+  document.getElementById('pct').textContent  = pct + '%'
+  document.getElementById('msg').textContent  = '부대찌개 끓이는 중...'
+})
+window.api?.onSplashDone?.(({ appCount }) => {
+  document.getElementById('msg').textContent = '부대찌개 끓이는 중...'
+  document.getElementById('fill').style.width = '50%'
+})
+window.api?.onSplashPhase?.(() => {
+  document.getElementById('msg').textContent = '부대찌개 끓이는 중...'
+})
+window.api?.onSplashUcProgress?.(({ pct }) => {
+  document.getElementById('fill').style.width = (50 + pct * 0.5) + '%'
+  document.getElementById('pct').textContent  = Math.round(50 + pct * 0.5) + '%'
+  document.getElementById('msg').textContent  = '부대찌개 끓이는 중...'
+})
+window.api?.onSplashUcDone?.(({ count }) => {
+  document.getElementById('msg').textContent = '완료! 🎉'
+  document.getElementById('fill').style.width = '100%'
+  document.getElementById('pct').textContent  = '100%'
+})
+</script>
+</body>
+</html>
