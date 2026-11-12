@@ -1847,68 +1847,6 @@ async function searchCore(kw) {
     return { data: sortDataByRelevance(filterVideoItems(data), _searchKw), source:'mixed' }
   }
 
-  // ── multi_or: 띄어쓰기 포함 복합 검색 ──
-  if (r.type === 'multi_or') {
-    const fullQ = r.words.join(' ').toLowerCase()
-    const wordsL = r.words.map(w => w.toLowerCase())
-
-    // AND 우선: tagsDb에서 입력한 모든 단어를 태그로 가진 화면만 먼저 찾기
-    // (예: "다크모드 로그인" → 다크모드 태그 + 로그인 태그 둘 다 가진 화면만)
-    const andData = {}
-    Object.entries(tagsDb).forEach(([url, tags]) => {
-      if (!Array.isArray(tags) || !url.startsWith('http')) return
-      const tagStrs = tags.map(t => t.toLowerCase())
-      const allMatch = wordsL.every(w => tagStrs.some(t => t.includes(w) || w.includes(t)))
-      if (!allMatch) return
-      // WWIT(images/posts/SLUG) 형식이면 앱 이름으로, 그 외(UPA 등 날짜/ID 폴더 구조)는
-      // "UPA 레퍼런스" 묶음으로 보존 — 여기서 그냥 버리면 AND로 정확히 찾은 화면이
-      // 통째로 사라지는 문제가 있었음
-      const m = url.match(/\/images\/posts\/([^/]+)\//)
-      let appName = m ? (slug2name[m[1]] || m[1]) : ''
-      if (!appName) { try { appName = (upaAppMeta()[url] || [])[0] || '' } catch {} }
-      if (!appName) appName = '기타 레퍼런스'
-      if (!andData[appName]) andData[appName] = []
-      andData[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags })
-    })
-    // AND로 하나라도 찾았으면 그 결과만 정확하게 반환 (엉뚱한 단어만 매칭된 화면 섞지 않음)
-    if (Object.keys(andData).length) {
-      return { data: filterVideoItems(andData), source:'mixed', meta: { text: `'${r.words.join("' + '")}' 조건이 모두 맞는 화면이에요.` } }
-    }
-
-    const data = {}
-    // AND 매칭이 전혀 없을 때만 단어별 OR로 폴백
-    // 전체 쿼리로 UPA 먼저 검색
-    ucCache.forEach(uc => {
-      if (!uc.appName || !uc.images.length) return
-      const nl = uc.appName.toLowerCase()
-      if (nl === fullQ || nl.includes(fullQ) || fullQ.includes(nl)) {
-        if (!data[uc.appName]) data[uc.appName] = []
-        uc.images.forEach(img => data[uc.appName].push({type:'image',src:img.src,thumbnail:img.src,screenName:img.screenName,source:'upa'}))
-      }
-    })
-    if (Object.keys(data).length) return { data: sortDataByRelevance(filterVideoItems(data), _searchKw), source:'upa' }
-    // 없으면 단어별 OR - searchByAppName 직접 호출
-    await Promise.all(r.words.map(async w => {
-      const wl = w.toLowerCase()
-      // WWIT 앱 매칭
-      const wApp = WWIT_APPS.find(a => a.name.toLowerCase().includes(wl) || a.kw.some(k=>k===wl))
-      if (wApp) {
-        let urls = await collectWwitUrls(wApp.slug)
-        if (!urls.length && Object.keys(tagsDb).length)
-          urls = Object.keys(tagsDb).filter(u => u.includes('/' + wApp.slug + '/'))
-        if (urls.length) data[wApp.name] = urls.map(u=>({type:'image',src:u,thumbnail:u,source:'wwit'}))
-      }
-      // UPA 매칭
-      ucCache.forEach(uc => {
-        if (!uc.appName||!uc.images.length) return
-        if (!uc.appName.toLowerCase().includes(wl) && !wl.includes(uc.appName.toLowerCase())) return
-        if (!data[uc.appName]) data[uc.appName] = []
-        uc.images.forEach(img => data[uc.appName].push({type:'image',src:img.src,thumbnail:img.src,screenName:img.screenName,source:'upa'}))
-      })
-    }))
-    return { data: sortDataByRelevance(filterVideoItems(data), _searchKw), source:'mixed' }
-  }
-
   return { data: {} }
 }
 

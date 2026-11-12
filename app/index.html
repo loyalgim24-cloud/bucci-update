@@ -357,6 +357,33 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
   82%{transform:translate3d(-2px,1px,0)} 92%{transform:translate3d(2px,0,0)}
 }
 @keyframes eggWobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) scale(1.15)}75%{transform:rotate(14deg) scale(1.15)}}
+/* 색상·모드로 좁혀보기 */
+.rf-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:12px 16px 2px;font-size:12px;color:var(--g05)}
+.rf-label{margin-right:2px}
+.rf-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:#fff;border:1px solid var(--g08,#dcdfe6);border-radius:14px;font-size:12px;font-family:inherit;color:var(--g02,#333);cursor:pointer}
+.rf-chip:hover{border-color:var(--p600)}
+.rf-chip.on{border-color:var(--p600);background:var(--sel-bg);color:var(--p600);font-weight:600}
+.rf-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.rf-n{font-size:10px;color:var(--g06);font-weight:400}
+.rf-chip.on .rf-n{color:var(--p600)}
+.rf-sep{width:1px;height:14px;background:var(--g08,#dcdfe6);margin:0 3px}
+.rf-reset{border:none;background:none;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--p600);cursor:pointer}
+.rf-info{margin-left:2px;font-size:11px;color:var(--g06)}
+.rf-none{margin:28px 16px;text-align:center;font-size:13px;color:var(--g05)}
+.rf-hide{display:none !important}
+/* 추천·최근 검색어 */
+.sq-panel{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:#fff;border:1px solid var(--g09);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.12);padding:8px 6px 10px;text-align:left}
+.sq-head{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 4px;font-size:11px;font-weight:600;color:var(--g05)}
+.sq-clear{border:none;background:none;font-size:11px;font-family:inherit;color:var(--g06);cursor:pointer;padding:2px 4px}
+.sq-clear:hover{color:var(--p600)}
+.sq-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;background:none;border-radius:8px;font-size:13px;font-family:inherit;color:var(--g01);cursor:pointer;text-align:left}
+.sq-item:hover{background:var(--g10)}
+.sq-item img.ic{width:15px;height:15px;margin:0;opacity:.75}
+.sq-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sq-del{border:none;background:none;color:var(--g06);font-size:12px;cursor:pointer;padding:2px 6px;border-radius:6px;visibility:hidden}
+.sq-item:hover .sq-del{visibility:visible}
+.sq-del:hover{background:var(--g09);color:var(--g01)}
+.sq-tag{font-size:10px;color:var(--g06);flex-shrink:0}
 /* 업데이트 내역 창 */
 #cl-overlay{position:fixed;inset:0;background:rgba(10,16,35,.45);z-index:9000;display:flex;align-items:center;justify-content:center}
 .cl-box{width:420px;max-width:calc(100vw - 40px);max-height:70vh;background:#fff;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
@@ -2429,6 +2456,7 @@ function renderResults(data, kw, opts={}) {
       const isFirstUc = item.ucTitle && !seenUcTitles.has(item.ucTitle)
       if (item.ucTitle) seenUcTitles.add(item.ucTitle)
       const card = makeCard(item, sectionItems, idx, false, isFirstUc)
+      card.dataset.fsrc = item.src   // 색상·모드 좁혀보기에서 태그를 찾을 때 사용
       flow.appendChild(card)
     })
     sec.appendChild(flow)
@@ -2449,6 +2477,8 @@ function renderResults(data, kw, opts={}) {
       })
     }
   })
+  // 색상·모드로 좁혀보기 바 (태그가 준비된 뒤에 붙임)
+  setupResultFilter(inner)
 }
 
 // ── 카드 생성 ──────────────────────────────────────────────────────
@@ -3693,9 +3723,6 @@ const _CORE_TAGS = new Set(['스플래시','온보딩','로그인','회원가입
   '필터','결제','마이페이지','설정','알림','목록','상세','빈상태','로딩','에러','리뷰','성공',
   '카드형','리스트형','그리드형','단일화면','피드형'])
 
-// 직전 weightedTagSearch 호출이 AND(모든 조건 동시 충족)로 결과를 찾았는지 여부
-// → 보강 검색(supplementWithLiveSearch)이 이미 정확한 AND 결과를 OR로 오염시키지 않도록 체크용
-let _lastSearchHadAndMatch = false
 
 // ── 이스터에그 ─────────────────────────────────────────────
 // 검색창(키워드·대화형 모두)에 정확히 이 단어를 넣었을 때만 나오는 숨은 결과.
@@ -3717,6 +3744,178 @@ function eggShow(q) {
   showResult()
   renderResults(data, EGG_NAME)
   return true
+}
+
+// ── 홈 검색창: 추천 검색어 / 최근 검색어 ──────────────────────
+// 검색창이 비어 있을 때 누르면, 지난 검색과 "이렇게 찾아보세요" 예시를 보여줌.
+const SQ_RECENT_KEY = 'bucci_recent_queries'
+const SQ_EXAMPLES = {
+  ai: ['토스 같은 송금 화면', '바텀시트가 있는 결제 화면', '다크모드 로그인', '파란색 홈화면', '지도가 있는 택시 화면', '처음 앱 켰을 때 나오는 화면'],
+  keyword: ['토스', '카카오뱅크', '토스 결제', '지도 검색', '#송금', 'ㅋㅋㅇ']
+}
+function sqRecentList() {
+  try { const l = JSON.parse(localStorage.getItem(SQ_RECENT_KEY) || '[]'); return Array.isArray(l) ? l.filter(e => e && e.q) : [] } catch { return [] }
+}
+function sqRecentSave(list) { try { localStorage.setItem(SQ_RECENT_KEY, JSON.stringify(list.slice(0, 8))) } catch {} }
+function sqRecentAdd(q, mode) {
+  q = String(q || '').trim()
+  if (!q || (typeof eggMatch === 'function' && eggMatch(q))) return     // 숨은 검색어는 기록하지 않음
+  sqRecentSave([{ q, mode: mode === 'keyword' ? 'keyword' : 'ai' }, ...sqRecentList().filter(e => e.q !== q)])
+}
+function sqPanelHide() { const p = document.getElementById('sq-panel'); if (p) p.remove() }
+function sqPanelShow() {
+  const input = document.getElementById('nl-inline-input')
+  const host = document.getElementById('nl-bar-outer')
+  if (!input || !host || input.value.trim()) { sqPanelHide(); return }
+  sqPanelHide()
+  const panel = document.createElement('div')
+  panel.id = 'sq-panel'; panel.className = 'sq-panel'
+  panel.addEventListener('mousedown', e => e.preventDefault())     // 눌러도 입력창 포커스 유지
+  const run = (q, mode) => {
+    if (mode && mode !== _searchMode) setSearchMode(mode)
+    input.value = q
+    sqPanelHide()
+    doSmartSearch()
+  }
+  const recent = sqRecentList()
+  if (recent.length) {
+    const head = document.createElement('div'); head.className = 'sq-head'
+    head.appendChild(Object.assign(document.createElement('span'), { textContent: '최근 검색' }))
+    const clear = Object.assign(document.createElement('button'), { className: 'sq-clear', type: 'button', textContent: '전체 지우기' })
+    clear.onclick = () => { sqRecentSave([]); sqPanelShow() }
+    head.appendChild(clear); panel.appendChild(head)
+    recent.forEach(e => {
+      const row = document.createElement('div'); row.className = 'sq-item'; row.setAttribute('role', 'button')
+      row.innerHTML = '<img class="ic" src="assets/icons/120.svg" alt="">'
+      row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-text', textContent: e.q }))
+      row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-tag', textContent: e.mode === 'keyword' ? '키워드' : '대화형' }))
+      const del = Object.assign(document.createElement('button'), { className: 'sq-del', type: 'button', textContent: '✕', title: '이 검색어 지우기' })
+      del.onclick = ev => { ev.stopPropagation(); sqRecentSave(sqRecentList().filter(x => x.q !== e.q)); sqPanelShow() }
+      row.appendChild(del)
+      row.onclick = () => run(e.q, e.mode)
+      panel.appendChild(row)
+    })
+  }
+  const head2 = document.createElement('div'); head2.className = 'sq-head'
+  head2.appendChild(Object.assign(document.createElement('span'), { textContent: '이렇게 찾아보세요' }))
+  panel.appendChild(head2)
+  const recentSet = new Set(recent.map(e => e.q))
+  ;(SQ_EXAMPLES[_searchMode] || SQ_EXAMPLES.ai).filter(q => !recentSet.has(q)).forEach(q => {
+    const row = document.createElement('div'); row.className = 'sq-item'; row.setAttribute('role', 'button')
+    row.innerHTML = '<img class="ic" src="assets/icons/025.svg" alt="">'
+    row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-text', textContent: q }))
+    row.onclick = () => run(q, null)
+    panel.appendChild(row)
+  })
+  host.style.position = 'relative'
+  host.appendChild(panel)
+}
+function sqPanelInit() {
+  const input = document.getElementById('nl-inline-input')
+  if (!input || input._sqInit) return
+  input._sqInit = true
+  input.addEventListener('focus', sqPanelShow)
+  input.addEventListener('click', sqPanelShow)
+  input.addEventListener('input', sqPanelShow)        // 글자를 치면 숨기고, 다 지우면 다시 보임
+  input.addEventListener('blur', () => setTimeout(sqPanelHide, 120))
+  input.addEventListener('keydown', e => { if (e.key === 'Escape') sqPanelHide() })
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sqPanelInit)
+else setTimeout(sqPanelInit, 0)
+
+// ── 검색 결과를 색상·모드로 좁혀보기 ─────────────────────────
+// 결과 화면에 붙은 색상 태그(블루톤 등)와 모드 태그(다크/라이트)로 화면을 걸러서 보여줌.
+// 태그는 화면 픽셀을 분석해 붙여둔 것이며, 해당 태그가 붙은 화면이 결과에 있을 때만 버튼이 나타남.
+const RF_MODES = [['라이트모드', '라이트'], ['다크모드', '다크']]
+const RF_COLORS = [['블루톤', '블루', '#2F6BFF'], ['그린톤', '그린', '#1DB954'], ['레드톤', '레드', '#EF4444'], ['옐로우톤', '옐로우', '#F5B700'],
+  ['퍼플톤', '퍼플', '#8B5CF6'], ['오렌지톤', '오렌지', '#F97316'], ['모노톤', '모노', 'linear-gradient(135deg,#111 0 50%,#d4d4d8 50% 100%)']]
+let _rfRenderId = 0
+function rfTagsOf(src) {
+  const t = tagsDb[src] || tagsDb[String(src).replace(/&(?!amp;)/g, '&amp;')] || tagsDb[String(src).replace(/&amp;/g, '&')]
+  return Array.isArray(t) ? t : null
+}
+function setupResultFilter(inner) {
+  const myId = ++_rfRenderId
+  ensureTagsLoaded().then(() => {
+    if (myId !== _rfRenderId || !inner.isConnected) return     // 그 사이 다른 결과로 바뀌었으면 중단
+    try { buildResultFilter(inner) } catch {}
+  }).catch(() => {})
+}
+function buildResultFilter(inner) {
+  const cards = [...inner.querySelectorAll('.card[data-fsrc]')]
+  if (cards.length < 6) return
+  const count = {}
+  let tagged = 0
+  cards.forEach(c => {
+    const tags = rfTagsOf(c.dataset.fsrc)
+    const mine = tags ? [...RF_MODES, ...RF_COLORS].map(x => x[0]).filter(t => tags.includes(t)) : []
+    c._rf = mine
+    if (mine.length) tagged++
+    mine.forEach(t => { count[t] = (count[t] || 0) + 1 })
+  })
+  const modes = RF_MODES.filter(([t]) => count[t]), colors = RF_COLORS.filter(([t]) => count[t])
+  // 태그가 붙은 화면이 너무 적거나 고를 것이 하나뿐이면 표시하지 않음
+  if (tagged < cards.length * 0.3 || modes.length + colors.length < 2) return
+
+  const state = { mode: null, color: null }
+  const bar = document.createElement('div')
+  bar.className = 'rf-bar'
+  const label = document.createElement('span'); label.className = 'rf-label'; label.textContent = '좁혀보기'
+  bar.appendChild(label)
+  const chips = []
+  const addChip = (kind, tag, text, swatch) => {
+    const b = document.createElement('button')
+    b.className = 'rf-chip'; b.type = 'button'
+    b.title = `${text} ${count[tag]}장`
+    if (swatch) { const dot = document.createElement('span'); dot.className = 'rf-dot'; dot.style.background = swatch; b.appendChild(dot) }
+    b.appendChild(document.createTextNode(text))
+    const n = document.createElement('span'); n.className = 'rf-n'; n.textContent = count[tag]; b.appendChild(n)
+    b.onclick = () => { state[kind] = state[kind] === tag ? null : tag; apply() }
+    chips.push({ b, kind, tag })
+    bar.appendChild(b)
+  }
+  modes.forEach(([t, text]) => addChip('mode', t, text, null))
+  if (modes.length && colors.length) { const sep = document.createElement('span'); sep.className = 'rf-sep'; bar.appendChild(sep) }
+  colors.forEach(([t, text, sw]) => addChip('color', t, text, sw))
+  const reset = document.createElement('button'); reset.className = 'rf-reset'; reset.type = 'button'; reset.textContent = '전체 보기'
+  reset.onclick = () => { state.mode = null; state.color = null; apply() }
+  bar.appendChild(reset)
+  const info = document.createElement('span'); info.className = 'rf-info'; bar.appendChild(info)
+  const none = document.createElement('div'); none.className = 'rf-none'; none.textContent = '이 조건에 맞는 화면이 없어요. 다른 색이나 모드를 골라보세요.'; none.style.display = 'none'
+
+  function apply() {
+    const active = !!(state.mode || state.color)
+    // 숨길 때는 전용 클래스(rf-hide)만 붙였다 뗌 — 이미지 로드 실패 등 다른 이유로 숨겨진 카드·묶음은 그대로 둠
+    const visible = el => !el.classList.contains('rf-hide') && el.style.display !== 'none'
+    let shown = 0
+    cards.forEach(c => {
+      const ok = (!state.mode || c._rf.includes(state.mode)) && (!state.color || c._rf.includes(state.color))
+      c.classList.toggle('rf-hide', !ok)
+      if (visible(c)) shown++
+    })
+    inner.querySelectorAll('.app-sec').forEach(sec => {
+      const secCards = [...sec.querySelectorAll('.card[data-fsrc]')]
+      if (!secCards.length) return
+      const vis = secCards.filter(visible).length
+      sec.classList.toggle('rf-hide', !vis)
+      const div = sec.nextElementSibling
+      if (div && div.classList.contains('sec-div')) div.classList.toggle('rf-hide', !vis)
+      const cnt = sec.querySelector('.app-hdr .app-cnt')
+      if (cnt && /^\d+개/.test(cnt.textContent)) {
+        if (!cnt.dataset.rfAll) cnt.dataset.rfAll = cnt.textContent
+        cnt.textContent = active ? vis + '개' : cnt.dataset.rfAll
+      }
+    })
+    chips.forEach(({ b, kind, tag }) => b.classList.toggle('on', state[kind] === tag))
+    reset.style.display = active ? '' : 'none'
+    info.textContent = active ? `${shown}장 표시 중` : ''
+    none.style.display = active && !shown ? '' : 'none'
+  }
+  // 안내 줄(이해했어요·안내 바·제안)보다 아래, 첫 결과 묶음 바로 위에 둠
+  const firstSec = inner.querySelector('.app-sec')
+  inner.insertBefore(bar, firstSec || inner.firstChild)
+  inner.insertBefore(none, bar.nextSibling)
+  apply()
 }
 
 // ── 버전 표시 / 업데이트 확인 ───────────────────────────────
@@ -3826,7 +4025,6 @@ function weightedTagSearch(extractedTags, maxApps, maxPerApp) {
   // 키워드가 2개 이상이고 AND로 하나라도 찾았으면, 그 결과만 정확하게 사용
   // (엉뚱한 조건 1개만 맞은 화면을 섞지 않음 — "다크모드 로그인"에 라이트모드 로그인 섞이는 문제 방지)
   const hasAndMatch = kwList.length >= 2 && Object.keys(andResults).length > 0
-  _lastSearchHadAndMatch = hasAndMatch
   const urlScores = hasAndMatch ? andResults : (() => {
     // AND 결과가 전혀 없을 때만 OR 방식 fallback (기존 로직)
     const scores = { ...andResults }
@@ -3863,9 +4061,6 @@ function weightedTagSearch(extractedTags, maxApps, maxPerApp) {
   Object.entries(appGroups).sort((a,b) => b[1].score-a[1].score).slice(0,maxApps).forEach(([name,{urls}]) => {
     data[name] = urls.map(({url}) => ({type:'image',src:url,thumbnail:url,source:'wwit'}))
   })
-  // AND로 raw 매칭은 있었지만(hasAndMatch) 그룹핑 후에도 실제 보여줄 화면이 없으면
-  // 보강검색이 작동할 수 있도록 플래그를 최종 결과 기준으로 다시 확정
-  _lastSearchHadAndMatch = hasAndMatch && Object.keys(data).length > 0
   return data
 }
 
@@ -4039,62 +4234,6 @@ function closeNLModal() {
   document.getElementById('nl-input').value = ''
 }
 
-// 일상어 → 태그 동의어 사전 (AI 호출 없이 1차로 빠르게 매칭)
-const _NL_SYNONYMS = {
-  // 화면 유형
-  '다크모드': ['까만','검은','어두운','블랙','다크','어두운배경','블랙배경','다크톤','검정색'],
-  '라이트모드': ['하얀','밝은','화이트','밝은배경','흰색','화이트톤','밝은화면'],
-  '온보딩': ['처음켰을때','튜토리얼','첫화면','앱처음','시작할때','처음시작'],
-  '스플래시': ['시작화면','로딩화면','앱켤때','앱실행','인트로화면'],
-  '로그인': ['로긴','signin','sign in','로그인화면','로그인창'],
-  '회원가입': ['가입','signup','sign up','계정만들기','회원등록'],
-  '마이페이지': ['내페이지','내정보','마이','my page','내계정','내프로필'],
-  '설정': ['환경설정','세팅','setting','앱설정','옵션'],
-  '알림': ['노티','푸시','push','알림창','알림목록','노티피케이션'],
-  '결제': ['페이','pay','payment','구매하기','주문하기','체크아웃','계산'],
-  '장바구니': ['카트','cart','담은상품','담기','위시리스트'],
-  '검색결과': ['검색후','찾은결과','검색된','결과화면'],
-  '빈상태': ['아무것도없는','비어있는','데이터없는','내용없음','empty'],
-  '상세': ['디테일','detail','상세화면','상세페이지','상세정보'],
-  // UI 컴포넌트
-  '바텀시트': ['아래에서올라오는','하단시트','밑에서올라오는','아래팝업'],
-  '탭바': ['하단버튼','네비게이션바','아래탭','하단탭','하단메뉴','하단바','하단네비'],
-  'GNB': ['상단메뉴','상단바','헤더','header','상단내비'],
-  '검색바': ['검색창','검색입력','서치바'],
-  '입력폼': ['입력창','폼','텍스트입력','form','입력칸','텍스트박스'],
-  '팝업': ['모달','다이얼로그','dialog','뜨는창','overlay','오버레이'],
-  '채팅': ['채팅창','메시지','채팅방','메신저','대화창','대화방','톡','카톡','문의창','상담창','cs창','고객문의','1대1채팅','일대일채팅','dm','다이렉트메시지'],
-  '메시지': ['채팅','문자','알림메시지','인앱메시지'],
-  '상담': ['고객센터','cs','문의','1대1문의','고객문의','상담하기'],
-  // 레이아웃
-  '카드형': ['카드레이아웃','카드ui','카드스타일'],
-  '리스트형': ['목록형','리스트레이아웃','나열','세로목록'],
-  '그리드형': ['격자','그리드','2열','3열','갤러리형'],
-  '피드형': ['피드','feed','타임라인형','sns피드','인스타형'],
-  '미니멀': ['심플','깔끔한','단순한','여백많은','깨끗한','군더더기없는'],
-  '컬러풀': ['화려한','알록달록','다채로운','색감좋은','생동감있는'],
-  // 산업군
-  '금융': ['뱅킹','은행','뱅크','bank','계좌','이체','잔액','금융앱'],
-  '송금': ['이체','보내기','transfer','계좌이체','송금하기'],
-  '투자': ['주식','코인','crypto','펀드','자산관리','포트폴리오'],
-  '커머스': ['쇼핑','상품','shop','store','스토어','온라인쇼핑','이커머스'],
-  '배달': ['음식배달','배달앱','푸드','food','음식주문','배달음식'],
-  '모빌리티': ['이동','교통','차량','택시','카풀','라이드','자동차'],
-  '헬스': ['운동','건강','피트니스','fitness','다이어트','헬스장','workout'],
-  '소셜': ['sns','피드','팔로우','친구','커뮤니티','소셜미디어'],
-  '부동산': ['집','아파트','매물','임대','전세','월세','부동산앱'],
-  '스트리밍': ['영상','동영상','ott','video','플레이어','재생','시청'],
-  '패션': ['옷','의류','스타일','fashion','코디','착장'],
-  '구독': ['멤버십','membership','premium','프리미엄','정기결제'],
-  '커뮤니티': ['게시판','forum','포럼','글쓰기','게시글','댓글'],
-  // 기능
-  '지도': ['맵','map','위치','장소','네이버지도','카카오맵'],
-  '채팅': ['채팅창','메시지창','대화창','문의창','상담창'],
-  '포인트': ['적립','리워드','reward','마일리지','캐시'],
-  '쿠폰': ['할인쿠폰','voucher','프로모코드','할인권'],
-  '리뷰': ['후기','평가','별점','rating','평점'],
-  '통계': ['차트','그래프','데이터','analytics','분석','수치'],
-}
 
 // ══════════════════════════════════════════════════════════════════════
 // 스마트 자연어 검색 엔진
@@ -4865,6 +5004,8 @@ else setTimeout(() => { try { nlApplyKeyState() } catch {} }, 0)
 
 function setSearchMode(mode) {
   _searchMode = mode
+  // 모드를 바꾸면 추천 검색어도 그 모드에 맞게 다시 보여줌 (검색창이 비어 있고 포커스가 있을 때만)
+  setTimeout(() => { try { if (document.activeElement === document.getElementById('nl-inline-input')) sqPanelShow() } catch {} }, 0)
   const input = document.getElementById('nl-inline-input')
   const bar = document.getElementById('nl-search-bar')
   if (mode === 'ai') {
@@ -4890,6 +5031,8 @@ async function doSmartSearch() {
   const input = document.getElementById('nl-inline-input')
   const query = input?.value.trim()
   if (!query) return
+  sqPanelHide()
+  sqRecentAdd(query, _searchMode)
 
   if (_searchMode === 'ai') {
     // 대화형 모드 → 무조건 NL 검색
