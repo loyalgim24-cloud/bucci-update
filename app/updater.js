@@ -144,8 +144,52 @@ async function apply(root, base, remote, onProgress) {
   } finally { cleanup() }
 }
 
-// 새 버전을 알리고, 사용자가 고르면 받아서 적용한 뒤 다시 시작
+// 새 버전을 알리고, 사용자가 고르면 받아서 적용한 뒤 다시 시작.
+// 안내는 부찌 화면 안의 창으로 띄움 (index.html 의 __bucciUpdatePrompt / Progress / Done).
+// 화면이 아직 준비되지 않았거나 그 함수가 없으면 Windows 기본 창으로 대신함.
+function ui(win, fn, arg) {
+  return win.webContents.executeJavaScript(`window.${fn}(${JSON.stringify(arg === undefined ? null : arg)})`, true)
+}
+async function hasInAppUi(win) {
+  try {
+    const ok = await Promise.race([
+      win.webContents.executeJavaScript('typeof window.__bucciUpdatePrompt === "function" && typeof window.__bucciUpdateDone === "function"', true),
+      new Promise(r => setTimeout(() => r(false), 3000))
+    ])
+    return ok === true
+  } catch { return false }
+}
 async function promptAndApply(ctx, c) {
+  const win = ctx.getWindow()
+  if (!win || win.isDestroyed()) return 'no-window'
+  if (!(await hasInAppUi(win))) return promptAndApplyNative(ctx, c)
+  let ans
+  try { ans = await ui(win, '__bucciUpdatePrompt', { local: c.local, version: c.remote.version, notes: c.remote.notes || '' }) }
+  catch { return promptAndApplyNative(ctx, c) }
+  if (ans !== 'now') return 'later'
+  const progress = (d, t) => {
+    try {
+      if (win.isDestroyed()) return
+      win.setProgressBar(t ? d / t : 1)
+      win.webContents.executeJavaScript(`window.__bucciUpdateProgress && window.__bucciUpdateProgress(${d},${t})`, true).catch(() => {})
+    } catch {}
+  }
+  try {
+    const r = await apply(ROOT, BASE, c.remote, progress)
+    try { win.setProgressBar(-1) } catch {}
+    try { await ui(win, '__bucciUpdateDone', { ok: true, version: c.remote.version, updated: r.updated }) } catch {}
+    ctx.app.relaunch()
+    ctx.app.exit(0)
+    return 'updated'
+  } catch (e) {
+    try { win.setProgressBar(-1) } catch {}
+    try { await ui(win, '__bucciUpdateDone', { ok: false, error: String(e && e.message ? e.message : e) }) } catch {}
+    return 'failed'
+  }
+}
+
+// (대비용) 화면 안의 창을 쓸 수 없을 때는 Windows 기본 창으로 안내
+async function promptAndApplyNative(ctx, c) {
   const win = ctx.getWindow()
   if (!win || win.isDestroyed()) return 'no-window'
   const ask = await ctx.dialog.showMessageBox(win, {
