@@ -423,7 +423,8 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .ver-actions button:hover{background:var(--sel-bg);color:var(--p600)}
 .ver-actions button:disabled{color:var(--g06);cursor:default;background:none}
 /* 홈 화면 제작자 표시 */
-#home-credit{position:fixed;right:20px;bottom:14px;z-index:5;font-size:10.5px;letter-spacing:-.01em;color:var(--g07);pointer-events:none;user-select:none}
+#home-credit{position:fixed;right:20px;bottom:14px;z-index:5;font-size:11.5px;letter-spacing:-.01em;color:var(--g05);pointer-events:none;user-select:none}
+#home-credit b{font-weight:700;color:var(--g02,#333)}
 /* 의견 보내기 창 */
 .fb-text{display:block;width:100%;box-sizing:border-box;height:150px;margin-top:16px;padding:12px 14px;border:1.5px solid var(--g08);border-radius:10px;font-family:inherit;font-size:13px;line-height:1.6;color:var(--g01);resize:none;outline:none;transition:border-color .15s}
 .fb-text:focus{border-color:var(--p600)}
@@ -693,7 +694,7 @@ img[src=""], img:not([src]) { background: var(--g10) }
     <!-- 홈 -->
     <div id="home" class="on">
       <!-- 제작자 표시: 홈 화면 오른쪽 아래 구석에 고정 (홈에서만 보임) -->
-      <div id="home-credit">Made by 솔리데오 크리에이티브그룹 UIUX팀 김선진</div>
+      <div id="home-credit">Made by <b>솔리데오 크리에이티브그룹 UIUX팀 김선진</b></div>
       <div class="home-hdr">
         <img src="assets/icon.png" alt="">
         <div><h1>부찌 🍲</h1><p>Korean App UIUX Reference</p></div>
