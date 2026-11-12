@@ -416,6 +416,12 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .up-btn:hover{background:var(--g10)}
 .up-btn.primary{border-color:var(--p600);background:var(--p600);color:#fff}
 .up-btn.primary:hover{filter:brightness(1.07);background:var(--p600)}
+/* 의견 보내기 창 */
+.fb-text{display:block;width:100%;box-sizing:border-box;height:150px;margin-top:16px;padding:12px 14px;border:1.5px solid var(--g08);border-radius:10px;font-family:inherit;font-size:13px;line-height:1.6;color:var(--g01);resize:none;outline:none;transition:border-color .15s}
+.fb-text:focus{border-color:var(--p600)}
+.fb-foot{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:11px;color:var(--g06)}
+.fb-msg.err{color:var(--danger,#E53E3E)}
+.up-btn:disabled{opacity:.5;cursor:default}
 /* 왼쪽 메뉴: 색상 점 */
 .sb-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
 /* PC 기능 숨김 */
@@ -667,7 +673,10 @@ img[src=""], img:not([src]) { background: var(--g10) }
       </div>
       <div id="ver-row" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--g09);font-size:10px;color:var(--g06);align-items:center;justify-content:space-between;gap:6px">
         <span id="ver-text" onclick="openChangelog()" title="업데이트 내역 보기" style="cursor:pointer">부찌</span>
-        <button id="ver-check-btn" onclick="checkUpdateNow()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">업데이트 확인</button>
+        <span style="display:flex;gap:9px;flex-shrink:0">
+          <button id="fb-open-btn" onclick="openFeedback()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">의견 보내기</button>
+          <button id="ver-check-btn" onclick="checkUpdateNow()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">업데이트 확인</button>
+        </span>
       </div>
     </div>
   </nav>
@@ -4085,6 +4094,61 @@ window.__bucciUpdateDone = function (r) {
       _upButtons([['확인', true, () => { _upClose(); resolve('ok') }]])
     }
   })
+}
+// ── 의견 보내기 ──────────────────────────────────────────────
+// 익명으로 내용만 보냄 (부찌 버전은 자동으로 함께 전송). 받는 곳은 app/feedback.js 의 구글 설문지.
+const FB_MAX = 3000
+let _fbSending = false
+function closeFeedback() {
+  if (_fbSending) return
+  const ov = document.getElementById('fb-overlay'); if (ov) ov.remove()
+  document.removeEventListener('keydown', _fbEsc)
+}
+function _fbEsc(e) { if (e.key === 'Escape') closeFeedback() }
+function openFeedback() {
+  if (document.getElementById('fb-overlay')) return
+  closeChangelog()
+  const ov = document.createElement('div')
+  ov.id = 'fb-overlay'
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,16,35,.5);z-index:9400;display:flex;align-items:center;justify-content:center'
+  ov.innerHTML = `<div class="up-box" role="dialog" aria-label="의견 보내기" style="width:440px">
+    <div class="up-head"><img class="up-logo" src="assets/icon.png" alt=""><div><div class="up-title">의견 보내기</div><div class="up-ver">불편한 점이나 있었으면 하는 기능을 알려주세요</div></div></div>
+    <textarea class="fb-text" id="fb-text" maxlength="${FB_MAX}" placeholder="예) 검색 결과를 앱 이름순으로 정렬하고 싶어요"></textarea>
+    <div class="fb-foot"><span class="fb-msg" id="fb-msg">익명으로 전송돼요. 내용과 부찌 버전만 보냅니다.</span><span id="fb-count">0 / ${FB_MAX}</span></div>
+    <div class="up-btns"><button class="up-btn" id="fb-cancel">닫기</button><button class="up-btn primary" id="fb-send" disabled>보내기</button></div></div>`
+  document.body.appendChild(ov)
+  const ta = document.getElementById('fb-text'), btn = document.getElementById('fb-send'), msg = document.getElementById('fb-msg')
+  const draft = (() => { try { return sessionStorage.getItem('bucci_fb_draft') || '' } catch { return '' } })()
+  ta.value = draft
+  const sync = () => {
+    document.getElementById('fb-count').textContent = ta.value.length + ' / ' + FB_MAX
+    btn.disabled = _fbSending || ta.value.trim().length < 2
+    try { sessionStorage.setItem('bucci_fb_draft', ta.value) } catch {}
+  }
+  ta.addEventListener('input', sync); sync()
+  document.getElementById('fb-cancel').onclick = closeFeedback
+  ov.addEventListener('mousedown', e => { if (e.target === ov) closeFeedback() })
+  document.addEventListener('keydown', _fbEsc)
+  btn.onclick = async () => {
+    if (_fbSending || ta.value.trim().length < 2) return
+    _fbSending = true; btn.disabled = true; btn.textContent = '보내는 중…'; ta.disabled = true
+    msg.className = 'fb-msg'; msg.textContent = '보내고 있어요…'
+    let r = null
+    try { r = await window.api.sendFeedback(ta.value) } catch {}
+    _fbSending = false
+    if (r && r.ok) {
+      try { sessionStorage.removeItem('bucci_fb_draft') } catch {}
+      closeFeedback()
+      showToast('의견을 보냈어요. 고맙습니다!')
+      return
+    }
+    ta.disabled = false; btn.textContent = '다시 보내기'; sync()
+    msg.className = 'fb-msg err'
+    msg.textContent = r && r.reason === 'rejected'
+      ? '지금은 의견을 받을 수 없어요. 나중에 다시 시도해주세요.'
+      : '보내지 못했어요. 인터넷 연결을 확인해주세요.'
+  }
+  setTimeout(() => { try { ta.focus() } catch {} }, 0)
 }
 async function initVersionRow() {
   const row = document.getElementById('ver-row')

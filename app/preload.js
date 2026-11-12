@@ -63,4 +63,5 @@ contextBridge.exposeInMainWorld('api', {
   r2DeleteImage:   (opts)       => ipcRenderer.invoke('r2-delete-image', opts),
   getVersion:      ()           => ipcRenderer.invoke('get-version'),
   checkUpdate:     ()           => ipcRenderer.invoke('check-update'),
+  sendFeedback:    (text)       => ipcRenderer.invoke('send-feedback', text),
 })

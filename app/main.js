@@ -1279,6 +1279,14 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 ipcMain.handle('get-version', () => {
   try { return require('./updater').info() } catch { return { version: '', dev: false } }
 })
+// 의견 보내기 (익명, 내용과 버전만 구글 설문지로 전송)
+ipcMain.handle('send-feedback', async (_, text) => {
+  try {
+    let version = ''
+    try { version = require('./updater').info().version } catch {}
+    return await require('./feedback').send(text, version)
+  } catch { return { ok: false, reason: 'offline' } }
+})
 ipcMain.handle('check-update', async () => {
   try { return await require('./updater').manual({ app, dialog, getWindow: () => win }) }
   catch (e) { return { status: 'offline', error: String(e && e.message || e) } }
