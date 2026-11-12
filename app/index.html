@@ -416,6 +416,14 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .up-btn:hover{background:var(--g10)}
 .up-btn.primary{border-color:var(--p600);background:var(--p600);color:#fff}
 .up-btn.primary:hover{filter:brightness(1.07);background:var(--p600)}
+/* 왼쪽 아래 버튼 묶음 (업데이트 내역 · 의견 보내기 · 업데이트 확인) */
+.ver-actions{display:flex;border:1px solid var(--g08);border-radius:8px;background:#fff;overflow:hidden}
+.ver-actions button{flex:1;min-width:0;padding:7px 0;border:none;border-left:1px solid var(--g09);background:none;font-family:inherit;font-size:9.5px;font-weight:600;letter-spacing:-.03em;color:var(--g04,#555);cursor:pointer;white-space:nowrap;transition:background .12s,color .12s}
+.ver-actions button:first-child{border-left:none}
+.ver-actions button:hover{background:var(--sel-bg);color:var(--p600)}
+.ver-actions button:disabled{color:var(--g06);cursor:default;background:none}
+/* 홈 화면 제작자 표시 */
+#home-credit{position:fixed;right:20px;bottom:14px;z-index:5;font-size:10.5px;letter-spacing:-.01em;color:var(--g07);pointer-events:none;user-select:none}
 /* 의견 보내기 창 */
 .fb-text{display:block;width:100%;box-sizing:border-box;height:150px;margin-top:16px;padding:12px 14px;border:1.5px solid var(--g08);border-radius:10px;font-family:inherit;font-size:13px;line-height:1.6;color:var(--g01);resize:none;outline:none;transition:border-color .15s}
 .fb-text:focus{border-color:var(--p600)}
@@ -671,18 +679,21 @@ img[src=""], img:not([src]) { background: var(--g10) }
         <div>• <a href="https://krds.go.kr" target="_blank" style="color:var(--g05);text-decoration:none">KRDS</a> — 행정안전부</div>
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
       </div>
-      <div id="ver-row" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--g09);font-size:10px;color:var(--g06);align-items:center;justify-content:space-between;gap:6px">
-        <span id="ver-text" onclick="openChangelog()" title="업데이트 내역 보기" style="cursor:pointer">부찌</span>
-        <span style="display:flex;gap:9px;flex-shrink:0">
-          <button id="fb-open-btn" onclick="openFeedback()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">의견 보내기</button>
-          <button id="ver-check-btn" onclick="checkUpdateNow()" style="border:none;background:none;padding:0;font-family:inherit;font-size:10px;color:var(--p600);cursor:pointer">업데이트 확인</button>
-        </span>
+      <div id="ver-row" style="display:none;margin-top:8px;padding-top:9px;border-top:1px solid var(--g09)">
+        <div id="ver-text" style="font-size:10px;color:var(--g06);margin-bottom:6px">부찌</div>
+        <div class="ver-actions">
+          <button onclick="openChangelog()">업데이트 내역</button>
+          <button id="fb-open-btn" onclick="openFeedback()">의견 보내기</button>
+          <button id="ver-check-btn" onclick="checkUpdateNow()">업데이트 확인</button>
+        </div>
       </div>
     </div>
   </nav>
   <main id="main">
     <!-- 홈 -->
     <div id="home" class="on">
+      <!-- 제작자 표시: 홈 화면 오른쪽 아래 구석에 고정 (홈에서만 보임) -->
+      <div id="home-credit">Made by 솔리데오 크리에이티브그룹 UIUX팀 김선진</div>
       <div class="home-hdr">
         <img src="assets/icon.png" alt="">
         <div><h1>부찌 🍲</h1><p>Korean App UIUX Reference</p></div>
@@ -3527,32 +3538,6 @@ init()
   <div id="similar-grid" style="flex:1;overflow-y:auto;min-height:0;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
 </div>
 
-<!-- 자연어 검색 모달 -->
-<div id="nl-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:flex-start;justify-content:center;padding-top:80px">
-  <div style="background:#fff;border-radius:12px;width:min(560px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.2)">
-    <div style="padding:16px 20px;border-bottom:1px solid var(--g09)">
-      <div style="font-size:14px;font-weight:700;margin-bottom:10px">💬 자연어 검색</div>
-      <div style="display:flex;gap:8px">
-        <input id="nl-input" type="text" placeholder="예: 회원가입할 때 비밀번호 입력하는 화면" style="flex:1;padding:8px 12px;border:1px solid var(--g08);border-radius:6px;font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter') doNLSearch()">
-        <button id="nl-search-trigger-btn" onclick="doNLSearch()" style="padding:8px 16px;background:var(--p600);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px">검색</button>
-      </div>
-      <div id="nl-examples" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">
-        <span style="font-size:11px;color:var(--g05);margin-right:4px">예시:</span>
-      </div>
-      <div id="nl-apikey-wrap" style="margin-top:12px">
-        <label style="font-size:12px;color:var(--g05);display:block;margin-bottom:4px">Anthropic API Key <span style="color:var(--p600)">(문장 의미를 이해하려면 필요해요)</span></label>
-        <input id="nl-apikey-input" type="password" placeholder="sk-ant-..." style="width:100%;padding:8px 12px;border:1px solid var(--g08);border-radius:6px;font-size:13px;font-family:inherit;box-sizing:border-box">
-        <div style="font-size:11px;color:var(--g06);margin-top:4px">저장하면 다음엔 자동으로 입력돼요 · 키가 없으면 단어 매칭으로만 검색돼요</div>
-      </div>
-    </div>
-    <div id="nl-result" style="padding:14px 20px;min-height:60px;font-size:13px;color:var(--g04)">검색어를 입력해주세요</div>
-    <div style="padding:10px 20px;border-top:1px solid var(--g09);display:flex;justify-content:flex-end;gap:8px">
-      <button onclick="closeNLModal()" style="padding:7px 14px;border:1px solid var(--g08);background:#fff;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px">닫기</button>
-      <button id="nl-search-btn" onclick="applyNLSearch()" style="display:none;padding:7px 14px;background:var(--p600);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px">이 태그로 검색</button>
-    </div>
-  </div>
-</div>
-
 <!-- R2 클라우드 설정 모달 -->
 <div id="r2-config-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2200;align-items:flex-start;justify-content:center;padding-top:80px">
   <div style="background:#fff;border-radius:12px;width:min(480px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.2)">
@@ -4158,7 +4143,7 @@ async function initVersionRow() {
     if (!v) return
     _verInfo = v
     document.getElementById('ver-text').textContent = '부찌 v' + (v.version && v.version !== '0.0.0' ? v.version : '?') + (v.dev ? ' (작업 폴더)' : '')
-    row.style.display = 'flex'
+    row.style.display = 'block'
   } catch {}
 }
 async function checkUpdateNow() {
@@ -4407,8 +4392,6 @@ function closeSimilar() { slidePanel('similar-panel', false) }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSimilar(); closeUiuxPanel(); closeHistoryPanel() } })
 
 // ── 자연어 검색 ──────────────────────────────────────────────────────
-let _nlParsedTags = []
-let _nlParsed = null, _nlParsedQuery = ''
 const _NL_ALL_TAGS = [
   // 화면 유형
   '스플래시','온보딩','로그인','회원가입','홈화면','홈','검색','검색결과','필터','결제',
@@ -4427,19 +4410,6 @@ const _NL_ALL_TAGS = [
   '포인트','쿠폰','혜택','할인','리워드','적립'
 ]
 
-function openNLModal() {
-  document.getElementById('nl-modal').style.display = 'flex'
-  const savedKey = localStorage.getItem(APIKEY_STORE) || ''
-  document.getElementById('nl-apikey-input').value = savedKey
-  setTimeout(() => document.getElementById('nl-input').focus(), 100)
-}
-function closeNLModal() {
-  document.getElementById('nl-modal').style.display = 'none'
-  _nlParsedTags = []
-  document.getElementById('nl-result').textContent = '검색어를 입력해주세요'
-  document.getElementById('nl-search-btn').style.display = 'none'
-  document.getElementById('nl-input').value = ''
-}
 
 
 // ══════════════════════════════════════════════════════════════════════
@@ -5079,27 +5049,6 @@ async function nlSuggest(i) {
   await showSmartResults(s.parsed, query)
 }
 
-async function doNLSearch() {
-  const input = document.getElementById('nl-input').value.trim()
-  if (!input) return
-  if (eggMatch(input)) { closeNLModal(); doSearch2(input); return }
-  const resultEl = document.getElementById('nl-result')
-  const triggerBtn = document.getElementById('nl-search-trigger-btn')
-  const apiKey = document.getElementById('nl-apikey-input').value.trim()
-  if (apiKey && apiKey.startsWith('sk-ant-')) localStorage.setItem(APIKEY_STORE, apiKey)
-  triggerBtn.disabled = true; triggerBtn.textContent = '분석 중...'
-  resultEl.innerHTML = '<span style="color:var(--g05)">문장을 분석하고 있어요...</span>'
-  try {
-    const parsed = await nlUnderstand(input, apiKey)
-    _nlParsed = parsed
-    _nlParsedQuery = input
-    _nlParsedTags = [...parsed.apps.map(a => parsed.similar ? a + ' 같은' : a), ...parsed.labels]
-    renderNLResult(_nlParsedTags, _nlParsedTags.length ? null : '문장에서 검색 조건을 찾지 못했어요. 화면 종류나 앱 이름을 넣어서 다시 써보세요.')
-  } finally {
-    triggerBtn.disabled = false; triggerBtn.textContent = '검색'
-  }
-}
-
 // ── 홈 인라인 자연어 검색 ───────────────────────────────────
 async function doInlineNLSearch() {
   const input = document.getElementById('nl-inline-input')
@@ -5132,19 +5081,25 @@ async function doInlineNLSearch() {
     const resultInner = document.getElementById('result-inner')
     const banner = document.createElement('div')
     banner.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;margin:12px 16px 4px;font-size:12px;color:#92400E'
-    banner.innerHTML = `<span style="font-size:16px">✨</span><span style="flex:1">AI 자연어 검색을 쓰면 문장을 더 정확하게 이해해요. <b>API 키</b>를 등록해보세요.</span><button onclick="openNLModal()" style="padding:5px 12px;background:#F97316;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">키 추가</button>`
+    banner.innerHTML = `<span style="font-size:16px">✨</span><span style="flex:1">AI 자연어 검색을 쓰면 문장을 더 정확하게 이해해요. <b>API 키</b>를 등록해보세요.</span><button id="nl-key-banner-btn" style="padding:5px 12px;background:#F97316;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">키 추가</button>`
+    banner.querySelector('#nl-key-banner-btn').onclick = () => promptApiKey(query)
     resultInner.insertBefore(banner, resultInner.firstChild)
   }
 }
 
 // ── API 키 prompt 입력 ──────────────────────────────────────
-function promptApiKey() {
+// retryQuery: 키를 등록한 뒤 다시 검색할 문장 (결과 화면의 "키 추가"에서 열었을 때)
+let _apiKeyRetryQuery = ''
+function promptApiKey(retryQuery) {
+  _apiKeyRetryQuery = typeof retryQuery === 'string' ? retryQuery : ''
   const saved = localStorage.getItem(APIKEY_STORE) || ''
   const bg = document.getElementById('apikey-modal-bg')
   const input = document.getElementById('apikey-modal-input')
   const currentDiv = document.getElementById('apikey-modal-current')
   const deleteBtn = document.getElementById('apikey-delete-btn')
   if (!bg || !input) return
+  // 이 창은 홈 화면 안에 들어 있어서 결과 화면에서는 보이지 않음 → 열 때 문서 맨 바깥으로 옮김
+  if (bg.parentElement !== document.body) document.body.appendChild(bg)
   if (saved) {
     input.value = saved
     currentDiv.style.display = 'block'
@@ -5172,6 +5127,13 @@ function saveApiKey() {
     if (_searchMode === 'ai') setSearchMode('ai')
   }
   closeApiKeyModal()
+  // 결과 화면에서 키를 등록했으면, 방금 그 문장으로 다시 검색 (이번엔 AI가 문장을 이해)
+  const retry = _apiKeyRetryQuery
+  _apiKeyRetryQuery = ''
+  if (retry && trimmed.startsWith('sk-ant-')) {
+    const box = document.getElementById('nl-inline-input')
+    if (box) { box.value = retry; doInlineNLSearch() }
+  }
 }
 function deleteApiKey() {
   localStorage.removeItem(APIKEY_STORE)
@@ -5264,18 +5226,6 @@ function _isSimpleKeyword(query) {
   if (nlPatterns.test(query)) return false
   // 2단어 이하 + 특수 패턴 없으면 키워드
   return words.length <= 2
-}
-
-function renderNLResult(tags, errorMsg) {
-  const resultEl = document.getElementById('nl-result')
-  if (tags.length) {
-    resultEl.innerHTML = '<div style="margin-bottom:8px;font-size:12px;color:var(--g04)">추출된 태그:</div>' +
-      tags.map(t => `<span style="display:inline-block;margin:2px;padding:3px 10px;background:var(--sel-bg);color:var(--p600);border-radius:10px;font-size:12px">${t}</span>`).join('')
-    document.getElementById('nl-search-btn').style.display = ''
-  } else {
-    resultEl.innerHTML = `<span style="color:var(--g05)">${errorMsg || '매칭되는 태그를 찾지 못했어요.'}</span>`
-    document.getElementById('nl-search-btn').style.display = 'none'
-  }
 }
 
 // ── 클라우드 PC 레퍼런스 (R2) ──────────────────────────────────────────
@@ -5631,13 +5581,6 @@ async function deleteR2Image(id) {
   await refreshR2ImageList()
 }
 
-
-async function applyNLSearch() {
-  if (!_nlParsed || !_nlParsedTags.length) return
-  const parsed = _nlParsed, query = _nlParsedQuery
-  closeNLModal()
-  await showSmartResults(parsed, query)
-}
 
 // ── UIUX 분석 패널 ───────────────────────────────────────────────────
 function closeUiuxPanel() { slidePanel('uiux-panel', false) }
@@ -6362,15 +6305,6 @@ document.addEventListener('DOMContentLoaded', () => {
       else btn.style.display = ''
     }).observe(popOv, {attributes:true, attributeFilter:['class']})
   }
-  // NL 예시 버튼
-  const exEl = document.getElementById('nl-examples')
-  if (exEl) ['다크모드 로그인','카드형 홈화면','바텀시트 결제','미니멀 온보딩'].forEach(ex => {
-    const btn2 = document.createElement('button')
-    btn2.style.cssText = 'padding:2px 8px;background:var(--g10);border:1px solid var(--g08);border-radius:10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--g03)'
-    btn2.textContent = ex
-    btn2.onclick = () => { document.getElementById('nl-input').value = ex; doNLSearch() }
-    exEl.appendChild(btn2)
-  })
 
 })
 
