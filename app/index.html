@@ -443,7 +443,7 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .up-title{font-size:16px;font-weight:700;color:var(--g01)}
 .up-ver{margin-top:3px;font-size:12px;color:var(--g05)}
 .up-ver b{color:var(--p600);font-weight:700}
-.up-notes{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--g11);font-size:12.5px;line-height:1.65;color:var(--g01);white-space:pre-line;max-height:180px;overflow-y:auto}
+.up-notes{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--g11,#F5F6FA);font-size:12.5px;line-height:1.65;color:var(--g01);white-space:pre-line;max-height:180px;overflow-y:auto}
 .up-desc{margin-top:12px;font-size:11.5px;line-height:1.6;color:var(--g05);white-space:pre-line}
 .up-err{margin-top:6px;font-size:10.5px;color:var(--g06);word-break:break-all}
 .up-prog{margin-top:16px}
@@ -2183,7 +2183,27 @@ function toHome() {
   if (nlBar) { nlBar.classList.remove('focused','ai-mode','no-key'); if (document.getElementById('seg-ai')?.classList.contains('active')) nlBar.classList.add('ai-mode') }
   try { if (typeof nlApplyKeyState === 'function') nlApplyKeyState() } catch {}
   document.getElementById('home-autocomplete')?.classList.remove('on')
+  homeSearchFocus()
 }
+// 홈 검색창에 커서를 둠 (켜자마자 타이핑하면 바로 입력되게).
+// 자동으로 둔 커서에는 추천·최근 검색어 패널을 띄우지 않고, 직접 누르거나 지울 때만 띄움.
+let _homeAutoFocus = false
+function homeSearchFocus() {
+  setTimeout(() => {
+    const input = document.getElementById('nl-inline-input')
+    const home = document.getElementById('home')
+    if (!input || !home || !home.classList.contains('on')) return
+    if (document.querySelector('#wn-overlay, #up-overlay, #fb-overlay, #cl-overlay')) return
+    const bg = document.getElementById('apikey-modal-bg'); if (bg && bg.offsetParent) return
+    const a = document.activeElement
+    if (a && a !== document.body && a !== input && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return
+    _homeAutoFocus = true
+    try { input.focus({ preventScroll: true }) } catch {}
+    setTimeout(() => { _homeAutoFocus = false }, 50)
+  }, 30)
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(homeSearchFocus, 300))
+else setTimeout(homeSearchFocus, 300)
 function toGallery() { pushNav({ type:'gallery' }); showView('gallery'); return loadGallery() }
 function showResult(title, cnt, showMultiBtn) {
   showView('result')
@@ -2354,9 +2374,11 @@ async function buildSidebarPcCategories() {
 async function doLoad(kw) {
   _portalCurrentApp = null
   pushNav({ type:'result', kw })
-  document.getElementById('q').value = kw
+  // 왼쪽 색상 메뉴에서 온 검색은 태그(#블루톤) 대신 메뉴 이름(블루)으로 보여줌
+  const shown = SB_TAG_MENU[kw] ? SB_TAG_MENU[kw].label : kw
+  document.getElementById('q').value = shown
   if (await eggShow(kw)) return
-  showResult(); showSkeleton(); setSt("'"+kw+"' 검색 중...", 'warn')
+  showResult(); showSkeleton(); setSt("'"+shown+"' 검색 중...", 'warn')
   try {
     const mode = getReferenceMode()
     // PC 모드에서는 WWIT/UPA(모바일 전용) 검색을 건너뛰고 PC 레퍼런스만 표시
@@ -2364,7 +2386,7 @@ async function doLoad(kw) {
     const menu = SB_TAG_MENU[kw]
     if (menu && mode !== 'pc') {
       const picked = sbTagMenuPick(res.data || {})
-      renderResults(picked.data, kw)
+      renderResults(picked.data, menu.label)
       const what = `'${menu.label}' 화면`
       showSearchMeta({ text: picked.shown < picked.total
         ? `${what} ${picked.total.toLocaleString()}장 중 앱마다 몇 장씩 골라 ${picked.shown.toLocaleString()}장을 보여드려요.`
@@ -3941,7 +3963,7 @@ function sqPanelInit() {
   const input = document.getElementById('nl-inline-input')
   if (!input || input._sqInit) return
   input._sqInit = true
-  input.addEventListener('focus', sqPanelShow)
+  input.addEventListener('focus', () => { if (!_homeAutoFocus) sqPanelShow() })
   input.addEventListener('click', sqPanelShow)
   input.addEventListener('input', sqPanelShow)        // 글자를 치면 숨기고, 다 지우면 다시 보임
   input.addEventListener('blur', () => setTimeout(sqPanelHide, 120))
@@ -4076,6 +4098,7 @@ function _upEl(id) { return document.getElementById(id) }
 function _upClose() { const ov = _upEl('up-overlay'); if (ov) ov.remove() }
 function _upOpen() {
   _upClose(); closeChangelog()
+  { const wn = document.getElementById('wn-overlay'); if (wn) { wn.remove(); document.removeEventListener('keydown', _wnEsc) } }
   const ov = document.createElement('div')
   ov.id = 'up-overlay'
   ov.innerHTML = `<div class="up-box" role="dialog" aria-label="부찌 업데이트">
@@ -4219,7 +4242,62 @@ async function initVersionRow() {
     _verInfo = v
     document.getElementById('ver-text').textContent = '부찌 v' + (v.version && v.version !== '0.0.0' ? v.version : '?') + (v.dev ? ' (작업 폴더)' : '')
     row.style.display = 'block'
+    whatsNewCheck(v)
   } catch {}
+}
+// ── 새로워진 점 ─────────────────────────────────────────────
+// 업데이트 후 처음 켰을 때 한 번만, 지난번에 본 버전 이후의 변경 내용을 보여줌.
+// 처음 설치한 사람에게는 보여주지 않음 (이 컴퓨터에 사용자가 남긴 부찌 기록이 없으면 처음 설치로 봄).
+const WN_KEY = 'bucci_seen_version'
+function _wnCmp(a, b) {
+  const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number)
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d }
+  return 0
+}
+function whatsNewCheck(v) {
+  if (!v || v.dev || !v.version || v.version === '0.0.0') return
+  let seen = null, used = false
+  try {
+    seen = localStorage.getItem(WN_KEY)
+    // 사용자가 직접 남긴 기록(최근 검색어, 좋아요, 다크 모드, API 키 등)이 있으면 기존 사용자.
+    // bucci_ref_mode 는 켤 때마다 자동으로 저장돼서 제외함
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (/^(bucci|buchji)_/.test(k) && k !== WN_KEY && k !== 'bucci_ref_mode') { used = true; break }
+    }
+    localStorage.setItem(WN_KEY, v.version)
+  } catch { return }
+  if (seen === v.version) return
+  if (!seen && !used) return                                // 처음 설치
+  const list = (Array.isArray(v.history) ? v.history : [])
+    // 지난번에 본 버전 이후 것만. 기록이 없는 기존 사용자(이 기능이 생기기 전 버전)에게는 이번 버전만
+    .filter(e => e && e.version && (seen ? (_wnCmp(e.version, v.version) <= 0 && _wnCmp(e.version, seen) > 0) : e.version === v.version))
+    .slice(0, 3)
+  if (!list.length || !list.some(e => String(e.notes || '').trim())) return
+  setTimeout(() => whatsNewOpen(v.version, list), 600)
+}
+function whatsNewClose() {
+  const ov = document.getElementById('wn-overlay'); if (!ov) return
+  ov.remove(); document.removeEventListener('keydown', _wnEsc)
+  homeSearchFocus()
+}
+function _wnEsc(e) { if (e.key === 'Escape' || e.key === 'Enter') whatsNewClose() }
+function whatsNewOpen(version, list) {
+  if (document.getElementById('wn-overlay') || document.getElementById('up-overlay')) return
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]))
+  const ov = document.createElement('div')
+  ov.id = 'wn-overlay'
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,16,35,.5);z-index:9450;display:flex;align-items:center;justify-content:center'
+  ov.innerHTML = `<div class="up-box" role="dialog" aria-label="새로워진 점">
+    <div class="up-head"><img class="up-logo" src="assets/icon.png" alt=""><div><div class="up-title">부찌가 새로워졌어요</div><div class="up-ver"><b>v${esc(version)}</b>로 업데이트됐어요</div></div></div>
+    <div class="up-notes">${list.map(e => (list.length > 1 ? `<div style="font-weight:700;color:var(--g05);font-size:11px;margin-top:6px">v${esc(e.version)}</div>` : '') + esc(String(e.notes || '').trim())).join('\n')}</div>
+    <div class="up-btns"><button class="up-btn" id="wn-all">전체 내역</button><button class="up-btn primary" id="wn-ok">확인</button></div></div>`
+  document.body.appendChild(ov)
+  document.getElementById('wn-ok').onclick = whatsNewClose
+  document.getElementById('wn-all').onclick = () => { whatsNewClose(); openChangelog() }
+  ov.addEventListener('mousedown', e => { if (e.target === ov) whatsNewClose() })
+  document.addEventListener('keydown', _wnEsc)
+  setTimeout(() => { try { document.getElementById('wn-ok').focus() } catch {} }, 0)
 }
 async function checkUpdateNow() {
   const btn = document.getElementById('ver-check-btn')
