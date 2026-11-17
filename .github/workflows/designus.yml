@@ -1,0 +1,80 @@
+# 부찌 — 디자이너스 레퍼런스 자동 수집
+# 매달 한 번 GitHub 가 designus/designus_collect.js 를 실행해서,
+# 결과(designus_refs.json)를 designus-data 브랜치에 올립니다.
+# 부찌는 켜질 때 그 파일을 받아 검색 결과에 함께 보여줍니다.
+#
+# 결과를 main 이 아닌 별도 브랜치에 올리므로, 평소의 업데이트 올리기(main)와 겹치지 않습니다.
+# 직접 돌리려면: GitHub 저장소 → Actions → "디자이너스 레퍼런스 수집" → Run workflow
+#   (앱 수를 적으면 그 수만큼만 시범으로 모읍니다. 비워두면 전체)
+# 수집이 실패하면(사이트 구조가 바뀐 경우 등) 저장하지 않고, GitHub 가 이메일로 알려줍니다.
+
+name: 디자이너스 레퍼런스 수집
+
+on:
+  schedule:
+    - cron: '23 18 1 * *'      # 매달 2일 새벽 3시 23분 (한국 시간)
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '시범으로 모을 앱 수 (비워두면 전체)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: designus-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node 준비
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 브라우저 준비
+        run: |
+          npm install --no-save --no-package-lock playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: 지난번 수집 결과 가져오기 (이어서 모으기용)
+        run: |
+          mkdir -p "$RUNNER_TEMP/d"
+          if git fetch origin designus-data 2>/dev/null; then
+            git show FETCH_HEAD:designus_refs.json > "$RUNNER_TEMP/d/designus_refs.json" 2>/dev/null || rm -f "$RUNNER_TEMP/d/designus_refs.json"
+          fi
+          ls -la "$RUNNER_TEMP/d"
+
+      - name: 수집
+        env:
+          PC_BROWSER: chromium
+          CI: 'true'
+          LIMIT: ${{ github.event.inputs.limit }}
+        run: |
+          if [ -n "$LIMIT" ]; then EXTRA="--limit $LIMIT"; else EXTRA=""; fi
+          node designus/designus_collect.js --out "$RUNNER_TEMP/d/designus_refs.json" $EXTRA
+
+      - name: 결과를 designus-data 브랜치에 올리기
+        run: |
+          git config user.name "bucci-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch origin designus-data 2>/dev/null; then
+            git switch -c designus-data FETCH_HEAD
+          else
+            git switch --orphan designus-data
+          fi
+          cp "$RUNNER_TEMP/d/designus_refs.json" designus_refs.json
+          git add designus_refs.json
+          if git diff --cached --quiet; then echo "바뀐 것이 없어 올리지 않습니다."; exit 0; fi
+          git commit -m "디자이너스 레퍼런스 자동 수집 ($(date -u +%Y-%m-%d))"
+          git push origin designus-data
