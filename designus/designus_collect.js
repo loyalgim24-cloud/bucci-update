@@ -41,6 +41,9 @@ const NO_TAGS = !!opt('--no-tags', false)
 const RETAG = !!opt('--retag', false)
 const OUT = path.resolve(String(opt('--out', path.join(__dirname, 'designus_refs.json'))))
 const PAUSE = Number(process.env.DESIGNUS_PAUSE || 700)    // 동작 사이 쉬는 시간(ms)
+// 분류는 앱 하나에 몇 분씩 걸려서, 한 번 실행에 이 시간까지만 분류하고 나머지는 다음 실행 때 이어서 함
+const TAG_BUDGET_MS = Number(process.env.TAG_BUDGET_MIN || 200) * 60000
+const STARTED = Date.now()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 // 디자이너스 분류 → 부찌 태그 (부찌에 이미 있는 이름으로 맞춤). 여기 있는 분류만 모읍니다.
@@ -70,79 +73,81 @@ async function appIds(page) {
   return ids
 }
 
-// 페이지 안에서 실제로 스크롤되는 영역을 끝까지 천천히 내려서 화면을 모두 불러옴
-async function loadAllScreens(page) {
-  return page.evaluate(async () => {
-    const wait = ms => new Promise(r => setTimeout(r, ms))
-    const pick = () => [...document.querySelectorAll('*')].filter(e => /(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.scrollHeight > e.clientHeight + 50)
-      .sort((a, b) => b.scrollHeight - a.scrollHeight)[0] || document.scrollingElement
-    const count = () => document.querySelectorAll('.screens .reference-screen img').length
-    let stall = 0, lastC = -1, lastH = -1
-    for (let k = 0; k < 300 && stall < 4; k++) {
-      const sc = pick()
-      sc.scrollTop = sc.scrollTop + sc.clientHeight * 0.8
-      window.scrollBy(0, innerHeight * 0.8)
-      await wait(400)
-      if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 5) await wait(900)
-      const c = count(), h = sc.scrollHeight
-      if (c === lastC && h === lastH) stall++; else stall = 0
-      lastC = c; lastH = h
-    }
-    const sc = pick(); sc.scrollTop = 0; window.scrollTo(0, 0)
-  })
-}
-async function visibleScreens(page) {
-  return page.evaluate(() => [...document.querySelectorAll('.screens .reference-screen img')]
-    .map(i => i.currentSrc || i.src).filter(u => u.includes('/app-screen/')))
-}
+// 화면 목록을 끝까지 천천히 내려서 모두 불러옴 (화면 목록을 감싼 스크롤 영역을 씀)
+const IN_PAGE = `
+  window.__dz = window.__dz || {
+    wait: ms => new Promise(r => setTimeout(r, ms)),
+    count: () => document.querySelectorAll('.screens .reference-screen img').length,
+    srcs: () => [...document.querySelectorAll('.screens .reference-screen img')].map(i => i.currentSrc || i.src).filter(u => u.includes('/app-screen/')),
+    empty: () => /필터 검색 결과가 없어요/.test(document.body.innerText),
+    scroller() {
+      let e = document.querySelector('.screens')
+      while (e && e !== document.body) { const s = getComputedStyle(e); if (/(auto|scroll)/.test(s.overflowY) && e.scrollHeight > e.clientHeight + 20) return e; e = e.parentElement }
+      return document.scrollingElement
+    },
+    async loadAll() {
+      let stall = 0, lastC = -1, lastH = -1
+      for (let k = 0; k < 300 && stall < 4; k++) {
+        const sc = this.scroller()
+        sc.scrollTop = sc.scrollTop + sc.clientHeight * 0.8
+        await this.wait(400)
+        if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 5) await this.wait(900)
+        const c = this.count(), h = sc.scrollHeight
+        if (c === lastC && h === lastH) stall++; else stall = 0
+        lastC = c; lastH = h
+      }
+      this.scroller().scrollTop = 0
+    },
+    // 화면 목록이 바뀔 때까지 기다림 (개수가 두 번 연속 같으면 끝난 것으로 봄)
+    async settle() {
+      await this.wait(600)
+      let last = -2, same = 0
+      for (let k = 0; k < 20 && same < 2; k++) { const c = this.empty() ? -1 : this.count(); if (c === last) same++; else same = 0; last = c; await this.wait(350) }
+    },
+    visible: e => !!(e && e.offsetParent),
+    exact(t) { return [...document.querySelectorAll('*')].filter(e => this.visible(e) && e.textContent.trim() === t && [...e.children].every(c => c.textContent.trim() !== t)) },
+    item(label) {
+      const re = new RegExp('^' + label.replace(/[.*+?^\${}()|[\\]\\\\/]/g, '\\\\$&') + '\\\\s*\\\\(\\\\d+\\\\)$')
+      return [...document.querySelectorAll('li')].find(l => this.visible(l) && re.test(l.textContent.replace(/\\s+/g, ' ').trim()))
+    },
+    async openPanel() { if (this.item('버튼') || this.item('홈')) return true; for (const t of ['패턴', '컴포넌트']) { const c = this.exact(t)[0]; if (c) { c.click(); await this.wait(800); if (this.item('버튼') || this.item('홈')) return true } } return false },
+    async reset() { const r = this.exact('초기화')[0]; if (r) { r.click(); await this.settle() } },
+    labels() { return [...document.querySelectorAll('li')].filter(l => this.visible(l)).map(l => l.textContent.replace(/\\s+/g, ' ').trim().match(/^(.+?)\\s*\\((\\d+)\\)$/)).filter(Boolean).map(m => m[1].trim()) },
+  }
+`
+async function inPage(page, fn, arg) { await page.evaluate(IN_PAGE); return page.evaluate(fn, arg) }
+async function loadAllScreens(page) { return inPage(page, () => window.__dz.loadAll()) }
+async function visibleScreens(page) { return inPage(page, () => window.__dz.srcs()) }
 
 // ── 패턴·컴포넌트로 걸러서, 어떤 화면에 어떤 분류가 붙는지 알아냄 ──
-// 페이지의 "컴포넌트"/"패턴" 버튼을 눌러 목록을 열고, 분류를 하나씩 골라 남는 화면을 기록한 뒤 "초기화"로 되돌림
-async function clickVisibleText(page, text) {
-  const loc = page.getByText(text, { exact: true })
-  const n = await loc.count().catch(() => 0)
-  for (let i = 0; i < n; i++) {
-    const el = loc.nth(i)
-    if (await el.isVisible().catch(() => false)) { await el.click({ timeout: 3000 }).catch(() => {}); await wait(PAUSE); return true }
-  }
-  return false
-}
-// 지금 열려 있는 목록에서 "이름 (숫자)" 형태인 분류 이름들 (사이트 전체에 0개인 분류는 숫자가 없어서 빠짐)
-async function listedLabels(page) {
-  return page.evaluate(() => [...document.querySelectorAll('li')].filter(li => li.offsetParent)
-    .map(li => li.textContent.replace(/\s+/g, ' ').trim().match(/^(.+?)\s*\((\d+)\)$/)).filter(Boolean).map(m => m[1].trim()))
-}
-function labelItem(page, label) {
-  const re = new RegExp('^\\s*' + label.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') + '\\s*\\(\\d+\\)\\s*$')
-  return page.locator('li').filter({ hasText: re }).first()
-}
-async function resetFilter(page) {
-  const btn = page.getByText('초기화', { exact: true }).first()
-  if (await btn.isVisible().catch(() => false)) { await btn.click({ timeout: 3000 }).catch(() => {}); await wait(PAUSE) }
-}
+// 페이지의 "컴포넌트"/"패턴" 버튼을 눌러 분류 목록을 열고, 분류를 하나씩 골라 남는 화면을 기록한 뒤 "초기화"로 되돌림
+const TAG_MAP = { ...PATTERN_MAP, ...COMPONENT_MAP }
 async function tagScreens(page, srcs) {
   const tags = Object.fromEntries(srcs.map(s => [s, new Set()]))
-  for (const [category, map] of [['패턴', PATTERN_MAP], ['컴포넌트', COMPONENT_MAP]]) {
-    await resetFilter(page)
-    await clickVisibleText(page, category)
-    const listed = new Set(await listedLabels(page))
-    const todo = Object.keys(map).filter(l => listed.has(l))
-    for (const label of todo) {
-      try {
-        let item = labelItem(page, label)
-        if (!(await item.isVisible().catch(() => false))) { await resetFilter(page); await clickVisibleText(page, category); item = labelItem(page, label) }
-        if (!(await item.isVisible().catch(() => false))) continue
-        await item.click({ timeout: 4000 })
-        await wait(PAUSE * 2)
-        try { await page.waitForLoadState('networkidle', { timeout: 6000 }) } catch {}
-        await loadAllScreens(page)
-        const hits = await visibleScreens(page)
-        hits.forEach(h => { if (tags[h]) map[label].forEach(t => tags[h].add(t)) })
-        await resetFilter(page)
-      } catch (e) { /* 이 분류만 건너뜀 */ }
-    }
+  await inPage(page, () => window.__dz.reset())
+  if (!(await inPage(page, () => window.__dz.openPanel()))) { console.log('    (분류 목록을 열지 못해 분류는 건너뜁니다)'); return Object.fromEntries(srcs.map(s => [s, []])) }
+  const listed = new Set(await inPage(page, () => window.__dz.labels()))
+  const todo = Object.keys(TAG_MAP).filter(l => listed.has(l))
+  for (const label of todo) {
+    try {
+      const hits = await inPage(page, async label => {
+        const dz = window.__dz
+        await dz.openPanel()
+        const li = dz.item(label)
+        if (!li) return null
+        li.click()
+        await dz.settle()
+        if (dz.empty()) { await dz.reset(); return [] }
+        if (dz.count() >= 18) await dz.loadAll()          // 한 번에 18장씩 불러오므로, 18장 이상일 때만 끝까지 내림
+        const got = dz.srcs()
+        await dz.reset()
+        return got
+      }, label)
+      if (hits) hits.forEach(h => { if (tags[h]) TAG_MAP[label].forEach(t => tags[h].add(t)) })
+      await wait(250)
+    } catch (e) { /* 이 분류만 건너뜀 */ }
   }
-  await resetFilter(page)
+  await inPage(page, () => window.__dz.reset())
   return Object.fromEntries(Object.entries(tags).map(([k, v]) => [k, [...v]]))
 }
 
@@ -192,6 +197,11 @@ async function collectApp(page, tool, id, prev) {
     return { name, logo, desc: i >= 0 && lines[i + 1] && !lines[i + 1].startsWith('©') ? lines[i + 1] : '' }
   })
   if (!meta.name) throw new Error('앱 이름을 찾지 못했어요')
+  await inPage(page, () => window.__dz.settle())
+  if (await inPage(page, () => window.__dz.empty() && window.__dz.count() === 0)) {
+    await inPage(page, () => window.__dz.reset())                 // 혹시 걸려 있는 필터를 풀어보고
+    if (await inPage(page, () => window.__dz.empty() && window.__dz.count() === 0)) return { id, name: meta.name, empty: true }
+  }
   await loadAllScreens(page)
   const srcs = [...new Set(await visibleScreens(page))]
   if (!srcs.length) throw new Error('화면을 찾지 못했어요')
@@ -220,9 +230,11 @@ async function collectApp(page, tool, id, prev) {
 
   // 분류: 화면 목록이 지난번과 같으면 지난번 분류를 그대로 씀
   const same = prev && !RETAG && prev.screens.length && srcs.every(s => prevScreens.has(s) || prevCovers.has(s)) && prev.screens.every(s => srcs.includes(s.thumb))
-  let tagMap
-  if (NO_TAGS) tagMap = Object.fromEntries(srcs.map(s => [s, prevScreens.get(s)?.tags || []]))
-  else if (same && prev.tagged) tagMap = Object.fromEntries(srcs.map(s => [s, prevScreens.get(s)?.tags || []]))
+  let tagMap, tagged = true
+  const keepOld = () => Object.fromEntries(srcs.map(s => [s, prevScreens.get(s)?.tags || []]))
+  if (NO_TAGS) { tagMap = keepOld(); tagged = !!(prev && prev.tagged) }
+  else if (same && prev.tagged) tagMap = keepOld()
+  else if (Date.now() - STARTED > TAG_BUDGET_MS) { tagMap = keepOld(); tagged = false }   // 시간 초과: 다음 실행 때 분류
   else tagMap = await tagScreens(page, srcs)
 
   const screens = srcs.filter(s => !info[s]?.cover).map((thumb, i) => ({
@@ -230,7 +242,7 @@ async function collectApp(page, tool, id, prev) {
     tags: tagMap[thumb] || [], color: info[thumb]?.color || []
   }))
   const covers = srcs.filter(s => info[s]?.cover)
-  return { id, name: meta.name, desc: meta.desc, logo: meta.logo, url: `${SITE}/reference/service/${id}`, tagged: !NO_TAGS || !!(prev && prev.tagged), screens, covers }
+  return { id, name: meta.name, desc: meta.desc, logo: meta.logo, url: `${SITE}/reference/service/${id}`, tagged, screens, covers }
 }
 
 // ── 결과 보기 페이지 (직접 실행했을 때 확인용) ──
@@ -266,13 +278,14 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
   let ids = await appIds(page)
   if (LIMIT) ids = ids.slice(0, LIMIT)
   console.log(`\n디자이너스 수집 시작 — 앱 ${ids.length}개${NO_TAGS ? ' (분류 건너뜀)' : ''}\n`)
-  const apps = [], failed = []
+  const apps = [], failed = [], skipped = []
   for (const [i, id] of ids.entries()) {
     try {
       const a = await collectApp(page, tool, id, prevApps.get(String(id)))
+      if (a.empty) { console.log(`  - [${i + 1}/${ids.length}] ${a.name}  디자이너스에 아직 화면이 없어 건너뜀`); skipped.push(a.name); continue }
       apps.push(a)
       const tagged = a.screens.filter(s => s.tags.length).length
-      console.log(`  ✓ [${i + 1}/${ids.length}] ${a.name}  화면 ${a.screens.length}장, 분류된 화면 ${tagged}장`)
+      console.log(`  ✓ [${i + 1}/${ids.length}] ${a.name}  화면 ${a.screens.length}장, 분류된 화면 ${tagged}장${a.tagged ? '' : ' (분류는 다음 실행 때)'}`)
     } catch (e) {
       failed.push({ id, error: String(e.message || e).split('\n')[0] })
       console.log(`  ✗ [${i + 1}/${ids.length}] 앱 ${id} — ${failed[failed.length - 1].error}`)
@@ -282,7 +295,7 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
   }
   await browser.close()
 
-  const data = { source: 'designus', site: SITE, updated: new Date().toISOString(), apps, failed }
+  const data = { source: 'designus', site: SITE, updated: new Date().toISOString(), apps, failed, skipped }
   const screens = apps.reduce((n, a) => n + a.screens.length, 0)
   // 안전장치: 지난번보다 크게 줄었으면 저장하지 않음 (시범 실행은 예외)
   if (!LIMIT && prev && prev.apps) {
@@ -300,7 +313,9 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
   fs.writeFileSync(OUT, JSON.stringify(data))
   const preview = OUT.replace(/\.json$/, '_preview.html')
   if (!process.env.CI) writePreview(data, preview)
-  console.log(`\n완료: 앱 ${apps.length}개, 화면 ${screens}장${failed.length ? `, 실패 ${failed.length}개` : ''}`)
+  const later = apps.filter(a => !a.tagged).length
+  if (later) console.log(`\n분류를 다 못 한 앱 ${later}개는 다음 실행 때 이어서 분류합니다.`)
+  console.log(`\n완료: 앱 ${apps.length}개, 화면 ${screens}장${skipped.length ? `, 화면 없는 앱 ${skipped.length}개 건너뜀` : ''}${failed.length ? `, 실패 ${failed.length}개` : ''}`)
   console.log(`저장: ${OUT}`)
   if (!process.env.CI) console.log(`결과 보기: ${preview}\n`)
 })().catch(e => { console.error('\n오류:', e.message); process.exit(1) })
