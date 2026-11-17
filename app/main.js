@@ -1279,6 +1279,90 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 ipcMain.handle('get-version', () => {
   try { return require('./updater').info() } catch { return { version: '', dev: false } }
 })
+// ── 앱스토어 정보 ─────────────────────────────────────────────
+// 애플의 공개 앱 검색(iTunes Search API, 키 필요 없음)으로 한국 앱스토어에서 앱을 찾아
+// 스크린샷·아이콘·평점·최근 업데이트 내용을 돌려줌. 한 번 찾은 결과는 켜져 있는 동안 기억함.
+//  - 이름으로 찾을 때: 이름이 확실히 맞는 앱이 있으면 그 앱(confident), 없으면 후보 목록만 돌려줌
+//  - 앱 번호(id)로 찾을 때: 사용자가 후보에서 직접 고른 앱
+const _appStoreCache = new Map()
+function _asNorm(s) { return normAppKey(String(s || '').normalize('NFC')) }
+// 앱스토어 이름에서 부제("토스 - 금융이 쉬워진다"의 뒷부분)와 괄호를 뗀 핵심 이름
+function _asCore(trackName) {
+  const head = String(trackName || '').split(/\s+[-–—:|·]\s+|\s*[-–—|]\s*(?=\S)|\s:\s?/)[0]
+  const inParen = (head.match(/\(([^)]*)\)/) || [])[1] || ''
+  return { core: _asNorm(head.replace(/\([^)]*\)/g, '')), alt: _asNorm(inParen) }
+}
+function _asPick(r) {
+  return {
+    id: r.trackId, name: r.trackName, seller: r.sellerName || '', genre: r.primaryGenreName || '',
+    icon: r.artworkUrl512 || r.artworkUrl100 || '',
+    rating: typeof r.averageUserRating === 'number' ? r.averageUserRating : null,
+    ratingCount: r.userRatingCount || 0, version: r.version || '', updated: r.currentVersionReleaseDate || '',
+    notes: String(r.releaseNotes || '').trim(),
+    screenshots: Array.isArray(r.screenshotUrls) ? r.screenshotUrls : [],
+    ipadScreenshots: Array.isArray(r.ipadScreenshotUrls) ? r.ipadScreenshotUrls : [],
+    url: r.trackViewUrl || ''
+  }
+}
+async function _asFetch(url) {
+  const text = await fetchHtml(url)
+  if (!text) return null
+  try { return (JSON.parse(text).results || []).filter(r => r && r.trackName && r.trackId) } catch { return null }
+}
+// 앱스토어 이름이 부찌 이름과 사실상 같은지 ("토스", "온라인 패션 스토어 무신사"처럼 끝이 같은 것 포함)
+function _asSameName(query, r) {
+  const s = _asScore(query, r)
+  return s >= 100 || s === 75
+}
+// 부찌의 앱 이름과 앱스토어 앱이 얼마나 같은지 (100 = 핵심 이름이 같음)
+function _asScore(query, r) {
+  const nq = _asNorm(query)
+  const variants = [...new Set([nq, koToLatin(nq, false), koToLatin(nq, true)].filter(v => v && v.length >= 2))]
+  const { core, alt } = _asCore(r.trackName)
+  const full = _asNorm(r.trackName), seller = _asNorm(r.sellerName)
+  let best = 0
+  for (const v of variants) {
+    if (core === v || alt === v) best = Math.max(best, 100)
+    // 앞뒤에 짧은 말이 붙은 경우: "KB올라케어", "카카오뱅크 ..." / "온라인 패션 스토어 무신사"
+    else if ((core.endsWith(v) || core.startsWith(v)) && core.length - v.length <= 3) best = Math.max(best, 85)
+    else if (full.endsWith(v)) best = Math.max(best, 75)
+    else if (full.includes(v)) best = Math.max(best, 60)
+    else if (seller.includes(v)) best = Math.max(best, 40)
+  }
+  return best
+}
+ipcMain.handle('appstore-lookup', async (_, arg) => {
+  const req = typeof arg === 'object' && arg ? arg : { name: arg }
+  const q = String(req.name || '').trim()
+  const id = req.id ? String(req.id).replace(/\D/g, '') : ''
+  if (!q && !id) return { ok: false, reason: 'empty' }
+  const key = id ? 'id:' + id : 'q:' + q
+  if (_appStoreCache.has(key)) return _appStoreCache.get(key)
+
+  if (id) {
+    const list = await _asFetch('https://itunes.apple.com/lookup?country=kr&id=' + id)
+    if (!list) return { ok: false, reason: 'offline' }
+    if (!list.length) return { ok: false, reason: 'notfound' }
+    const r = { ok: true, confident: true, chosen: true, query: q, ...(_asPick(list[0])), nameDiffers: q ? !_asSameName(q, list[0]) : false }
+    _appStoreCache.set(key, r)
+    return r
+  }
+
+  const list = await _asFetch('https://itunes.apple.com/search?country=kr&entity=software&limit=10&term=' + encodeURIComponent(q))
+  if (!list) return { ok: false, reason: 'offline' }
+  const ranked = list.map((r, i) => ({ r, s: _asScore(q, r) - i * 0.01 })).sort((a, b) => b.s - a.s)
+  const candidates = list.slice(0, 8).map(r => ({ id: r.trackId, name: r.trackName, seller: r.sellerName || '', icon: r.artworkUrl100 || r.artworkUrl512 || '' }))
+  let result
+  if (ranked.length && ranked[0].s >= 60) {
+    result = { ok: true, confident: true, query: q, ...(_asPick(ranked[0].r)), nameDiffers: !_asSameName(q, ranked[0].r), candidates }
+  } else {
+    // 이름이 맞는 앱이 없음 → 아무 앱이나 보여주지 않고 후보만 돌려줌
+    result = { ok: true, confident: false, query: q, candidates, reason: list.length ? 'unsure' : 'notfound' }
+  }
+  _appStoreCache.set(key, result)
+  return result
+})
+
 // 의견 보내기 (익명, 내용과 버전만 구글 설문지로 전송)
 ipcMain.handle('send-feedback', async (_, text) => {
   try {

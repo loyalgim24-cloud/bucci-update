@@ -191,6 +191,32 @@ html,body{height:100%;font-family:'Pretendard',-apple-system,'Malgun Gothic',san
 .app-badge-icon{width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--sk1);flex-shrink:0}
 .app-badge-name{font-size:12px;font-weight:700;color:var(--g01)}
 .app-cnt{font-size:11px;color:var(--g05)}
+/* 앱 이름 옆 "앱스토어" 버튼과 앱스토어 정보 창 */
+.as-btn{display:inline-flex;align-items:center;gap:5px;margin-left:2px;padding:3px 10px 3px 4px;border:1px solid var(--g08);border-radius:12px;background:var(--surface);color:var(--g05);font-family:inherit;font-size:10.5px;font-weight:600;cursor:pointer;transition:color .12s,border-color .12s}
+.as-btn:hover{color:var(--p600);border-color:var(--p600)}
+.as-btn img{width:16px;height:16px;border-radius:4px;flex-shrink:0}
+.up-box.as-box{width:760px;max-width:calc(100vw - 48px);max-height:calc(100vh - 60px);display:flex;flex-direction:column}
+.as-head{display:flex;align-items:center;gap:14px}
+.as-icon{width:60px;height:60px;border-radius:14px;flex-shrink:0;object-fit:cover;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.as-name{font-size:16px;font-weight:700;color:var(--g01)}
+.as-sub{margin-top:3px;font-size:12px;color:var(--g05)}
+.as-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.as-meta span{padding:4px 10px;border-radius:12px;background:var(--g11,#F5F6FA);font-size:11.5px;color:var(--g04)}
+.as-meta b{color:var(--g01);font-weight:700}
+.as-shots{display:flex;gap:10px;overflow-x:auto;margin-top:16px;padding-bottom:8px}
+.as-shots img{height:300px;flex-shrink:0;border-radius:12px;cursor:zoom-in;box-shadow:0 0 0 1px var(--g09);background:var(--g10)}
+.as-sec-title{margin-top:14px;font-size:12px;font-weight:700;color:var(--g05)}
+.as-empty{margin-top:16px;padding:28px 0;text-align:center;font-size:12.5px;color:var(--g05);background:var(--g11,#F5F6FA);border-radius:12px}
+.as-scroll{overflow-y:auto;min-height:0}
+.as-note{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--warn-bg,#FFF7ED);border:1px solid var(--warn-bd,#FED7AA);font-size:12px;line-height:1.6;color:var(--warn-fg,#92400E)}
+.as-cands{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.as-cand{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--g08);border-radius:12px;background:var(--surface);cursor:pointer;text-align:left;font-family:inherit;transition:border-color .12s,background .12s}
+.as-cand:hover{border-color:var(--p600);background:var(--sel-bg)}
+.as-cand img{width:40px;height:40px;border-radius:10px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.as-cand span{display:flex;flex-direction:column;min-width:0}
+.as-cand b{font-size:12.5px;color:var(--g01);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-cand small{font-size:11px;color:var(--g05);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#as-btns .as-wrong{margin-right:auto;border:none;background:none;color:var(--g05);text-decoration:underline;padding-left:0}
 
 .img-flow{display:flex;flex-wrap:wrap;gap:9px;padding:0 12px 6px}
 .sec-div{height:1px;background:var(--g09);margin:6px 16px 0}
@@ -481,6 +507,10 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .ver-actions button:first-child{border-left:none}
 .ver-actions button:hover{background:var(--sel-bg);color:var(--p600)}
 .ver-actions button:disabled{color:var(--g06);cursor:default;background:none}
+/* 앱 안에서는 글자 끌어 선택(파랗게 칠해짐)과 이미지 끌기를 막음. 글자를 입력하는 칸은 그대로 선택 가능 */
+body{-webkit-user-select:none;user-select:none}
+input,textarea,[contenteditable]:not([contenteditable="false"]){-webkit-user-select:text;user-select:text}
+img{-webkit-user-drag:none}
 /* 홈 화면 제작자 표시 */
 #home-credit{position:fixed;right:20px;bottom:14px;z-index:5;font-size:11.5px;letter-spacing:-.01em;color:var(--g05);pointer-events:none;user-select:none}
 #home-credit b{font-weight:700;color:var(--g02)}
@@ -2602,7 +2632,15 @@ function renderResults(data, kw, opts={}) {
 
     const cnt = document.createElement('span'); cnt.className='app-cnt'; cnt.textContent='...'
     if (!opts.hideAppBadge) hdr.appendChild(badge)
-    hdr.appendChild(cnt); sec.appendChild(hdr)
+    hdr.appendChild(cnt)
+    // 실제 앱일 때만 앱스토어 정보 버튼 (묶음·숨은 결과·PC 레퍼런스 제외)
+    if (!isCloudPc && !(_eggGroup && appName === _eggGroup) && appName !== '비슷하게 생긴 화면' && appName !== '기타 레퍼런스' && window.api && window.api.appStoreLookup) {
+      const asb = document.createElement('button'); asb.className = 'as-btn'; asb.type = 'button'; asb.innerHTML = '<img src="assets/appstore.png" alt="">앱스토어'
+      asb.title = appName + ' 앱스토어 정보 보기'
+      asb.onclick = e => { e.stopPropagation(); openAppStore(appName) }
+      hdr.appendChild(asb)
+    }
+    sec.appendChild(hdr)
 
     const flow = document.createElement('div'); flow.className='img-flow'
     // 섹션별 URL/파일명 중복 필터링
@@ -4278,6 +4316,113 @@ async function initVersionRow() {
     whatsNewCheck(v)
   } catch {}
 }
+// ── 앱스토어 정보 창 ─────────────────────────────────────────
+// 앱 이름으로 한국 앱스토어를 찾아 스크린샷·평점·최근 업데이트 내용을 보여줌 (main.js 의 appstore-lookup)
+function closeAppStore() {
+  const ov = document.getElementById('as-overlay'); if (!ov) return
+  ov.remove(); document.removeEventListener('keydown', _asEsc2)
+}
+// 사용자가 후보에서 직접 고른 앱 기억 (부찌 앱 이름 → 앱스토어 앱 번호). 이 컴퓨터에만 저장됨
+const AS_PICK_KEY = 'bucci_appstore_pick'
+function _asPicks() { try { return JSON.parse(localStorage.getItem(AS_PICK_KEY) || '{}') || {} } catch { return {} } }
+function _asSavePick(appName, id) {
+  try { const m = _asPicks(); if (id) m[appName] = id; else delete m[appName]; localStorage.setItem(AS_PICK_KEY, JSON.stringify(m)) } catch {}
+}
+const _asEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]))
+function _asShortName(name) { return String(name || '').split(/\s+[-–—|]\s+|\s:\s/)[0].trim() }
+
+async function openAppStore(appName, opts = {}) {
+  closeAppStore()
+  const esc = _asEsc
+  const ov = document.createElement('div')
+  ov.id = 'as-overlay'
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,16,35,.5);z-index:9300;display:flex;align-items:center;justify-content:center'
+  ov.innerHTML = `<div class="up-box as-box" role="dialog" aria-label="앱스토어 정보"><div class="as-scroll" id="as-body">
+    <div class="as-head"><img class="as-icon" src="assets/icon.png" alt=""><div><div class="as-name">${esc(appName)}</div><div class="as-sub">앱스토어에서 찾는 중…</div></div></div></div>
+    <div class="up-btns" id="as-btns"><button class="up-btn" id="as-close">닫기</button></div></div>`
+  document.body.appendChild(ov)
+  document.getElementById('as-close').onclick = closeAppStore
+  ov.addEventListener('mousedown', e => { if (e.target === ov) closeAppStore() })
+  document.addEventListener('keydown', _asEsc2)
+
+  const picked = opts.pickList ? null : _asPicks()[appName]
+  let r = null
+  try { r = await window.api.appStoreLookup(picked ? { name: appName, id: picked } : appName) } catch {}
+  if (!document.body.contains(ov)) return
+  // 고른 앱이 앱스토어에서 내려간 경우 → 기억을 지우고 이름으로 다시 찾기
+  if (picked && r && !r.ok && r.reason === 'notfound') { _asSavePick(appName, null); try { r = await window.api.appStoreLookup(appName) } catch {} }
+  if (!document.body.contains(ov)) return
+
+  if (!r || !r.ok) return _asRenderMessage(appName, r && r.reason === 'notfound' ? `앱스토어에서 '${esc(appName)}'을(를) 찾지 못했어요.` : '앱스토어에 연결하지 못했어요. 인터넷 연결을 확인해주세요.')
+  if (opts.pickList || !r.confident) return _asRenderPicker(appName, r, opts.pickList)
+  _asRenderDetail(appName, r)
+}
+function _asEsc2(e) { if (e.key === 'Escape') closeAppStore() }
+function _asSetButtons(list) {
+  const box = document.getElementById('as-btns'); if (!box) return
+  box.innerHTML = ''
+  list.forEach(([text, cls, fn, style]) => {
+    const b = document.createElement('button'); b.className = 'up-btn' + (cls ? ' ' + cls : ''); b.textContent = text; b.onclick = fn
+    if (style) b.style.cssText = style
+    box.appendChild(b)
+  })
+}
+function _asRenderMessage(appName, msg) {
+  const body = document.getElementById('as-body'); if (!body) return
+  body.innerHTML = `<div class="as-head"><img class="as-icon" src="assets/icon.png" alt=""><div><div class="as-name">${_asEsc(appName)}</div><div class="as-sub">${msg}</div></div></div>`
+  _asSetButtons([['닫기', '', closeAppStore]])
+}
+// 후보 목록: 이름이 같은 앱을 못 찾았거나, 사용자가 "다른 앱이에요"를 눌렀을 때
+async function _asRenderPicker(appName, r, fromWrong) {
+  const esc = _asEsc
+  let cands = (r && r.candidates) || []
+  if (!cands.length && r && r.chosen) {         // 직접 고른 앱으로 열었을 때는 후보가 없어서 이름으로 다시 찾음
+    try { const r2 = await window.api.appStoreLookup(appName); cands = (r2 && r2.candidates) || [] } catch {}
+  }
+  const body = document.getElementById('as-body'); if (!body) return
+  const msg = fromWrong ? `'${esc(appName)}'에 맞는 앱을 골라주세요. 고른 앱은 다음부터 바로 보여드려요.`
+    : `앱스토어에서 '${esc(appName)}'과(와) 이름이 같은 앱을 찾지 못했어요. 이 중에 있다면 골라주세요.`
+  body.innerHTML = `<div class="as-head"><img class="as-icon" src="assets/icon.png" alt=""><div><div class="as-name">${esc(appName)}</div><div class="as-sub">${msg}</div></div></div>
+    ${cands.length ? `<div class="as-cands">${cands.map(c => `<button class="as-cand" data-id="${esc(c.id)}"><img src="${esc(c.icon)}" alt=""><span><b>${esc(c.name)}</b><small>${esc(c.seller)}</small></span></button>`).join('')}</div>`
+      : '<div class="as-empty">후보가 없어요.</div>'}`
+  body.querySelectorAll('.as-cand').forEach(btn => btn.onclick = async () => {
+    _asSavePick(appName, btn.dataset.id)
+    openAppStore(appName)
+  })
+  _asSetButtons([['목록에 없어요', '', () => _asRenderMessage(appName, `앱스토어에서 '${esc(appName)}'을(를) 찾지 못했어요.`)], ['닫기', '', closeAppStore]])
+}
+function _asRenderDetail(appName, r) {
+  const esc = _asEsc
+  const body = document.getElementById('as-body'); if (!body) return
+  const shots = r.screenshots.length ? r.screenshots : r.ipadScreenshots
+  const fmtCnt = n => n >= 10000 ? (Math.round(n / 1000) / 10) + '만' : n.toLocaleString()
+  const date = r.updated ? new Date(r.updated) : null
+  const meta = [
+    r.rating != null ? `<span>평점 <b>${r.rating.toFixed(1)}</b> (${fmtCnt(r.ratingCount)}명)</span>` : '',
+    r.genre ? `<span>${esc(r.genre)}</span>` : '',
+    r.version ? `<span>버전 <b>${esc(r.version)}</b></span>` : '',
+    date && !isNaN(date) ? `<span>최근 업데이트 <b>${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}</b></span>` : ''
+  ].join('')
+  const note = r.nameDiffers
+    ? `<div class="as-note">앱스토어에는 <b>'${esc(_asShortName(r.name))}'</b>(으)로 올라가 있어요. 이름이 바뀌었거나 다른 이름으로 등록된 앱일 수 있어요. 다른 앱이라면 아래 <b>다른 앱이에요</b>를 눌러주세요.</div>` : ''
+  body.innerHTML = `
+    <div class="as-head"><img class="as-icon" src="${esc(r.icon || 'assets/icon.png')}" alt=""><div><div class="as-name">${esc(r.name)}</div><div class="as-sub">${esc(r.seller)}</div></div></div>
+    ${note}
+    <div class="as-meta">${meta}</div>
+    ${shots.length
+      ? `<div class="as-sec-title">앱스토어 스크린샷 ${shots.length}장 <span style="font-weight:400">· 홍보용 이미지예요</span></div><div class="as-shots">${shots.map((u, i) => `<img src="${esc(u)}" data-i="${i}" alt="" loading="lazy">`).join('')}</div>`
+      : `<div class="as-empty">앱스토어에 등록된 스크린샷을 받아오지 못했어요.</div>`}
+    ${r.notes ? `<div class="as-sec-title">최근 업데이트 내용</div><div class="up-notes" style="margin-top:8px;max-height:140px">${esc(r.notes)}</div>` : ''}`
+  // 스크린샷을 누르면 크게 보기로 (좌우로 넘겨볼 수 있음)
+  const items = shots.map((u, i) => ({ type: 'image', src: u, thumbnail: u, source: 'appstore', screenName: `${r.name} 앱스토어 ${i + 1}` }))
+  body.querySelectorAll('.as-shots img').forEach(img => {
+    img.onclick = () => { const i = +img.dataset.i; closeAppStore(); openPop(items[i], items, i) }
+  })
+  const btns = [['다른 앱이에요', 'as-wrong', () => openAppStore(appName, { pickList: true })], ['닫기', '', closeAppStore]]
+  if (r.url) btns.push(['앱스토어에서 열기', 'primary', () => window.api.openBrowser(r.url)])
+  _asSetButtons(btns)
+}
+
 // ── 새로워진 점 ─────────────────────────────────────────────
 // 업데이트 후 처음 켰을 때 한 번만, 지난번에 본 버전 이후의 변경 내용을 보여줌.
 // 처음 설치한 사람에게는 보여주지 않음 (이 컴퓨터에 사용자가 남긴 부찌 기록이 없으면 처음 설치로 봄).

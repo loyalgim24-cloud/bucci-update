@@ -64,4 +64,5 @@ contextBridge.exposeInMainWorld('api', {
   getVersion:      ()           => ipcRenderer.invoke('get-version'),
   checkUpdate:     ()           => ipcRenderer.invoke('check-update'),
   sendFeedback:    (text)       => ipcRenderer.invoke('send-feedback', text),
+  appStoreLookup:  (name)       => ipcRenderer.invoke('appstore-lookup', name),
 })
