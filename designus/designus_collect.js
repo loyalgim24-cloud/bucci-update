@@ -182,6 +182,69 @@ async function analyze(tool, jpg) {
   }, jpg.toString('base64'))
 }
 
+// ── 중복 찾기: 부찌에 이미 있는 화면(WWIT)과 같은 화면인지 그림 모양으로 비교 ──
+// 화면을 작게 줄여 명암 패턴만 남긴 "지문"을 만들고, 같은 앱 안에서만 비교함.
+// 결과는 near: [이미 있는 화면 주소, 다른 정도(0~256)] 로 남기고, 실제로 숨길지는 부찌가 기준값으로 정함.
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+async function fingerprint(tool, url) {
+  try {
+    const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept': 'image/avif,image/webp,image/*,*/*' }, signal: AbortSignal.timeout(20000) })
+    if (!r.ok) return null
+    const b64 = Buffer.from(await r.arrayBuffer()).toString('base64')
+    return await tool.evaluate(async b64 => {
+      const blob = await (await fetch('data:application/octet-stream;base64,' + b64)).blob()
+      const bmp = await createImageBitmap(blob)
+      const W = 12, H = 24, c = document.createElement('canvas'); c.width = W; c.height = H
+      const g = c.getContext('2d', { willReadFrequently: true })
+      g.fillStyle = '#fff'; g.fillRect(0, 0, W, H)
+      // 위쪽 상태바(시계·배터리)와 아래쪽 홈 표시줄은 빼고 비교
+      g.drawImage(bmp, 0, bmp.height * 0.08, bmp.width, bmp.height * 0.87, 0, 0, W, H)
+      const d = g.getImageData(0, 0, W, H).data, v = []
+      for (let i = 0; i < d.length; i += 4) v.push(d[i], d[i + 1], d[i + 2])
+      return { v, r: bmp.width / bmp.height }
+    }, b64)
+  } catch { return null }
+}
+// 두 화면이 다른 정도: 0 = 완전히 같음. 같은 화면을 크기·화질만 다르게 저장한 경우 보통 3 이하
+function fpDist(a, b) {
+  if (Math.abs(a.r - b.r) / Math.max(a.r, b.r) > 0.1) return 999     // 화면 비율이 다르면 다른 화면
+  let n = 0
+  for (let i = 0; i < a.v.length; i++) n += Math.abs(a.v[i] - b.v[i])
+  return n / a.v.length
+}
+async function pool(items, size, fn) { let i = 0; await Promise.all(Array.from({ length: size }, async () => { while (i < items.length) { const it = items[i++]; await fn(it) } })) }
+const normName = s => String(s).toLowerCase().replace(/\(.*?\)|[\s.·_\-]/g, '')
+async function findDuplicates(tool, apps) {
+  let tagsDb = {}
+  const tp = process.env.BUCCI_TAGS || path.join(__dirname, '..', 'app', 'tags.json')
+  try { tagsDb = JSON.parse(fs.readFileSync(tp, 'utf8')) } catch { console.log('\n(부찌 태그 파일을 찾지 못해 중복 찾기는 건너뜁니다)'); return }
+  const byTag = {}
+  for (const [url, tags] of Object.entries(tagsDb)) {
+    if (!Array.isArray(tags) || !/^https?:/.test(url) || /\.(mp4|mov|webm|gif)(\?|$)/i.test(url)) continue
+    for (const t of tags) { const k = normName(t); (byTag[k] = byTag[k] || []).push(url) }
+  }
+  const ext = {}; let total = 0
+  console.log('\n중복 찾기 (부찌에 이미 있는 화면과 비교)')
+  for (const a of apps) {
+    const cands = [...new Set(byTag[normName(a.name)] || [])]
+    a.screens.forEach(s => { delete s.near; delete s.h })
+    if (cands.length < 3) continue                                   // 부찌에 없는 앱
+    await pool(cands, 8, async u => { ext[u] = await fingerprint(tool, u) })
+    const have = cands.filter(u => ext[u])
+    const mine = new Map()
+    await pool(a.screens, 8, async s => { const h = await fingerprint(tool, s.thumb); if (h) mine.set(s, h) })
+    let close = 0
+    for (const [s, h] of mine) {
+      let best = 999, bu = ''
+      for (const u of have) { const d = fpDist(h, ext[u]); if (d < best) { best = d; bu = u } }
+      if (best <= 14) { s.near = [bu, Math.round(best * 10) / 10]; if (best <= 4) close++ }
+    }
+    total += close
+    console.log(`  ${a.name}: 부찌 화면 ${have.length}/${cands.length}장, 디자이너스 화면 ${mine.size}/${a.screens.length}장 비교 → 거의 같은 화면 ${close}장`)
+  }
+  console.log(`  합계: 거의 같은 화면 ${total}장`)
+}
+
 // ── 앱 하나 ──
 async function collectApp(page, tool, id, prev) {
   await page.goto(`${SITE}/reference/service/${id}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -189,7 +252,7 @@ async function collectApp(page, tool, id, prev) {
   await page.waitForFunction(() => /\(.+\)/.test(document.title), null, { timeout: 10000 }).catch(() => {})
   await wait(PAUSE)
   const meta = await page.evaluate(() => {
-    const m = document.title.match(/\((.+?)\)/)
+    const m = document.title.match(/\((.+)\)\s*\|/) || document.title.match(/\((.+)\)/)   // 이름에 괄호가 있어도 끝까지
     const logo = [...document.images].map(i => i.currentSrc || i.src).find(u => u.includes('/app-logo/')) || ''
     const lines = (document.querySelector('main') || document.body).innerText.split('\n').map(s => s.trim()).filter(Boolean)
     const name = m ? m[1].trim() : ''
@@ -237,10 +300,10 @@ async function collectApp(page, tool, id, prev) {
   else if (Date.now() - STARTED > TAG_BUDGET_MS) { tagMap = keepOld(); tagged = false }   // 시간 초과: 다음 실행 때 분류
   else tagMap = await tagScreens(page, srcs)
 
-  const screens = srcs.filter(s => !info[s]?.cover).map((thumb, i) => ({
-    thumb, src: thumb.replace(/_small\.webp$/, '.webp'), order: i + 1,
-    tags: tagMap[thumb] || [], color: info[thumb]?.color || []
-  }))
+  // 큰 이미지 주소는 thumb에서 "_small"만 빼면 되므로 따로 저장하지 않음 (파일 크기 절약)
+  const screens = srcs.filter(s => !info[s]?.cover).map(thumb => {
+    return { thumb, tags: tagMap[thumb] || [], color: info[thumb]?.color || [] }
+  })
   const covers = srcs.filter(s => info[s]?.cover)
   return { id, name: meta.name, desc: meta.desc, logo: meta.logo, url: `${SITE}/reference/service/${id}`, tagged, screens, covers }
 }
@@ -256,7 +319,7 @@ h2{font-size:15px;margin:26px 0 10px;display:flex;align-items:center;gap:8px}h2 
 .f{background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:12px}</style></head><body>
 <h1>디자이너스 수집 결과</h1><div class="sub">${esc(data.updated)} · 앱 ${data.apps.length}개 · 화면 ${data.apps.reduce((a, b) => a + b.screens.length, 0)}장</div>
 ${data.failed.length ? `<div class="f">모으지 못한 앱 ${data.failed.length}개: ${data.failed.map(f => esc(f.id + ' ' + f.error)).join(' / ')}</div>` : ''}
-${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>${a.screens.length}장 · ${esc(a.desc)}</span></h2><div class="g">${a.screens.map(s => `<div class="c"><a href="${esc(s.src)}" target="_blank"><img src="${esc(s.thumb)}" loading="lazy"></a><div class="t">${s.tags.map(t => `<i>${esc(t)}</i>`).join('')}${s.color.map(t => `<i class="k">${esc(t)}</i>`).join('')}</div></div>`).join('')}</div>`).join('')}
+${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>${a.screens.length}장 · ${esc(a.desc)}</span></h2><div class="g">${a.screens.map(s => `<div class="c"><a href="${esc(s.thumb.replace(/_small\.webp$/, '.webp'))}" target="_blank"><img src="${esc(s.thumb)}" loading="lazy"></a><div class="t">${s.tags.map(t => `<i>${esc(t)}</i>`).join('')}${s.color.map(t => `<i class="k">${esc(t)}</i>`).join('')}</div></div>`).join('')}</div>`).join('')}
 </body></html>`)
 }
 
@@ -275,10 +338,16 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
   const page = await ctx.newPage()
   const tool = await ctx.newPage()
 
-  let ids = await appIds(page)
-  if (LIMIT) ids = ids.slice(0, LIMIT)
+  // limit에 -1을 넣으면: 화면은 다시 모으지 않고, 지난번 결과로 중복 찾기만 다시 함 (몇 분이면 끝남)
+  const ONLY_DUPS = LIMIT < 0
+  if (ONLY_DUPS && !(prev && prev.apps && prev.apps.length)) { console.log('지난번 수집 결과가 없어요. limit을 비우고 전체 수집을 먼저 해주세요.'); process.exit(2) }
+  let ids = ONLY_DUPS ? [] : await appIds(page)
+  if (LIMIT > 0) ids = ids.slice(0, LIMIT)
+  if (ONLY_DUPS) console.log('\n지난번 수집 결과로 중복 찾기만 다시 합니다.')
+  else
   console.log(`\n디자이너스 수집 시작 — 앱 ${ids.length}개${NO_TAGS ? ' (분류 건너뜀)' : ''}\n`)
-  const apps = [], failed = [], skipped = []
+  const apps = ONLY_DUPS ? prev.apps : [], failed = ONLY_DUPS ? (prev.failed || []) : [], skipped = ONLY_DUPS ? (prev.skipped || []) : []
+  apps.forEach(a => { if (/\([^)]*$/.test(a.name)) a.name += ')' })      // 예전 버전에서 잘린 이름 고치기
   for (const [i, id] of ids.entries()) {
     try {
       const a = await collectApp(page, tool, id, prevApps.get(String(id)))
@@ -293,6 +362,7 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
     }
     await wait(PAUSE)
   }
+  try { await findDuplicates(tool, apps) } catch (e) { console.log('  (중복 찾기 중 문제가 생겨 건너뜁니다: ' + e.message + ')') }
   await browser.close()
 
   const data = { source: 'designus', site: SITE, updated: new Date().toISOString(), apps, failed, skipped }
@@ -306,7 +376,7 @@ ${data.apps.map(a => `<h2><img src="${esc(a.logo)}" alt="">${esc(a.name)}<span>$
     }
   }
   if (!apps.length) { console.log('\n[중단] 모은 앱이 없어요.\n'); process.exit(2) }
-  if (failed.length >= Math.max(2, ids.length * 0.3)) {
+  if (!ONLY_DUPS && failed.length >= Math.max(2, ids.length * 0.3)) {
     console.log(`\n[중단] 앱 ${ids.length}개 중 ${failed.length}개를 모으지 못했어요. 사이트 구조가 바뀌었을 수 있어 저장하지 않았습니다.\n`)
     process.exit(2)
   }
