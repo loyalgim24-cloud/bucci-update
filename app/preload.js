@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
   downloadMultiple: (urls)   => ipcRenderer.invoke('download-multiple', urls),
   getAppPath:      ()        => ipcRenderer.invoke('get-app-path'),
   loadTags:        ()        => ipcRenderer.invoke('load-tags'),
+  loadDzTags:      ()        => ipcRenderer.invoke('load-dz-tags'),
   claudeApi:       (opts)    => ipcRenderer.invoke('claude-api', opts),
   getUpaUrls:      ()        => ipcRenderer.invoke('get-upa-urls'),
   fetchImageBase64:(url)     => ipcRenderer.invoke('fetch-image-base64', url),

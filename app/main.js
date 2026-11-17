@@ -77,14 +77,14 @@ function loadUcCache() {
     if (!fs.existsSync(UC_CACHE_JSON)) return false
     const data = JSON.parse(fs.readFileSync(UC_CACHE_JSON, 'utf8'))
     if (Date.now() - (data.updated || 0) > CACHE_TTL) return false
-    ucCache = data.items || []
+    ucCache = (data.items || []).filter(u => !u._dz)
     console.log('[uc-cache] loaded:', ucCache.length, 'use-cases')
     return true
   } catch { return false }
 }
 
 function saveUcCache() {
-  try { fs.writeFileSync(UC_CACHE_JSON, JSON.stringify({ items: ucCache, updated: Date.now() })) }
+  try { fs.writeFileSync(UC_CACHE_JSON, JSON.stringify({ items: ucCache.filter(u => !u._dz), updated: Date.now() })) }
   catch {}
 }
 
@@ -101,6 +101,62 @@ function loadTags() {
     if (fs.existsSync(p)) tagsDb = JSON.parse(fs.readFileSync(p, 'utf8'))
     console.log('[tags] loaded:', Object.keys(tagsDb).length)
   } catch (e) { console.log('[tags] error:', e.message) }
+}
+
+// ── 디자이너스 레퍼런스 (깃허브에 매달 자동 수집되는 목록을 받아 기존 자료에 합침) ──
+let designus
+try { designus = require('./designus') }
+catch (e) { console.log('[designus] 모듈 없음:', e.message); designus = { URL: '', DUP_MAX: 0, build: () => ({ ucs: [], tags: {}, extra: {}, appByUrl: {}, hidden: 0 }), big: u => u } }
+const DZ_JSON = path.join(APP_DATA, 'designus_refs.json')
+let dzUcs = [], dzTagKeys = [], dzAppByUrl = {}, dzUpdated = ''
+function dzAttach() {
+  ucCache = ucCache.filter(u => !u._dz).concat(dzUcs)
+  try { _upaAppMap = null; _upaIdMap = null } catch {}
+}
+function dzApply(data) {
+  try {
+    const known = [...WWIT_APPS.map(a => a.name), ...ucCache.filter(u => u && !u._dz && u.appName).map(u => u.appName)]
+    const r = designus.build(data, known, normAppKey)
+    dzTagKeys.forEach(k => { delete tagsDb[k] })
+    Object.assign(tagsDb, r.tags); dzTagKeys = Object.keys(r.tags)
+    // 중복이라 숨긴 화면의 분류는 남아 있는 기존 화면에 합침
+    Object.entries(r.extra).forEach(([u, t]) => { if (Array.isArray(tagsDb[u])) t.forEach(x => { if (!tagsDb[u].includes(x)) tagsDb[u].push(x) }) })
+    dzUcs = r.ucs; dzAppByUrl = r.appByUrl; dzUpdated = data.updated || ''
+    dzAttach()
+    console.log('[designus] 앱', r.ucs.length, '화면', dzTagKeys.length, '중복으로 숨김', r.hidden)
+    return true
+  } catch (e) { console.log('[designus] error:', e.message); return false }
+}
+// 화면 종류(로그인·바텀시트 등) 검색 결과에 같은 분류가 붙은 디자이너스 화면을 더함
+function dzMergeByPath(data, wwitPath) {
+  try {
+    const words = new Set(Object.entries(WWIT_PATHS).filter(([, p]) => p === wwitPath).flatMap(([k]) => k.toLowerCase().replace(/\s/g, '').split('/')))
+    if (!words.size) return
+    dzTagKeys.forEach(url => {
+      const tags = tagsDb[url]
+      if (!Array.isArray(tags) || !tags.some(t => words.has(String(t).toLowerCase().replace(/\s/g, '')))) return
+      const appName = dzAppByUrl[url]; if (!appName) return
+      if (!data[appName]) data[appName] = []
+      if (!data[appName].find(i => i.src === url))
+        data[appName].push({ type:'image', src:url, thumbnail:url, screenName:appName, source:'upa', ucTitle:'', ucUrl:'', tags })
+    })
+  } catch {}
+}
+function dzLoadCached() {
+  try { if (fs.existsSync(DZ_JSON)) return dzApply(JSON.parse(fs.readFileSync(DZ_JSON, 'utf8'))) } catch {}
+  return false
+}
+async function dzRefresh() {
+  try {
+    if (!designus.URL) return
+    const { status, body } = await fetchRaw(designus.URL + '?t=' + Math.floor(Date.now() / 3600000), 90000)
+    if (status !== 200) return
+    const data = JSON.parse(body.toString('utf8'))
+    if (!data || !Array.isArray(data.apps) || !data.apps.length) return
+    if (data.updated && data.updated === dzUpdated) return
+    try { fs.writeFileSync(DZ_JSON, JSON.stringify(data)) } catch {}
+    if (dzApply(data)) win?.webContents.send('uc-loaded', { count: ucCache.length })
+  } catch (e) { console.log('[designus] refresh error:', e.message) }
 }
 
 // ── HTTP ─────────────────────────────────────────────────────────────
@@ -523,6 +579,7 @@ async function buildUseCaseCache(splashWin) {
 
   ucCache = results.filter(uc => uc.images.length > 0)
   saveUcCache()
+  dzAttach()
   win?.webContents.send('uc-done', { count: ucCache.length })
   splashWin?.webContents.send('splash-uc-done', { count: ucCache.length })
   console.log('[uc] done:', ucCache.length, 'use-cases')
@@ -1238,6 +1295,8 @@ app.whenReady().then(async () => {
   loadTags()
   const wwit_cached = loadCache()
   const uc_cached   = loadUcCache()
+  dzLoadCached()
+  setTimeout(dzRefresh, 6000)
 
   if (wwit_cached && uc_cached) {
     // 둘 다 캐시 있으면 바로 실행
@@ -1587,10 +1646,10 @@ async function searchCore(kw) {
           if (!Array.isArray(imgTags) || !url.startsWith('http')) return
           if (!imgTags.some(t => targetTags.has(t))) return
           const slugMatch = url.match(/\/images\/posts\/([^\/]+)\//)
-          if (!slugMatch) return
-          const appName = slug2name[slugMatch[1]] || slugMatch[1]
+          if (!slugMatch && !dzAppByUrl[url]) return
+          const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
           if (!data[appName]) data[appName] = []
-          data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags:imgTags })
+          data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags:imgTags })
         })
       }
     }))
@@ -1607,11 +1666,10 @@ async function searchCore(kw) {
       if (!url.startsWith('http')) return
       // URL에서 slug 추출: https://wwit.design//images/posts/SLUG/...
       const slugMatch = url.match(/\/images\/posts\/([^\/]+)\//)
-      if (!slugMatch) return
-      const slug = slugMatch[1]
-      const appName = slug2name[slug] || slug
+      if (!slugMatch && !dzAppByUrl[url]) return
+      const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
       if (!data[appName]) data[appName] = []
-      data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags:imgTags })
+      data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags:imgTags })
     })
     return { data: filterVideoItems(data), source:'tags' }
   }
@@ -1743,11 +1801,11 @@ async function searchCore(kw) {
         if (!Array.isArray(imgTags) || !url.startsWith('http')) return
         if (!imgTags.includes('홈')) return
         const slugMatch = url.match(/\/+images\/posts\/([^\/]+)\//)
-        if (!slugMatch) return
-        const appName = slug2name[slugMatch[1]] || slugMatch[1]
+        if (!slugMatch && !dzAppByUrl[url]) return
+        const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
         if (!data[appName]) data[appName] = []
         if (!data[appName].find(i => i.src === url))
-          data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit' })
+          data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit' })
       })
 
       // UPA 홈 관련 use-case 병합
@@ -1764,6 +1822,7 @@ async function searchCore(kw) {
       })
 
       console.log('[home] result:', Object.keys(data).length, 'apps')
+      dzMergeByPath(data, r.path)
       return { data: filterVideoItems(data), source:'mixed' }
     }
 
@@ -1785,11 +1844,11 @@ async function searchCore(kw) {
         if (!Array.isArray(imgTags) || !url.startsWith('http')) return
         if (!imgTags.includes('홈')) return
         const slugMatch = url.match(/\/+images\/posts\/([^\/]+)\//)
-        if (!slugMatch) return
-        const appName = slug2name[slugMatch[1]] || slugMatch[1]
+        if (!slugMatch && !dzAppByUrl[url]) return
+        const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
         if (!data[appName]) data[appName] = []
         if (!data[appName].find(i => i.src === url))
-          data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags:imgTags })
+          data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags:imgTags })
       })
 
       // 2. paths 캐시 병합
@@ -1840,6 +1899,8 @@ async function searchCore(kw) {
         })
       })
     }
+
+    dzMergeByPath(data, r.path)
 
     return { data: filterVideoItems(data), source:'mixed' }
   }
@@ -1917,11 +1978,10 @@ async function searchCore(kw) {
       const tagMatch = tags.some(t => t.toLowerCase().includes(kl) || kl.includes(t.toLowerCase()))
       if (!tagMatch) return
       const m = url.match(/\/images\/posts\/([^/]+)\//)
-      if (!m) return
-      const slug = m[1]
-      const appName = slug2name[slug] || slug
+      if (!m && !dzAppByUrl[url]) return
+      const appName = m ? (slug2name[m[1]] || m[1]) : dzAppByUrl[url]
       if (!data[appName]) data[appName] = []
-      data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags })
+      data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags })
     })
 
     // UPA ucCache: 제목/태그에 키워드 포함
@@ -2087,6 +2147,7 @@ ipcMain.handle('scrape-upa-cat', async (_, catId, catName) => {
 })
 
 ipcMain.handle('save-file', async (_, { url, defaultName }) => {
+  url = designus.big(url)
   const res = await dialog.showSaveDialog(win, {
     defaultPath: decodeURIComponent(defaultName || url.split('/').pop() || 'image.png'),
     filters: [{ name:'이미지/영상', extensions:['png','webp','jpg','mp4','gif'] }, { name:'모든 파일', extensions:['*'] }]
@@ -2107,6 +2168,7 @@ ipcMain.handle('save-file', async (_, { url, defaultName }) => {
 // 이미지 복사 - 렌더러에서 Canvas로 PNG 변환 후 클립보드
 ipcMain.handle('copy-image', async (_, url) => {
   try {
+    url = designus.big(url)
     const { clipboard, nativeImage } = require('electron')
     let imgBuf
 
@@ -2147,11 +2209,14 @@ ipcMain.handle('fetch-image-base64', async (_, url) => {
   } catch(e) { return null }
 })
 
+ipcMain.handle('load-dz-tags', () => { const o = {}; dzTagKeys.forEach(k => { o[k] = tagsDb[k] }); return o })
+
 ipcMain.handle('get-upa-urls', () => {
   // ucCache에서 모든 이미지 URL 수집
   const urls = []
   const seen = new Set()
   ucCache.forEach(uc => {
+    if (uc._dz) return
     uc.images.forEach(img => {
       if (img.src && !seen.has(img.src)) {
         seen.add(img.src)
@@ -2404,10 +2469,10 @@ ipcMain.handle('combo-search', async (_, selectedTags) => {
     // AND 조건: 선택된 태그 모두 포함
     if (!selectedTags.every(tag => imgTags.includes(tag))) return
     const slugMatch = url.match(/\/images\/posts\/([^\/]+)\//)
-    if (!slugMatch) return
-    const appName = slug2name[slugMatch[1]] || slugMatch[1]
+    if (!slugMatch && !dzAppByUrl[url]) return
+    const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
     if (!data[appName]) data[appName] = []
-    data[appName].push({ type:'image', src:url, thumbnail:url, source:'wwit', tags:imgTags })
+    data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags:imgTags })
   })
 
   // UPA: screenName에 선택된 태그 키워드 포함하는 이미지 (AND)

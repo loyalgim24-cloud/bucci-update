@@ -511,6 +511,14 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 body{-webkit-user-select:none;user-select:none}
 input,textarea,[contenteditable]:not([contenteditable="false"]){-webkit-user-select:text;user-select:text}
 img{-webkit-user-drag:none}
+/* 왼쪽 아래 레퍼런스 출처 접기 */
+.src-fold summary{display:flex;align-items:center;gap:5px;list-style:none;cursor:pointer;font-weight:600;color:var(--g05);padding:2px 0}
+.src-fold summary::-webkit-details-marker{display:none}
+.src-fold summary::after{content:'';margin-left:auto;width:6px;height:6px;border-right:1.5px solid var(--g06,#9A9CA3);border-bottom:1.5px solid var(--g06,#9A9CA3);transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.src-fold[open] summary::after{transform:rotate(-135deg) translateY(-1px)}
+.src-fold summary:hover{color:var(--g01)}
+.src-fold .src-cnt{font-weight:400;color:var(--g07)}
+.src-fold[open] summary{margin-bottom:3px}
 /* 홈 화면 제작자 표시 */
 #home-credit{position:fixed;right:20px;bottom:14px;z-index:5;font-size:11.5px;letter-spacing:-.01em;color:var(--g05);pointer-events:none;user-select:none}
 #home-credit b{font-weight:700;color:var(--g02)}
@@ -763,13 +771,15 @@ img[src=""], img:not([src]) { background: var(--g10) }
     </div>
     <div style="flex-shrink:0;padding:10px 12px;border-top:1px solid var(--g09);background:var(--g11)">
       <div class="theme-row"><span>다크 모드</span><button class="theme-sw" id="theme-sw" type="button" role="switch" aria-label="다크 모드" onclick="toggleTheme()"></button></div>
-      <div style="font-size:9.5px;color:var(--g06);line-height:1.6">
-        <div style="font-weight:600;margin-bottom:3px;color:var(--g05)">📋 레퍼런스 출처</div>
+      <!-- 레퍼런스 출처: 접어 두고 눌러서 펼침 (출처가 늘어나도 메뉴가 길어지지 않게) -->
+      <details class="src-fold" style="font-size:9.5px;color:var(--g06);line-height:1.6">
+        <summary><span>📋 레퍼런스 출처</span><span class="src-cnt"></span></summary>
         <div>• <a href="https://wwit.design" target="_blank" style="color:var(--g05);text-decoration:none">WWIT</a> (wwit.design)</div>
         <div>• <a href="https://upa.userspoon.com/" target="_blank" style="color:var(--g05);text-decoration:none">UPA</a> (upa.userspoon.com)</div>
+        <div>• <a href="https://ko.designus.design/reference" target="_blank" style="color:var(--g05);text-decoration:none">Designus</a> (designus.design)</div>
         <div>• <a href="https://krds.go.kr" target="_blank" style="color:var(--g05);text-decoration:none">KRDS</a> — 행정안전부</div>
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
-      </div>
+      </details>
       <div id="ver-row" style="display:none;margin-top:8px;padding-top:9px;border-top:1px solid var(--g09)">
         <div id="ver-text" style="font-size:10px;color:var(--g06);margin-bottom:6px">부찌</div>
         <div class="ver-actions">
@@ -1597,6 +1607,7 @@ async function init() {
     loadGallery()
   })
   window.api.onUcLoaded(({ count }) => {
+    try { _tagsLoaded = false } catch {}   // 새 자료가 들어왔으니 다음 검색 때 태그를 다시 읽음
     setSt('✓ 레퍼런스 준비 완료', 'ok')
     loadGallery()
   })
@@ -2797,6 +2808,9 @@ function openPop(item, items, idx) {
   document.getElementById('pop-ov').classList.add('on')
 }
 
+// 디자이너스 화면: 목록은 작은 이미지, 크게 볼 때는 원본 크기
+function dzBig(u){ return /^https:\/\/static\.designus\.design\/.+_small\.webp$/.test(String(u||'')) ? u.replace(/_small\.webp$/, '.webp') : u }
+
 function renderPopImg() {
   const item = slideItems[slideIdx]
   curItem = item
@@ -2823,9 +2837,11 @@ function renderPopImg() {
     body.appendChild(v)
     document.getElementById('act-copy').style.display='none'
   } else {
-    const img=document.createElement('img');img.src=item.src;img.alt=''
+    const img=document.createElement('img');img.src=dzBig(item.src);img.alt=''
     img.style.cssText='max-width:100%;max-height:80vh;display:block;transform-origin:center;transition:transform .2s'
     img.onerror = () => {
+      // 디자이너스 원본 크기가 안 열리면 작은 이미지로 한 번 더 시도
+      if (img.src !== item.src && dzBig(item.src) !== item.src && !img._dzRetry) { img._dzRetry = true; img.src = item.src; return }
       // 이미지 로드 실패 → slideItems에서 제거 후 재렌더
       slideItems = slideItems.filter((_, i) => i !== slideIdx)
       if (!slideItems.length) { closePop(); return }
@@ -2926,7 +2942,7 @@ document.addEventListener('click',()=>closeCtx())
 // ── 액션 ──────────────────────────────────────────────────────────
 async function dlCur(){
   if(!curItem)return
-  const ok=await window.api.saveFile({url:curItem.src,defaultName:curItem.src.split('/').pop()})
+  const ok=await window.api.saveFile({url:curItem.src,defaultName:dzBig(curItem.src).split('/').pop()})
   setSt(ok?'저장 완료!':'저장 실패',ok?'ok':'danger')
 }
 
@@ -4297,6 +4313,14 @@ function openFeedback() {
   }
   setTimeout(() => { try { ta.focus() } catch {} }, 0)
 }
+// 접힌 출처 옆에 개수 표시 (출처 줄 수를 세어 자동으로)
+function initSourceFold() {
+  const d = document.querySelector('.src-fold'); if (!d) return
+  const n = [...d.children].filter(el => el.tagName === 'DIV' && /^•/.test(el.textContent.trim())).length
+  const c = d.querySelector('.src-cnt'); if (c && n) c.textContent = n + '곳'
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSourceFold)
+else setTimeout(initSourceFold, 0)
 // ── 다크 모드 ───────────────────────────────────────────────
 // 선택은 이 컴퓨터에 저장되어 다음에 켤 때도 유지됨. 색은 CSS 변수(html.dark)로만 바뀜.
 function toggleTheme() {
@@ -4609,6 +4633,7 @@ let tagsDb = {}, slugNames = {}, _tagsLoaded = false
 async function ensureTagsLoaded() {
   if (_tagsLoaded) return
   try { const t = await window.api.loadTags(); if (t && Object.keys(t).length) tagsDb = t } catch {}
+  try { const d = await window.api.loadDzTags(); if (d) tagsDb = Object.assign({}, tagsDb, d) } catch {}   // 디자이너스 화면
   try { const s = await window.api.getSlugNames(); if (s) slugNames = s } catch {}
   _tagsLoaded = true
 }
