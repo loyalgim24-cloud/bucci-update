@@ -194,23 +194,31 @@ async function fingerprint(tool, url) {
     return await tool.evaluate(async b64 => {
       const blob = await (await fetch('data:application/octet-stream;base64,' + b64)).blob()
       const bmp = await createImageBitmap(blob)
-      const W = 12, H = 24, c = document.createElement('canvas'); c.width = W; c.height = H
+      const W = 24, H = 48, c = document.createElement('canvas'); c.width = W; c.height = H
       const g = c.getContext('2d', { willReadFrequently: true })
+      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'
       g.fillStyle = '#fff'; g.fillRect(0, 0, W, H)
       // 위쪽 상태바(시계·배터리)와 아래쪽 홈 표시줄은 빼고 비교
       g.drawImage(bmp, 0, bmp.height * 0.08, bmp.width, bmp.height * 0.87, 0, 0, W, H)
       const d = g.getImageData(0, 0, W, H).data, v = []
-      for (let i = 0; i < d.length; i += 4) v.push(d[i], d[i + 1], d[i + 2])
+      for (let i = 0; i < d.length; i += 4) v.push(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2])
       return { v, r: bmp.width / bmp.height }
     }, b64)
   } catch { return null }
 }
-// 두 화면이 다른 정도: 0 = 완전히 같음. 같은 화면을 크기·화질만 다르게 저장한 경우 보통 3 이하
+// 두 화면이 다른 정도 (0 = 완전히 같음, 클수록 다름).
+// 화면을 작은 칸(가로 8 × 세로 16)으로 나눠 칸마다 차이를 재고, 가장 많이 다른 칸 6개의 평균을 씀.
+// 전체 평균으로 재면 흰 바탕에 글자만 다른 화면이 "같다"고 나오기 때문에, 한 군데라도 뚜렷이 다르면 다른 화면으로 봄.
 function fpDist(a, b) {
   if (Math.abs(a.r - b.r) / Math.max(a.r, b.r) > 0.1) return 999     // 화면 비율이 다르면 다른 화면
-  let n = 0
-  for (let i = 0; i < a.v.length; i++) n += Math.abs(a.v[i] - b.v[i])
-  return n / a.v.length
+  const W = 24, H = 48, B = 3, blocks = []
+  for (let by = 0; by < H; by += B) for (let bx = 0; bx < W; bx += B) {
+    let n = 0
+    for (let y = by; y < by + B; y++) for (let x = bx; x < bx + B; x++) n += Math.abs(a.v[y * W + x] - b.v[y * W + x])
+    blocks.push(n / (B * B))
+  }
+  blocks.sort((p, q) => q - p)
+  return (blocks[0] + blocks[1] + blocks[2] + blocks[3] + blocks[4] + blocks[5]) / 6
 }
 async function pool(items, size, fn) { let i = 0; await Promise.all(Array.from({ length: size }, async () => { while (i < items.length) { const it = items[i++]; await fn(it) } })) }
 const normName = s => String(s).toLowerCase().replace(/\(.*?\)|[\s.·_\-]/g, '')
@@ -227,7 +235,7 @@ async function findDuplicates(tool, apps) {
   console.log('\n중복 찾기 (부찌에 이미 있는 화면과 비교)')
   for (const a of apps) {
     const cands = [...new Set(byTag[normName(a.name)] || [])]
-    a.screens.forEach(s => { delete s.near; delete s.h })
+    a.screens.forEach(s => { delete s.near; delete s.h; delete s.dup; delete s.src; delete s.order })
     if (cands.length < 3) continue                                   // 부찌에 없는 앱
     await pool(cands, 8, async u => { ext[u] = await fingerprint(tool, u) })
     const have = cands.filter(u => ext[u])
@@ -237,7 +245,7 @@ async function findDuplicates(tool, apps) {
     for (const [s, h] of mine) {
       let best = 999, bu = ''
       for (const u of have) { const d = fpDist(h, ext[u]); if (d < best) { best = d; bu = u } }
-      if (best <= 14) { s.near = [bu, Math.round(best * 10) / 10]; if (best <= 4) close++ }
+      if (best <= 40) { s.dup = [bu, Math.round(best * 10) / 10]; if (best <= 8) close++ }
     }
     total += close
     console.log(`  ${a.name}: 부찌 화면 ${have.length}/${cands.length}장, 디자이너스 화면 ${mine.size}/${a.screens.length}장 비교 → 거의 같은 화면 ${close}장`)
