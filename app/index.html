@@ -285,6 +285,26 @@ html,body{height:100%;font-family:'Pretendard',-apple-system,'Malgun Gothic',san
 .pop-arrow.left{border-radius:12px 0 0 12px}
 .pop-arrow.right{border-radius:0 12px 12px 0}
 .pop-arrow:disabled{opacity:.15;cursor:default}
+/* 좌우 넘기기: 팝업 바깥 배경을 화면 가운데 기준 왼쪽/오른쪽 절반으로 나눠, 누르면 이전/다음.
+   마우스를 올린 쪽은 바깥 가장자리부터 흰 그라데이션이 퍼지고 화살표가 보임.
+   더 넘길 화면이 없는 쪽(.end)은 화살표만 흐리게 보이고 눌러도 아무 일 없음. 닫기는 오른쪽 위 ✕ 또는 Esc */
+.pop-arrow{display:none!important}
+#pop-wrap{position:relative;z-index:1}
+.pop-zone{position:absolute;top:0;bottom:0;width:50%;z-index:0;cursor:pointer;display:flex;align-items:center;transition:background .18s}
+.pop-zone.l{left:0;justify-content:flex-start;padding-left:min(5vw,64px)}
+.pop-zone.r{right:0;justify-content:flex-end;padding-right:min(5vw,64px)}
+.pop-zone .pz-ic{font-size:64px;line-height:1;font-weight:200;color:#fff;opacity:0;transform:translateX(0);transition:opacity .18s,transform .18s;user-select:none;pointer-events:none}
+.pop-zone.l:not(.end):hover{background:linear-gradient(90deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.06) 35%,rgba(255,255,255,0) 70%)}
+.pop-zone.r:not(.end):hover{background:linear-gradient(270deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.06) 35%,rgba(255,255,255,0) 70%)}
+.pop-zone.l:not(.end):hover .pz-ic{opacity:.95;transform:translateX(-6px)}
+.pop-zone.r:not(.end):hover .pz-ic{opacity:.95;transform:translateX(6px)}
+.pop-zone.end{cursor:not-allowed}
+.pop-zone.end:hover .pz-ic{opacity:.22}
+.pop-x{position:absolute;top:44px;right:48px;z-index:1001;width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:background .15s,transform .15s}
+.pop-x:hover{background:rgba(255,255,255,.3);transform:scale(1.06)}
+#pop-box.fullscreen #pop-hdr{padding-right:76px}
+/* 전체화면에서는 머리줄과 겹치지 않게 원래 크기로 모서리에 */
+#pop-ov:has(#pop-box.fullscreen) .pop-x{top:12px;right:16px;width:44px;height:44px;font-size:18px}
 #pop-acts{display:flex;gap:7px;padding:10px 14px;border-top:1px solid var(--g09);flex-shrink:0}
 .act{flex:1;padding:7px;border-radius:6px;border:none;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
 .act.p{background:var(--p600);color:#fff}
@@ -864,6 +884,9 @@ img[src=""], img:not([src]) { background: var(--g10) }
 
 <!-- 팝업 -->
 <div id="pop-ov" onclick="popOvClick(event)">
+  <div class="pop-zone l" id="pop-zone-l" onclick="popZoneClick(event,-1)" title="이전 화면"><span class="pz-ic">‹</span></div>
+  <div class="pop-zone r" id="pop-zone-r" onclick="popZoneClick(event,1)" title="다음 화면"><span class="pz-ic">›</span></div>
+  <button class="pop-x" id="pop-x" onclick="event.stopPropagation();closePop()" title="닫기 (Esc)" aria-label="닫기">✕</button>
   <div id="pop-wrap">
     <button class="pop-arrow left" id="arr-l" onclick="slideImg(-1)">‹</button>
     <div id="pop-box">
@@ -875,7 +898,6 @@ img[src=""], img:not([src]) { background: var(--g10) }
         <button class="pop-zoom-btn" id="pop-zoom-reset" onclick="popZoom(0)" title="원래 크기">100%</button>
         <button class="pop-zoom-btn" onclick="popZoom(0.25)" title="확대">＋</button>
         <button class="pop-zoom-btn" id="pop-fs-btn" onclick="togglePopFullscreen()" title="전체화면">⛶</button>
-        <button class="pop-close" onclick="closePop()">✕</button>
       </div>
     </div>
     <div id="pop-minimap">
@@ -2753,6 +2775,9 @@ function renderPopImg() {
   const arrR = document.getElementById('arr-r')
   arrL.disabled = slideIdx===0 || slideItems.length <= 1
   arrR.disabled = slideIdx===slideItems.length-1 || slideItems.length <= 1
+  const zl = document.getElementById('pop-zone-l'), zr = document.getElementById('pop-zone-r')
+  if (zl) { zl.classList.toggle('end', arrL.disabled); zl.title = arrL.disabled ? '첫 화면이에요' : '이전 화면' }
+  if (zr) { zr.classList.toggle('end', arrR.disabled); zr.title = arrR.disabled ? '마지막 화면이에요' : '다음 화면' }
 
   if (item.type==='video') {
     const v=document.createElement('video');v.src=item.src;v.controls=true;v.autoplay=true
@@ -2836,6 +2861,14 @@ function closePop() {
   box.classList.remove('wide')
   const v=document.querySelector('#pop-body video');if(v) v.pause()
   document.getElementById('pop-ov').classList.remove('on')
+}
+// 배경 왼쪽/오른쪽 절반을 눌렀을 때: 그쪽으로 넘길 화면이 있으면 넘김
+function popZoneClick(e, dir) {
+  e.stopPropagation()
+  if (_popDragging || window._popJustDragged) return
+  const z = e.currentTarget
+  if (z.classList.contains('end')) return            // 더 넘길 화면이 없음 (비활성)
+  slideImg(dir)
 }
 function popOvClick(e) { if(_popDragging || window._popJustDragged) return; if(e.target===document.getElementById('pop-ov')) closePop() }
 
