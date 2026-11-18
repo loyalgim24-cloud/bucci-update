@@ -897,10 +897,14 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
 .ix-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .ix-card{cursor:pointer;background:var(--surface);border:1px solid var(--g09);border-radius:12px;overflow:hidden;transition:box-shadow .15s,border-color .15s}
 .ix-card:hover{border-color:var(--g08);box-shadow:0 6px 18px rgba(15,23,42,.08)}
-.ix-stage{height:170px;display:flex;align-items:center;justify-content:center;background:#F5F6FA;position:relative;overflow:hidden}
-html.dark .ix-stage{background:#1C2030}
-.ix-stage.dk{background:#1C2030}
-html.dark .ix-stage.dk{background:#F5F6FA}
+.ix-stage{height:170px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+/* 미리보기 배경: 라이트 모드는 밝게, 다크 모드는 어둡게. 효과가 배경에 묻히면(흰 효과·검은 효과) 자동으로 반대 배경 */
+.ix-stage,.ix-big{background:#F0F1F5;transition:background-color .2s}
+html.dark .ix-stage,html.dark .ix-big{background:#2A2F3D}
+.ix-stage[data-tone=light],.ix-big[data-tone=light]{background:#2A2F3D}
+html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background:#F0F1F5}
+.ix-stage[data-force=l],.ix-big[data-force=l]{background:#F0F1F5 !important}
+.ix-stage[data-force=d],.ix-big[data-force=d]{background:#2A2F3D !important}
 .ix-host{display:block;width:100%;height:100%}
 .ix-stage .ix-host{pointer-events:none}
 .ix-bg{position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;border:1px solid rgba(128,128,140,.35);background:linear-gradient(135deg,#fff 50%,#1C2030 50%);cursor:pointer;opacity:0;transition:opacity .15s;padding:0}
@@ -916,10 +920,7 @@ html.dark .ix-stage.dk{background:#F5F6FA}
 #ix-ov{position:fixed;inset:0;background:rgba(10,16,35,.45);z-index:9000;display:flex;align-items:center;justify-content:center}
 .ix-box{width:880px;max-width:calc(100vw - 60px);height:min(560px,calc(100vh - 80px));background:var(--surface);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;overflow:hidden}
 .ix-left{flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--g09)}
-.ix-big{flex:1;min-height:0;position:relative;background:#F5F6FA;overflow:hidden}
-html.dark .ix-big{background:#1C2030}
-.ix-big.dk{background:#1C2030}
-html.dark .ix-big.dk{background:#F5F6FA}
+.ix-big{flex:1;min-height:0;position:relative;overflow:hidden}
 .ix-big .ix-bg{opacity:1;top:12px;left:12px}
 .ix-info{padding:14px 18px}
 .ix-info h3{margin:0;font-size:15px;font-weight:800;color:var(--g01)}
@@ -957,7 +958,6 @@ html.dark .ix-big.dk{background:#F5F6FA}
   <button class="combo-btn" id="combo-btn" onclick="toggleCombo()">조합 검색</button>
 
   <div class="tabs">
-    <button class="tab on" id="t-explore" onclick="toHome()">탐색</button>
     <button class="tab"    id="t-gallery" onclick="toGallery()">모아보기</button>
     <button class="tab"    id="t-ix" onclick="toInteraction()">인터랙션<em class="tab-new">NEW</em></button>
   </div>
@@ -1546,7 +1546,7 @@ function toCollection() {
   pushNav({ type:'col' })
   showView('col-view')
   document.getElementById('t-gallery').classList.remove('on')
-  document.getElementById('t-explore').classList.remove('on')
+  document.getElementById('t-explore')?.classList.remove('on')
   document.getElementById('hbtn').classList.add('off')
   if(document.getElementById('lbtn')) document.getElementById('lbtn').classList.add('off')
   document.getElementById('cbtn').classList.remove('off')
@@ -2476,14 +2476,14 @@ function showView(id) {
   scrollEls.forEach(el => { if(el) el.scrollTop = 0 })
   if (id === 'gallery') {
     document.getElementById('t-gallery').classList.add('on')
-    document.getElementById('t-explore').classList.remove('on')
+    document.getElementById('t-explore')?.classList.remove('on')
     document.getElementById('hbtn').classList.add('off')
   } else if (id === 'ix-view') {
-    document.getElementById('t-explore').classList.remove('on')
+    document.getElementById('t-explore')?.classList.remove('on')
     document.getElementById('t-gallery').classList.remove('on')
     document.getElementById('hbtn').classList.add('off')
   } else {
-    document.getElementById('t-explore').classList.add('on')
+    document.getElementById('t-explore')?.classList.add('on')
     document.getElementById('t-gallery').classList.remove('on')
     document.getElementById('hbtn').classList[id==='home'?'remove':'add']('off')
   }
@@ -7549,6 +7549,7 @@ function ixMount(host, e, play) {
 :host{all:initial;display:block;width:100%;height:100%;contain:paint;transform:translateZ(0);overflow:hidden}
 .ix-root{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#000;font-size:16px;line-height:normal;box-sizing:border-box}
 .ix-fit{display:inline-flex;align-items:center;justify-content:center;transform-origin:center center}
+.ix-fit.fill{display:flex;width:100%;height:100%}
 :host(:not(.play)) *,:host(:not(.play)) *::before,:host(:not(.play)) *::after{animation-play-state:paused!important}
 </style><style>${ixScopeCss(e.s)}</style><div class="ix-root"><div class="ix-fit">${ixCleanHtml(e.h)}</div></div>`
   if (play) host.classList.add('play')
@@ -7556,7 +7557,39 @@ function ixMount(host, e, play) {
   root.addEventListener('click', ev => { if (ev.composedPath().some(n => n.tagName === 'A')) ev.preventDefault() }, true)
   root.addEventListener('submit', ev => ev.preventDefault(), true)
   root.addEventListener('dragstart', ev => ev.preventDefault(), true)
-  requestAnimationFrame(() => ixFit(host))
+  requestAnimationFrame(() => {
+    ixFit(host)
+    // 멈춘 상태가 첫 장면(투명·크기 0)이면 안 보이는 효과가 있어서, 처음에 잠깐 돌린 뒤 그 장면에서 멈춤
+    if (!play) host.classList.add('play')
+    setTimeout(() => {
+      if (!play && !host._hover) host.classList.remove('play')
+      ixTone(host)
+    }, 800)
+  })
+}
+// 효과에 쓰인 색이 대부분 아주 밝은지/어두운지 보고, 배경에 묻히지 않게 표시 (실제 배경색은 CSS가 모드에 맞춰 정함)
+function ixTone(host) {
+  const r = host.shadowRoot, stage = host.parentElement; if (!r || !stage) return
+  const parse = c => { const m = String(c).match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,/]+/).filter(Boolean).map(Number); return v.length >= 3 ? { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 } : null }
+  const lum = p => (0.2126 * p.r + 0.7152 * p.g + 0.0722 * p.b) / 255
+  let sum = 0, wsum = 0
+  const add = (c, w) => { const p = parse(c); if (!p || p.a < 0.35 || !(w > 0)) return; sum += lum(p) * w; wsum += w }
+  r.querySelectorAll('.ix-fit, .ix-fit *').forEach(el => {
+    const b = el.getBoundingClientRect(); const area = Math.min(b.width * b.height, 40000)
+    for (const ps of [null, '::before', '::after']) {
+      const cs = getComputedStyle(el, ps)
+      if (ps && (cs.content === 'none' || cs.content === 'normal')) continue
+      add(cs.backgroundColor, ps ? area * 0.5 : area)
+      const bw = parseFloat(cs.borderTopWidth) || 0; if (bw) add(cs.borderTopColor, (b.width + b.height) * 2 * bw)
+      if (el instanceof SVGElement) { add(cs.fill, area * 0.6); if (parseFloat(cs.strokeWidth)) add(cs.stroke, area * 0.3) }
+    }
+    if ([...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) add(getComputedStyle(el).color, 600)
+  })
+  if (!wsum) { delete stage.dataset.tone; return }
+  const avg = sum / wsum
+  if (avg > 0.86) stage.dataset.tone = 'light'
+  else if (avg < 0.14) stage.dataset.tone = 'dark'
+  else delete stage.dataset.tone
 }
 // 자동 시연: 올림 → 누름 → 뗌 → 내림을 반복 (체크박스·토글·라디오는 켜졌다 꺼짐)
 function ixDemo(host, on) {
@@ -7593,13 +7626,18 @@ function ixFit(host) {
   fit.style.transform = ''
   const W = host.clientWidth - 20, H = host.clientHeight - 20
   const w = fit.offsetWidth, h = fit.offsetHeight
-  if (!w || !h || W <= 0 || H <= 0) return
+  if (W <= 0 || H <= 0) return
+  if (!w || !h) { fit.classList.add('fill'); return }   // 패턴처럼 width:100% 로 칸을 채우는 효과
   const k = Math.min(1, W / w, H / h)
   if (k < 1) fit.style.transform = `scale(${k.toFixed(3)})`
 }
 function ixBgBtn(stage) {
   const b = document.createElement('button'); b.className = 'ix-bg'; b.type = 'button'; b.title = '배경 밝게/어둡게'
-  b.onclick = ev => { ev.stopPropagation(); stage.classList.toggle('dk') }
+  b.onclick = ev => {
+    ev.stopPropagation()
+    const c = getComputedStyle(stage).backgroundColor.match(/\d+/g) || [255]
+    stage.dataset.force = (+c[0] < 128) ? 'l' : 'd'
+  }
   return b
 }
 function ixTags(e) { return (e.t || []).filter(t => t && !/^(button|loader|card|toggle|checkbox|input|form|tooltip|radio|notification|pattern)s?$/i.test(t)).slice(0, 3) }
@@ -7617,8 +7655,8 @@ function ixCard(e) {
   meta.appendChild(l); meta.appendChild(btn)
   card.onclick = () => ixOpen(e)
   card.appendChild(stage); card.appendChild(meta)
-  card.addEventListener('mouseenter', () => { host.classList.add('play'); ixDemo(host, true) })
-  card.addEventListener('mouseleave', () => { host.classList.remove('play'); ixDemo(host, false) })
+  card.addEventListener('mouseenter', () => { host._hover = true; host.classList.add('play'); ixDemo(host, true) })
+  card.addEventListener('mouseleave', () => { host._hover = false; host.classList.remove('play'); ixDemo(host, false) })
   ixMount(host, e, false)
   return card
 }
