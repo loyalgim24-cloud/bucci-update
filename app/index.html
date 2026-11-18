@@ -846,10 +846,11 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
 .sb-group{margin:0 0 6px 26px;border-left:1px solid var(--g09)}
 /* ── 왼쪽 위 여백 넉넉하게 (AI 버튼·카드 3개) ── */
 #sb{width:236px;min-width:236px}
-.ai-side{margin:18px 16px 0}
+.ai-side{margin:14px 16px 12px}
+#upd-group.collapsed{margin-top:0}   /* 접혀 있을 때는 카드와 AI 버튼 사이에 빈 간격이 남지 않게 */
 .ai-side-btn{padding:13px 0;border-radius:12px;font-size:13.5px}
 .ai-side + .nav-cards{margin-top:14px}
-.nav-cards{gap:8px;margin:14px 16px 0}
+.nav-cards{gap:8px;margin:18px 16px 0}
 .sb-divider{height:1px;background:var(--g09);margin:16px 16px 0;flex-shrink:0}
 .nav-card{gap:7px;padding:14px 0 12px;border-radius:12px;font-size:12.5px}
 .nav-card img{width:22px;height:22px}
@@ -876,6 +877,66 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
 .nl-key-btn.has-key{border-color:transparent !important;color:#16A34A !important}
 .nl-search-btn-inline{height:44px;border-radius:12px !important;padding:0 24px !important;margin-right:7px;font-weight:700}
 .nl-key-btn.has-key img{display:inline-block}
+/* ── 인터랙션 (Uiverse CSS 효과) ── */
+.tab-new{font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:var(--p600);border-radius:4px;padding:1px 4px;margin-left:5px;vertical-align:1px;letter-spacing:0}
+#ix-view{flex:1;overflow:hidden;display:none;flex-direction:column}
+#ix-view.on{display:flex}
+.ix-head{padding:24px 30px 0;flex-shrink:0}
+.ix-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.ix-title{font-size:20px;font-weight:800;color:var(--g01);letter-spacing:-.02em}
+.ix-sub{font-size:12px;color:var(--g05);margin-top:4px}
+.ix-sub b{color:var(--p600);font-weight:700}
+.ix-hint{font-size:11px;color:var(--g05);white-space:nowrap}
+.ix-chips{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px}
+.ix-chip{font-family:inherit;font-size:12px;padding:6px 12px;border-radius:999px;background:var(--g10);color:var(--g01);border:none;cursor:pointer}
+.ix-chip:hover{background:var(--g09)}
+.ix-chip.on{background:var(--p600);color:#fff;font-weight:700}
+.ix-chip i{font-style:normal;color:var(--g05);margin-left:4px;font-size:11px}
+.ix-chip.on i{color:rgba(255,255,255,.75)}
+.ix-scroll{flex:1;overflow-y:auto;padding:2px 30px 30px}
+.ix-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ix-card{cursor:pointer;background:var(--surface);border:1px solid var(--g09);border-radius:12px;overflow:hidden;transition:box-shadow .15s,border-color .15s}
+.ix-card:hover{border-color:var(--g08);box-shadow:0 6px 18px rgba(15,23,42,.08)}
+.ix-stage{height:170px;display:flex;align-items:center;justify-content:center;background:#F5F6FA;position:relative;overflow:hidden}
+html.dark .ix-stage{background:#1C2030}
+.ix-stage.dk{background:#1C2030}
+html.dark .ix-stage.dk{background:#F5F6FA}
+.ix-host{display:block;width:100%;height:100%}
+.ix-stage .ix-host{pointer-events:none}
+.ix-bg{position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;border:1px solid rgba(128,128,140,.35);background:linear-gradient(135deg,#fff 50%,#1C2030 50%);cursor:pointer;opacity:0;transition:opacity .15s;padding:0}
+.ix-card:hover .ix-bg{opacity:1}
+.ix-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px}
+.ix-meta-l{min-width:0}
+.ix-name{font-size:12.5px;font-weight:600;color:var(--g01);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ix-by{font-size:11px;color:var(--g05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ix-code-btn{flex-shrink:0;font-family:inherit;font-size:11px;color:var(--p600);font-weight:700;border:none;background:none;cursor:pointer;padding:4px 2px}
+.ix-more{height:40px}
+.ix-empty{padding:60px 0;text-align:center;font-size:13px;color:var(--g05)}
+/* 코드 보기 창 */
+#ix-ov{position:fixed;inset:0;background:rgba(10,16,35,.45);z-index:9000;display:flex;align-items:center;justify-content:center}
+.ix-box{width:880px;max-width:calc(100vw - 60px);height:min(560px,calc(100vh - 80px));background:var(--surface);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;overflow:hidden}
+.ix-left{flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--g09)}
+.ix-big{flex:1;min-height:0;position:relative;background:#F5F6FA;overflow:hidden}
+html.dark .ix-big{background:#1C2030}
+.ix-big.dk{background:#1C2030}
+html.dark .ix-big.dk{background:#F5F6FA}
+.ix-big .ix-bg{opacity:1;top:12px;left:12px}
+.ix-info{padding:14px 18px}
+.ix-info h3{margin:0;font-size:15px;font-weight:800;color:var(--g01)}
+.ix-info p{margin:4px 0 0;font-size:11.5px;color:var(--g05)}
+.ix-info a{color:var(--p600);text-decoration:none;cursor:pointer}
+.ix-info p.ix-orig{font-size:11px;word-break:break-all}
+.ix-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.ix-tags span{font-size:10.5px;color:var(--g05);background:var(--g10);border-radius:5px;padding:2px 6px}
+.ix-right{width:420px;flex-shrink:0;display:flex;flex-direction:column;background:#0F172A}
+.ix-tabs{display:flex;align-items:center;gap:4px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ix-tab{font-family:inherit;font-size:12px;color:#94A3B8;padding:6px 10px;border-radius:7px;border:none;background:none;cursor:pointer}
+.ix-tab.on{background:rgba(255,255,255,.1);color:#fff;font-weight:700}
+.ix-share{margin-left:auto;font-family:inherit;font-size:12px;font-weight:700;color:#E2E8F0;background:rgba(255,255,255,.1);border:none;border-radius:7px;padding:6px 12px;cursor:pointer;margin-right:6px}
+.ix-share:hover{background:rgba(255,255,255,.16)}
+.ix-copy{font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--p600);border:none;border-radius:7px;padding:6px 12px;cursor:pointer}
+.ix-x{font-family:inherit;color:#94A3B8;font-size:14px;margin-left:6px;border:none;background:none;cursor:pointer;padding:4px 6px}
+.ix-code{flex:1;margin:0;padding:14px 16px;font:12px/1.65 Consolas,'D2Coding',monospace;color:#CBD5E1;white-space:pre;overflow:auto;user-select:text;tab-size:2}
 </style>
 </head>
 <!-- PC 기능 숨김: body 의 pc-off 클래스를 지우면 PC 레퍼런스 버튼과 Mobile/PC 전환이 다시 나타납니다 -->
@@ -898,6 +959,7 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
   <div class="tabs">
     <button class="tab on" id="t-explore" onclick="toHome()">탐색</button>
     <button class="tab"    id="t-gallery" onclick="toGallery()">모아보기</button>
+    <button class="tab"    id="t-ix" onclick="toInteraction()">인터랙션<em class="tab-new">NEW</em></button>
   </div>
   <span id="st"></span>
   <button class="reload-btn" id="reload-btn" onclick="doReloadAll()" title="앱 리로드">↻ 앱 리로드</button>
@@ -932,7 +994,6 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
 <div id="body">
   <nav id="sb">
     <!-- AI 디자인 분석 (분석기록은 분석 창 제목 줄 오른쪽) -->
-    <div class="ai-side"><button id="paste-search-btn" class="ai-side-btn" onclick="openPasteSearch()"><svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4" fill="none"/><path d="M22 5h-4" fill="none"/><path d="M4 17v2" fill="none"/><path d="M5 18H3" fill="none"/></svg>AI 디자인 분석</button></div>
     <!-- 위쪽 카드 3개: 홈 / 컬렉션 / 업데이트 (off = 선택 안 됨) -->
     <div class="nav-cards">
       <button class="nav-card" id="hbtn" onclick="toHome()"><img src="assets/icons/061.svg" alt="">홈</button>
@@ -944,7 +1005,7 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
       <div class="sb-item" id="ver-check-btn" onclick="checkUpdateNow()"><span class="sb-item-label">업데이트 확인</span></div>
       <div class="sb-item" id="fb-open-btn" onclick="openFeedback()"><span class="sb-item-label">의견 보내기</span></div>
     </div>
-    <div class="sb-divider"></div>
+    <div class="ai-side"><button id="paste-search-btn" class="ai-side-btn" onclick="openPasteSearch()"><svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4" fill="none"/><path d="M22 5h-4" fill="none"/><path d="M4 17v2" fill="none"/><path d="M5 18H3" fill="none"/></svg>AI 디자인 분석</button></div>
     <div id="sb-scroll"></div>
     <div id="sb-mode-toggle" style="flex-shrink:0;padding:12px;border-top:1px solid var(--g09);display:flex;background:var(--g11);border-radius:0;gap:4px">
       <button id="mode-mobile-btn" onclick="setReferenceMode('mobile')" style="flex:1;padding:8px 0;border:none;border-radius:6px;background:var(--p600);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">📱 Mobile</button>
@@ -957,8 +1018,10 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
         <div>• <a href="https://wwit.design" target="_blank" style="color:var(--g05);text-decoration:none">WWIT</a> (wwit.design)</div>
         <div>• <a href="https://upa.userspoon.com/" target="_blank" style="color:var(--g05);text-decoration:none">UPA</a> (upa.userspoon.com)</div>
         <div>• <a href="https://ko.designus.design/reference" target="_blank" style="color:var(--g05);text-decoration:none">Designus</a> (designus.design)</div>
+        <div>• <a href="https://uiverse.io" target="_blank" style="color:var(--g05);text-decoration:none">Uiverse</a> (uiverse.io) — 인터랙션 효과</div>
         <div>• <a href="https://krds.go.kr" target="_blank" style="color:var(--g05);text-decoration:none">KRDS</a> — 행정안전부</div>
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
+        <div style="font-size:9px;color:var(--g07)">Uiverse 효과는 MIT License · 각 효과의 만든 사람 표시</div>
       </details>
       <div id="ver-row" style="display:none;margin-top:8px;padding-top:9px;border-top:1px solid var(--g09)">
         <div id="ver-text" style="font-size:10px;color:var(--g06);margin-bottom:6px">부찌</div>
@@ -1079,6 +1142,16 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
         <span class="gal-cnt" id="likes-cnt"></span>
       </div>
       <div class="likes-scroll"><div class="likes-grid" id="likes-grid"></div></div>
+    </div>
+    <!-- 인터랙션 (Uiverse CSS 효과) -->
+    <div id="ix-view">
+      <div class="ix-head">
+        <div class="ix-top"><div><div class="ix-title">인터랙션</div>
+          <div class="ix-sub">Uiverse 효과 <b id="ix-total">-</b>개 · 코드를 바로 복사해서 쓸 수 있어요</div></div>
+          <div class="ix-hint">마우스를 올리면 움직여요 · 누르면 코드와 함께 크게 볼 수 있어요</div></div>
+        <div class="ix-chips" id="ix-chips"></div>
+      </div>
+      <div class="ix-scroll" id="ix-scroll"><div class="ix-grid" id="ix-grid"></div><div class="ix-more" id="ix-more"></div></div>
     </div>
     <!-- 모아보기 -->
     <div id="gallery">
@@ -2367,6 +2440,7 @@ function goBack() {
     setTimeout(() => { const c = document.querySelector('.cat-scroll'); if(c) c.scrollTop = prev._catScrollTop || 0 }, 100)
   }
   else if (prev.type === 'col') { toCollection() }
+  else if (prev.type === 'ix') { toInteraction() }
   else if (prev.type === 'portal') { loadPortalApp(prev.name, prev.mode) }
   _isBack = false
 }
@@ -2392,7 +2466,8 @@ function pushNav(state) {
 }
 
 function showView(id) {
-  ['home','result','cat-view','gallery','likes-view','col-view'].forEach(v => document.getElementById(v).classList.remove('on'))
+  ['home','result','cat-view','gallery','likes-view','col-view','ix-view'].forEach(v => document.getElementById(v).classList.remove('on'))
+  try { document.getElementById('t-ix').classList.toggle('on', id === 'ix-view'); if (id !== 'ix-view') ixClose() } catch {}
   document.getElementById(id).classList.add('on')
   try { closeUpdMenu() } catch {}
   // 컬렉션 화면일 때만 왼쪽 '컬렉션' 메뉴를 선택된 모습으로
@@ -2402,6 +2477,10 @@ function showView(id) {
   if (id === 'gallery') {
     document.getElementById('t-gallery').classList.add('on')
     document.getElementById('t-explore').classList.remove('on')
+    document.getElementById('hbtn').classList.add('off')
+  } else if (id === 'ix-view') {
+    document.getElementById('t-explore').classList.remove('on')
+    document.getElementById('t-gallery').classList.remove('on')
     document.getElementById('hbtn').classList.add('off')
   } else {
     document.getElementById('t-explore').classList.add('on')
@@ -2467,6 +2546,7 @@ function doSearch2(kw) {
 }
 function doSearch() {
   const kw = document.getElementById('q').value.trim(); if (!kw) return
+  if (ixTryShareCode(kw)) { document.getElementById('q').value = ''; return }
   setSbActive(null); doLoad(kw)
 }
 
@@ -5832,6 +5912,7 @@ async function doSmartSearch() {
   const query = input?.value.trim()
   if (!query) return
   sqPanelHide()
+  if (ixTryShareCode(query)) { input.value = ''; return }
   sqRecentAdd(query, _searchMode)
 
   if (_searchMode === 'ai') {
@@ -7352,6 +7433,255 @@ JSON 배열만 반환:`
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init()
 })()
+</script>
+<script>
+// ── 인터랙션: Uiverse.io CSS 효과 모음 (MIT License) ─────────────────
+// 데이터(uiverse/uiverse.js)는 탭을 처음 열 때만 불러옴. 효과는 각자 격리된 칸(Shadow DOM) 안에서만 그려지고,
+// 스크립트는 처음부터 빼 두었음. 평소엔 멈춰 있고 마우스를 올린 카드만 움직임.
+const IX_CATS = ['전체', '버튼', '로딩', '카드', '토글', '입력창', '체크박스', '폼', '패턴', '라디오', '툴팁', '알림']
+const IX_BATCH = 40
+let _ixByCode = {}
+// 공유 코드: 효과 id로 항상 똑같이 만들어지는 6자리 (예: #ix-k3f9a2). 받은 사람이 검색창에 붙여넣으면 바로 열림
+function ixCodeOf(id) {
+  let h = 0x811c9dc5
+  for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 0x01000193) }
+  return ((h >>> 0).toString(36) + '000000').slice(0, 6)
+}
+// 검색어 안에 공유 코드가 있으면 그 효과를 열고 true (메시지 전체를 붙여넣어도 코드만 찾아냄)
+function ixTryShareCode(text) {
+  const m = String(text || '').match(/#?ix-([a-z0-9]{6})\b/i)
+  if (!m) return false
+  const code = m[1].toLowerCase()
+  toInteraction()
+  ixLoadData().then(() => {
+    const e = _ixByCode[code]
+    if (e) ixOpen(e); else showToast('공유 코드에 맞는 효과를 찾지 못했어요')
+  })
+  return true
+}
+let _ixData = null, _ixLoading = null, _ixCat = '전체', _ixList = [], _ixShown = 0, _ixObs = null
+
+function toInteraction() {
+  pushNav({ type: 'ix' })
+  showView('ix-view'); setSbActive(null)
+  ixInit()
+}
+function ixLoadData() {
+  if (_ixData) return Promise.resolve(_ixData)
+  if (_ixLoading) return _ixLoading
+  _ixLoading = new Promise(resolve => {
+    const s = document.createElement('script')
+    s.src = 'uiverse/uiverse.js'
+    s.onload = () => {
+      const d = window.__UIVERSE || { items: [] }
+      // 같은 사람 작품이 몰려 나오지 않게 섞어 둠 (항상 같은 순서)
+      const h = t => { let x = 0; for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0; return x }
+      _ixData = d.items.map(e => [h(e.id), e]).sort((a, b) => a[0] - b[0]).map(p => p[1])
+      _ixByCode = {}
+      _ixData.forEach(e => { e.code = ixCodeOf(e.id); _ixByCode[e.code] = e })
+      try { delete window.__UIVERSE } catch { window.__UIVERSE = null }
+      resolve(_ixData)
+    }
+    s.onerror = () => { _ixLoading = null; resolve(null) }
+    document.body.appendChild(s)
+  })
+  return _ixLoading
+}
+async function ixInit() {
+  const grid = document.getElementById('ix-grid')
+  if (_ixData) return
+  grid.innerHTML = '<div class="ix-empty" style="grid-column:1/-1">효과를 불러오는 중…</div>'
+  const data = await ixLoadData()
+  if (!data) { grid.innerHTML = '<div class="ix-empty" style="grid-column:1/-1">효과를 불러오지 못했어요</div>'; return }
+  document.getElementById('ix-total').textContent = data.length.toLocaleString()
+  ixRenderChips(); ixSetCat(_ixCat)
+}
+function ixRenderChips() {
+  const box = document.getElementById('ix-chips'); box.innerHTML = ''
+  const cnt = {}; _ixData.forEach(e => { cnt[e.c] = (cnt[e.c] || 0) + 1 })
+  IX_CATS.forEach(c => {
+    const n = c === '전체' ? _ixData.length : (cnt[c] || 0)
+    if (!n) return
+    const b = document.createElement('button'); b.className = 'ix-chip' + (c === _ixCat ? ' on' : ''); b.dataset.cat = c
+    b.append(c); const i = document.createElement('i'); i.textContent = n.toLocaleString(); b.appendChild(i)
+    b.onclick = () => ixSetCat(c)
+    box.appendChild(b)
+  })
+}
+function ixSetCat(c) {
+  _ixCat = c
+  document.querySelectorAll('#ix-chips .ix-chip').forEach(b => b.classList.toggle('on', b.dataset.cat === c))
+  _ixList = c === '전체' ? _ixData : _ixData.filter(e => e.c === c)
+  _ixShown = 0
+  document.getElementById('ix-grid').innerHTML = ''
+  document.getElementById('ix-scroll').scrollTop = 0
+  ixMore()
+  if (!_ixObs) {
+    _ixObs = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) ixMore() }, { root: document.getElementById('ix-scroll'), rootMargin: '400px' })
+    _ixObs.observe(document.getElementById('ix-more'))
+  }
+}
+function ixMore() {
+  if (!_ixList || _ixShown >= _ixList.length) return
+  const grid = document.getElementById('ix-grid')
+  _ixList.slice(_ixShown, _ixShown + IX_BATCH).forEach(e => grid.appendChild(ixCard(e)))
+  _ixShown += IX_BATCH
+}
+
+// Uiverse CSS는 원래 한 페이지 전체에 쓰는 것이라, html/body/:root 선택자를 격리 칸 기준으로 바꿔 줌
+function ixScopeCss(css) {
+  // 마우스 올림·누름·포커스 상태를 자동 시연할 수 있게, 같은 모습을 클래스로도 켤 수 있게 바꿔 둠
+  // (::before:hover 처럼 가상 요소 뒤에 붙은 것은 :is()로 감쌀 수 없어서 그대로 둠)
+  const pe = '(?<!::[\\w-]+|:before|:after)'
+  css = css.replace(new RegExp(pe + ':hover\\b', 'g'), ':is(:hover,.ix-hv)')
+           .replace(new RegExp(pe + ':active\\b', 'g'), ':is(:active,.ix-ac)')
+           .replace(new RegExp(pe + ':focus(-within|-visible)?(?![\\w-])', 'g'), (m) => ':is(' + m + ',.ix-fc)')
+  return css.replace(/(^|[{},;]\s*)(html|body|:root)(?=\s*[{,:\s.#\[>~+])/g, (m, p, sel) => p + (sel === 'body' ? '.ix-root' : ':host'))
+}
+// 혹시 남아 있을 수 있는 위험 요소 제거 (스크립트·이벤트 속성은 데이터 만들 때 이미 뺐음)
+function ixCleanHtml(html) {
+  return html.replace(/<(script|meta|base|link|iframe)\b[^>]*>(?:[\s\S]*?<\/\1>)?/gi, '').replace(/\sautofocus\b/gi, '')
+}
+// 격리된 칸 하나에 효과 그리기. play=true면 계속 움직임
+function ixMount(host, e, play) {
+  const root = host.attachShadow({ mode: 'open' })
+  root.innerHTML = `<style>
+:host{all:initial;display:block;width:100%;height:100%;contain:paint;transform:translateZ(0);overflow:hidden}
+.ix-root{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#000;font-size:16px;line-height:normal;box-sizing:border-box}
+.ix-fit{display:inline-flex;align-items:center;justify-content:center;transform-origin:center center}
+:host(:not(.play)) *,:host(:not(.play)) *::before,:host(:not(.play)) *::after{animation-play-state:paused!important}
+</style><style>${ixScopeCss(e.s)}</style><div class="ix-root"><div class="ix-fit">${ixCleanHtml(e.h)}</div></div>`
+  if (play) host.classList.add('play')
+  // 링크 이동·폼 제출로 부찌 화면이 바뀌지 않게 막음
+  root.addEventListener('click', ev => { if (ev.composedPath().some(n => n.tagName === 'A')) ev.preventDefault() }, true)
+  root.addEventListener('submit', ev => ev.preventDefault(), true)
+  root.addEventListener('dragstart', ev => ev.preventDefault(), true)
+  requestAnimationFrame(() => ixFit(host))
+}
+// 자동 시연: 올림 → 누름 → 뗌 → 내림을 반복 (체크박스·토글·라디오는 켜졌다 꺼짐)
+function ixDemo(host, on) {
+  clearTimeout(host._demoT); host._demoT = null
+  const r = host.shadowRoot; if (!r) return
+  const all = () => r.querySelectorAll('.ix-fit, .ix-fit *')
+  const set = (c, v) => all().forEach(el => el.classList.toggle(c, v))
+  const flip = () => {
+    r.querySelectorAll('input[type=checkbox]').forEach(i => { i.checked = !i.checked })
+    const rs = [...r.querySelectorAll('input[type=radio]')]
+    if (rs.length) { const k = rs.findIndex(x => x.checked); rs[(k + 1) % rs.length].checked = true }
+  }
+  const reset = () => { set('ix-hv', false); set('ix-ac', false); set('ix-fc', false); if (host._flipped) { r.querySelectorAll('input[type=checkbox]').forEach(i => { i.checked = !i.checked }); host._flipped = false } }
+  if (!on) { reset(); return }
+  const steps = [
+    [0,    () => { set('ix-hv', true); set('ix-fc', true) }],
+    [700,  () => set('ix-ac', true)],
+    [900,  () => { set('ix-ac', false); flip(); host._flipped = !host._flipped }],
+    [2000, () => { set('ix-hv', false); set('ix-fc', false) }],
+    [2700, null]
+  ]
+  let i = 0
+  const run = () => {
+    const [t, fn] = steps[i]; if (fn) fn()
+    const n = (i + 1) % steps.length
+    const wait = n === 0 ? 0 : steps[n][0] - t
+    i = n; host._demoT = setTimeout(run, wait)
+  }
+  run()
+}
+// 칸보다 큰 효과는 줄여서 다 보이게
+function ixFit(host) {
+  const fit = host.shadowRoot && host.shadowRoot.querySelector('.ix-fit'); if (!fit) return
+  fit.style.transform = ''
+  const W = host.clientWidth - 20, H = host.clientHeight - 20
+  const w = fit.offsetWidth, h = fit.offsetHeight
+  if (!w || !h || W <= 0 || H <= 0) return
+  const k = Math.min(1, W / w, H / h)
+  if (k < 1) fit.style.transform = `scale(${k.toFixed(3)})`
+}
+function ixBgBtn(stage) {
+  const b = document.createElement('button'); b.className = 'ix-bg'; b.type = 'button'; b.title = '배경 밝게/어둡게'
+  b.onclick = ev => { ev.stopPropagation(); stage.classList.toggle('dk') }
+  return b
+}
+function ixTags(e) { return (e.t || []).filter(t => t && !/^(button|loader|card|toggle|checkbox|input|form|tooltip|radio|notification|pattern)s?$/i.test(t)).slice(0, 3) }
+function ixCard(e) {
+  const card = document.createElement('div'); card.className = 'ix-card'
+  const stage = document.createElement('div'); stage.className = 'ix-stage'
+  const host = document.createElement('div'); host.className = 'ix-host'
+  stage.appendChild(host); stage.appendChild(ixBgBtn(stage))
+  const meta = document.createElement('div'); meta.className = 'ix-meta'
+  const l = document.createElement('div'); l.className = 'ix-meta-l'
+  const tags = ixTags(e)
+  l.appendChild(Object.assign(document.createElement('div'), { className: 'ix-name', textContent: tags.length ? tags.join(' · ') : e.c }))
+  l.appendChild(Object.assign(document.createElement('div'), { className: 'ix-by', textContent: 'by ' + e.a }))
+  const btn = Object.assign(document.createElement('button'), { className: 'ix-code-btn', type: 'button', textContent: '</> 코드' })
+  meta.appendChild(l); meta.appendChild(btn)
+  card.onclick = () => ixOpen(e)
+  card.appendChild(stage); card.appendChild(meta)
+  card.addEventListener('mouseenter', () => { host.classList.add('play'); ixDemo(host, true) })
+  card.addEventListener('mouseleave', () => { host.classList.remove('play'); ixDemo(host, false) })
+  ixMount(host, e, false)
+  return card
+}
+
+// 코드 보기 창
+function ixOpen(e) {
+  ixClose()
+  const ov = document.createElement('div'); ov.id = 'ix-ov'
+  ov.innerHTML = `<div class="ix-box" role="dialog" aria-label="효과 코드"><div class="ix-left"><div class="ix-big"><div class="ix-host"></div></div>
+    <div class="ix-info"><h3></h3><p></p><div class="ix-tags"></div></div></div>
+    <div class="ix-right"><div class="ix-tabs"><button class="ix-tab on" data-k="h">HTML</button><button class="ix-tab" data-k="s">CSS</button>
+    <button class="ix-share" type="button" title="부찌를 쓰는 사람에게 보낼 공유 코드를 복사">공유 코드</button><button class="ix-copy" type="button">코드 복사</button><button class="ix-x" type="button" title="닫기">✕</button></div><pre class="ix-code"></pre></div></div>`
+  document.body.appendChild(ov)
+  const big = ov.querySelector('.ix-big'); big.appendChild(ixBgBtn(big))
+  const bh = ov.querySelector('.ix-host')
+  ixMount(bh, e, true)
+  // 크게 보기: 자동 시연하다가, 마우스를 미리보기에 올리면 멈추고 직접 눌러볼 수 있음
+  setTimeout(() => ixDemo(bh, true), 300)
+  big.addEventListener('mouseenter', () => ixDemo(bh, false))
+  big.addEventListener('mouseleave', () => ixDemo(bh, true))
+  const tags = ixTags(e)
+  ov.querySelector('h3').textContent = e.c + (tags.length ? ' · ' + tags.join(' · ') : '')
+  const p = ov.querySelector('.ix-info p')
+  p.append('by ' + e.a + ' · ')
+  const a = Object.assign(document.createElement('a'), { textContent: 'Uiverse에서 보기 ↗' })
+  const k = e.id.lastIndexOf('_')
+  a.onclick = () => { try { window.api.openBrowser('https://uiverse.io/' + encodeURIComponent(e.id.slice(0, k)) + '/' + encodeURIComponent(e.id.slice(k + 1))) } catch {} }
+  p.appendChild(a); p.append(' · MIT License')
+  // 다른 곳 작품을 옮겨 올린 경우 만든 사람이 남긴 원작 표기도 함께 보여줌 (링크는 브라우저로 열림)
+  if (e.n) {
+    const q = document.createElement('p'); q.className = 'ix-orig'; q.append('원작 표기: ')
+    String(e.n).split(/(https?:\/\/[^\s]+)/).forEach(part => {
+      if (/^https?:\/\//.test(part)) { const l = Object.assign(document.createElement('a'), { textContent: part }); l.onclick = () => { try { window.api.openBrowser(part) } catch {} }; q.appendChild(l) }
+      else if (part) q.append(part)
+    })
+    p.after(q)
+  }
+  const tg = ov.querySelector('.ix-tags'); (e.t || []).forEach(t => tg.appendChild(Object.assign(document.createElement('span'), { textContent: t })))
+  const code = ov.querySelector('.ix-code')
+  let cur = 'h'
+  const show = kk => { cur = kk; code.textContent = kk === 'h' ? e.h : e.s; code.scrollTop = 0; ov.querySelectorAll('.ix-tab').forEach(b => b.classList.toggle('on', b.dataset.k === kk)) }
+  ov.querySelectorAll('.ix-tab').forEach(b => b.onclick = () => show(b.dataset.k))
+  show('h')
+  ov.querySelector('.ix-copy').onclick = async () => {
+    const text = cur === 'h' ? e.h : e.s
+    let ok = false
+    try { await navigator.clipboard.writeText(text); ok = true } catch {}
+    if (!ok) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy') } catch {} t.remove() }
+    showToast(ok ? (cur === 'h' ? 'HTML' : 'CSS') + ' 코드를 복사했어요' : '복사하지 못했어요')
+  }
+  ov.querySelector('.ix-share').onclick = async () => {
+    const msg = '#ix-' + e.code
+    let ok = false
+    try { await navigator.clipboard.writeText(msg); ok = true } catch {}
+    if (!ok) { const t = document.createElement('textarea'); t.value = msg; document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy') } catch {} t.remove() }
+    showToast(ok ? '공유 코드 ' + msg + ' 를 복사했어요 · 받는 사람이 부찌 검색창에 붙여넣으면 열려요' : '복사하지 못했어요')
+  }
+  ov.querySelector('.ix-x').onclick = ixClose
+  ov.addEventListener('mousedown', ev => { if (ev.target === ov) ixClose() })
+}
+function ixClose() { const o = document.getElementById('ix-ov'); if (o) { o.querySelectorAll('.ix-host').forEach(h => ixDemo(h, false)); o.remove() } }
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && document.getElementById('ix-ov')) ixClose() })
+window.addEventListener('resize', () => { document.querySelectorAll('#ix-ov .ix-host').forEach(ixFit) })
 </script>
 </body>
 </html>
