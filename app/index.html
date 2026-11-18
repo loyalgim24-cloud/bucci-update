@@ -166,8 +166,16 @@ html,body{height:100%;font-family:'Pretendard',-apple-system,'Malgun Gothic',san
 #home::-webkit-scrollbar-thumb{background:var(--g08);border-radius:3px}
 .home-hdr{display:flex;align-items:center;gap:14px;margin-bottom:6px}
 .home-hdr img{width:48px;height:48px;object-fit:contain}
-.home-hdr h1{font-size:21px;font-weight:800}
+.home-hdr h1{font-size:24px;font-weight:800;letter-spacing:-.03em}
 .home-hdr p{font-size:12px;color:var(--g05);margin-top:2px}
+#home-total{margin-left:auto;display:flex;align-items:flex-end;gap:32px;padding-right:6px}
+#home-total:empty{display:none}
+#home-total .ht-item{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#home-total .ht-num{font-size:30px;font-weight:600;line-height:1;letter-spacing:-.045em;color:var(--p600);font-variant-numeric:proportional-nums}
+#home-total .ht-num small{font-size:14px;font-weight:500;margin-left:2px;color:var(--g04,var(--g05))}
+#home-total .ht-label{font-size:11.5px;font-weight:600;color:var(--g05)}
+#home-total .ht-sep{width:1px;align-self:stretch;background:var(--g09,rgba(128,128,128,.25))}
+body.pc-mode-on #home-total{display:none}
 .div{height:1px;background:var(--g09);margin:14px 0}
 .sec-t{font-size:13px;font-weight:700;margin-bottom:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
@@ -249,6 +257,8 @@ html,body{height:100%;font-family:'Pretendard',-apple-system,'Malgun Gothic',san
 .gal-grid{display:flex;flex-wrap:wrap;gap:10px}
 .gal-card{width:var(--card-w);background:var(--surface);border:1px solid var(--g09);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .15s;flex-shrink:0}
 .gal-card:hover{border-color:var(--p600);transform:translateY(-2px);box-shadow:0 4px 14px rgba(18,112,252,.16)}
+.home-cat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:14px 4px 12px;background:var(--surface);border:1px solid var(--g09);border-radius:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.home-cat-card:hover{border-color:var(--p600);transform:translateY(-2px);box-shadow:0 4px 14px rgba(18,112,252,.16)}
 .gal-thumb-wrap{width:100%;aspect-ratio:9/16;background:var(--g10);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .recent-thumb-wrap{aspect-ratio:1/1}
 .gal-thumb{width:100%;height:100%;object-fit:cover;display:block}
@@ -403,6 +413,7 @@ html,body{height:100%;font-family:'Pretendard',-apple-system,'Malgun Gothic',san
 .col-items::-webkit-scrollbar{width:6px}
 .col-items::-webkit-scrollbar-thumb{background:var(--g08);border-radius:3px}
 .col-grid{display:flex;flex-wrap:wrap;gap:9px}
+.col-grid>.empty-result{width:100%}
 .col-empty{padding:40px;color:var(--g05);font-size:14px;text-align:center}
 
 /* 검색 결과 없음 / 근사치 결과 안내 */
@@ -457,7 +468,7 @@ body.egg-shake #topbar, body.egg-shake #sb, body.egg-shake #main{animation:eggSh
 .rs-key b{font-weight:700;color:#EA580C}
 .nl-suggest.bottom{justify-content:center;margin:34px 16px 44px}
 /* 추천·최근 검색어 */
-.sq-panel{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:var(--surface);border:1px solid var(--g09);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.12);padding:8px 6px 10px;text-align:left}
+.sq-panel{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;overflow-y:auto;background:var(--surface);border:1px solid var(--g09);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.12);padding:8px 6px 10px;text-align:left}
 .sq-head{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 4px;font-size:11px;font-weight:600;color:var(--g05)}
 .sq-clear{border:none;background:none;font-size:11px;font-family:inherit;color:var(--g06);cursor:pointer;padding:2px 4px}
 .sq-clear:hover{color:var(--p600)}
@@ -704,6 +715,167 @@ img[src=""], img:not([src]) { background: var(--g10) }
 
 /* 팝업 스케일업 */
 @keyframes popupEnter { from{transform:scale(.97);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── 사이드바(왼쪽 메뉴) 단순화 ── */
+#sb{width:212px;min-width:212px}
+/* 컬렉션은 기존 붉은색 유지 */
+.home-btn,.home-btn.off,.sb-likes-btn{display:flex;align-items:center;gap:8px;width:auto;margin:2px 8px;padding:9px 12px;border:none;border-radius:8px;background:transparent;font-size:13.5px;font-weight:600;color:var(--g03,var(--g01));text-align:left}
+
+.home-btn:not(.off){background:var(--g10);color:var(--g01);font-weight:700}
+.sb-likes-btn{color:#E53E3E}
+.sb-likes-btn:not(.off){background:var(--g10);font-weight:700}
+.home-btn.off:hover,.sb-likes-btn:hover{background:var(--g10)}
+.sb-likes-btn{margin-bottom:10px}
+.sb-sec{padding:14px 20px 6px;font-size:11.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--g05);border-top:none}
+.sb-sec:hover{color:var(--g01)}
+/* 펼침 표시: 같은 자리에서 가운데를 기준으로 돌아가는 꺾쇠 (접힘 › / 펼침 ⌄) */
+.sb-sec-arrow{flex-shrink:0;width:12px;height:12px;font-size:0;color:var(--g06);background-color:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4.5 2.5 8 6l-3.5 3.5' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 12px no-repeat;mask:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4.5 2.5 8 6l-3.5 3.5' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 12px no-repeat;transform:rotate(90deg);transform-origin:50% 50%;transition:transform .2s;opacity:1}
+.sb-sec.collapsed .sb-sec-arrow{transform:rotate(0deg)}
+.sb-item{margin:1px 8px;padding:7px 12px;border-left:none;border-radius:8px;font-size:13px;color:var(--g03,var(--g01))}
+.sb-item:hover{background:var(--g10);color:var(--g01)}
+.sb-item.on{background:var(--g10);color:var(--g01);font-weight:700;border-left:none}
+#sb-scroll{padding-bottom:12px;scrollbar-gutter:stable}
+/* ── AI 디자인 분석 버튼 (왼쪽 메뉴 맨 위) ── */
+.ai-side{margin:14px 12px 0}
+.ai-side-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;line-height:1;padding:11px 0;border:none;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(90deg,#5B3EEF,#7B4FFF,#9B6BFF,#7B4FFF,#5B3EEF);background-size:300% auto;animation:gradientMove 3s ease infinite;box-shadow:0 2px 8px rgba(107,78,255,.4);transition:filter .15s}
+.ai-side-btn:hover{filter:brightness(1.08)}
+.ai-spark{width:15px;height:15px;flex-shrink:0;display:block}
+.ai-title .ai-spark{position:relative;top:0}
+.ai-hist-link svg{display:block;flex-shrink:0;position:relative;top:-0.5px}   /* 윈도우 + Pretendard에서 잰 값으로 글자와 세로 가운데 맞춤 */
+.ai-side + .nav-cards{margin-top:10px}
+.ai-hist-link{margin-left:auto;display:inline-flex;align-items:center;gap:6px;line-height:1;padding:5px 4px;border:none;background:none;color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;opacity:.92;transition:opacity .15s}
+.ai-hist-link:hover{opacity:1}
+.ai-hist-link:hover svg:last-child{transform:translateX(2px)}
+.ai-hist-link svg:last-child{transition:transform .15s;margin-left:-2px}
+.ai-hist-cnt{margin-left:-2px;font-size:12.5px;font-weight:500;opacity:.7}   /* 동그라미 없이 숫자만 흐리게 */
+.ai-hist-cnt:empty{display:none}
+/* AI 분석 창: 붙여넣는 이미지에 따라 창 높이가 들쭉날쭉하지 않게, 영역은 넉넉한 최소 높이 + 창 크기에 맞춘 최대 높이 */
+#paste-search-modal > div{max-height:92vh;overflow-y:auto}
+/* ── 메인: 가운데 정렬 제목 + 카드형 검색창 + 추천 검색 ── */
+#home{position:relative}
+.home-hdr{flex-direction:column;align-items:center;text-align:center;gap:0;margin:28px 0 22px}
+.home-hdr h1{font-size:28px}
+.home-hdr p{font-size:14px;margin-top:8px}
+.nl-search-wrap{max-width:680px;margin:0 auto}
+
+.nl-search-bar.focused{border-color:var(--p600) !important}
+
+
+/* 카드형 검색창 (두 줄) */
+#nl-search-bar.nl-search-bar{height:auto !important;flex-wrap:wrap;align-items:center;padding:16px 14px 12px 18px;border:1px solid var(--g09) !important;border-radius:18px;box-shadow:0 6px 24px rgba(20,30,60,.08) !important;background:var(--surface)}
+#nl-search-bar.nl-search-bar.focused{border-color:var(--p600) !important}
+#nl-search-bar .nl-search-input-wrap{order:0;flex:0 0 100%;padding:0 0 18px}
+#nl-search-bar .nl-search-input{font-size:15px;padding:0}
+#nl-search-bar .nl-mode-seg{order:1;border-right:none !important;padding:0 !important;margin:0}
+#nl-search-bar .nl-key-btn{order:2;margin-left:8px !important}
+#nl-search-bar .nl-search-btn-inline{order:3;margin-left:auto !important;width:38px;height:38px !important;padding:0 !important;border-radius:50% !important;display:flex !important;align-items:center;justify-content:center;font-size:0 !important}
+#nl-search-bar .nl-search-btn-inline svg{width:18px;height:18px}
+/* 앱·화면 수: 제목 위 한 줄 */
+#home-total{display:block;margin:0 0 10px;padding:0;gap:0;font-size:13.5px;font-weight:500;color:var(--g05)}
+#home-total b{font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--p600);margin:0 1px;font-variant-numeric:proportional-nums}
+/* 최근 본 앱 (작은 카드) */
+#recent-mini{max-width:680px;margin:16px auto 0}
+#recent-mini:empty{display:none}
+/* 작은 창(노트북 등)에서도 스크롤 없이 보이도록 세로 여백 줄이기 */
+#home{padding-top:clamp(12px, calc(100vh - 724px), 76px);padding-bottom:0}
+#home-body .home-sec-title{margin-top:14px}
+@media (max-height:740px){ #home-body .home-sec-title{margin-top:8px} }
+.home-hdr{margin:2px 0 8px}
+#recent-mini{margin-top:8px}
+.home-cat-card{padding:8px 4px 7px}
+/* 메인은 스크롤이 생기지 않게: 창 높이에 맞춰 위 여백이 늘고 줄며, 작은 창에서는 간격을 더 줄임 */
+#home{overflow-y:hidden !important}
+@media (max-height:740px){
+  #home{padding-top:clamp(12px, calc(100vh - 626px), 46px)}
+  .home-hdr{margin:0 0 6px} .home-hdr h1{font-size:24px} .home-hdr p{margin-top:4px}
+  #home-total{margin-bottom:6px}
+  #nl-search-bar .nl-search-input-wrap{padding-bottom:12px}
+  #nl-search-bar.nl-search-bar{padding-top:12px;padding-bottom:10px}
+  .home-cat-card{padding:6px 4px 5px;gap:4px}
+}
+@media (max-height:620px){ #recent-mini{display:none} }
+@media (max-height:660px){
+  .home-hdr p,.rm-title{display:none}
+  .home-cat-card img,.home-cat-card svg{width:18px;height:18px}
+}
+.rm-title{font-size:11.5px;font-weight:600;color:var(--g05);margin:0 0 6px 2px}
+.rm-row{display:flex;flex-wrap:wrap;gap:8px;max-height:40px;overflow:hidden}   /* 한 줄까지만: 넘치는 카드는 다음 줄로 밀려 가려짐 */
+#recent-mini .app-badge-icon{width:32px;height:32px}
+
+#paste-drop-zone{--dz-h:clamp(220px,32vh,360px);height:var(--dz-h);display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden}
+#paste-preview-wrap{margin-bottom:0 !important}
+#paste-preview{max-height:calc(var(--dz-h) - 88px) !important}
+#paste-search-run-btn:disabled{opacity:.4;cursor:not-allowed;animation:none !important;filter:saturate(.6)}
+
+/* ── 왼쪽 메뉴 위 카드 3개 (홈 / 컬렉션 / 업데이트) ── */
+.nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 12px 8px}
+.nav-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 0 9px;border:1px solid var(--g09);border-radius:10px;background:var(--surface);font-family:inherit;font-size:12px;font-weight:600;color:var(--g04,var(--g05));cursor:pointer;transition:all .15s}
+.nav-card img{width:20px;height:20px}
+.nav-card:hover{border-color:var(--g07);color:var(--g01)}
+.nav-card:not(.off):not(#ubtn){background:var(--g10);border-color:var(--g10);color:var(--g01);font-weight:700}
+.nav-card .upd-dot{position:absolute;top:7px;right:9px;width:6px;height:6px;border-radius:50%;background:#EF4444}
+#upd-group{margin:2px 0 8px 26px}
+#ver-text{font-size:11px !important;margin-bottom:0 !important}
+.nav-card .upd-dot{display:none}
+.nav-card .upd-dot.on{display:block}
+/* 업데이트를 펼치면 홈·컬렉션처럼 선택된 모습으로, 펼친 동안은 다른 카드 선택 표시를 잠시 내림 */
+#ubtn.open{background:var(--g10);border-color:var(--g10);color:var(--g01);font-weight:700}
+.nav-cards:has(#ubtn.open) .nav-card:not(#ubtn){background:var(--surface);border-color:var(--g09);font-weight:600}
+.nav-cards:has(#ubtn.open) .nav-card:not(#ubtn){color:var(--g04,var(--g05))}
+   /* 스크롤바가 생겨도 메뉴가 옆으로 밀리지 않게 자리를 미리 잡아 둠 */
+/* ── 상단 바: 남색 대신 메인과 같은 배경 (다크 모드에서는 자동으로 어두워짐) ── */
+#topbar{background:var(--surface);border-bottom:1px solid var(--g09)}
+.logo-name{color:var(--g01)}
+.search-box{background:var(--g10);border:1.5px solid transparent;border-radius:10px}
+.search-box:focus-within{border-color:var(--p600);background:var(--surface)}
+.search-box input{color:var(--g01);caret-color:var(--g01)}
+.search-box input::placeholder{color:var(--g07)}   /* 메인 검색창과 같은 연한 색 */
+.search-box button{border-radius:8px;white-space:nowrap;flex-shrink:0}
+.top-theme{margin:0 0 0 6px;padding:0;border:none;gap:8px;font-size:12px;font-weight:600;color:var(--g04,var(--g05));cursor:pointer;flex-shrink:0;white-space:nowrap}
+.combo-btn,.reload-btn{background:transparent;border:none;border-radius:8px;color:var(--g04,var(--g05));font-size:12px;font-weight:600;padding:6px 10px}
+.combo-btn:hover,.reload-btn:hover{background:var(--g10);color:var(--g01)}
+.tab{color:var(--g05);font-size:12px;font-weight:600;border-radius:8px;padding:6px 10px}
+.tab:hover{color:var(--g01);background:var(--g10)}
+.tab.on{color:var(--g01);background:var(--g10);font-weight:700}
+#st{color:var(--g05)}
+/* 상단 상태 문구: 밝은 화면·어두운 화면 각각 잘 보이는 색 */
+:root{--st-ok:#16A34A;--st-danger:#DC2626;--st-info:var(--g05)}
+html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
+/* ── 왼쪽 메뉴: 글씨는 그대로, 들여쓰기·세로선·간격만 정리 ── */
+.sb-sec{padding:13px 20px 8px}
+.sb-group{margin:0 0 6px 26px;border-left:1px solid var(--g09)}
+/* ── 왼쪽 위 여백 넉넉하게 (AI 버튼·카드 3개) ── */
+#sb{width:236px;min-width:236px}
+.ai-side{margin:18px 16px 0}
+.ai-side-btn{padding:13px 0;border-radius:12px;font-size:13.5px}
+.ai-side + .nav-cards{margin-top:14px}
+.nav-cards{gap:8px;margin:14px 16px 0}
+.sb-divider{height:1px;background:var(--g09);margin:16px 16px 0;flex-shrink:0}
+.nav-card{gap:7px;padding:14px 0 12px;border-radius:12px;font-size:12.5px}
+.nav-card img{width:22px;height:22px}
+#upd-group{margin:10px 0 0 30px}
+#sb-scroll{padding-top:8px}
+.sb-sec{padding-left:24px;padding-right:24px}
+.sb-group{margin-left:30px}
+.sb-item{margin:2px 8px 2px 6px;padding:8px 10px}
+
+
+/* ── 메인 검색창 다듬기 ── */
+/* 평소엔 테두리 없음, 입력할 때만 파란 테두리 */
+.nl-search-bar,.nl-search-bar.ai-mode,.nl-search-bar.no-key{height:58px;border:1.5px solid transparent !important;border-radius:16px;background:var(--surface);box-shadow:none !important}
+.nl-search-bar.focused{border-color:var(--p600) !important;box-shadow:none !important}
+.nl-mode-seg{padding-left:8px}
+.nl-seg-ctrl{background:var(--g10) !important;border-radius:10px !important;padding:3px !important}
+.nl-seg-btn{border-radius:8px !important;font-size:12.5px !important}
+.nl-seg-btn.active{background:var(--surface) !important;color:var(--g01) !important;box-shadow:0 1px 2px rgba(0,0,0,.08) !important}
+.nl-search-input{font-size:15px}
+.nl-search-input.no-key-warn::placeholder{color:var(--g07) !important;font-weight:400 !important}   /* 키가 없어도 평소와 같은 연한 색 */
+.nl-key-btn{border:1px solid var(--g08) !important;border-radius:999px !important;padding:6px 12px !important;font-size:12px !important;font-weight:600 !important;color:var(--g03) !important;background:transparent !important;margin-right:8px}
+.nl-key-btn img{display:none}
+.nl-search-bar.no-key .nl-key-btn{border-color:var(--g03) !important;color:var(--g01) !important}
+.nl-key-btn.has-key{border-color:transparent !important;color:#16A34A !important}
+.nl-search-btn-inline{height:44px;border-radius:12px !important;padding:0 24px !important;margin-right:7px;font-weight:700}
+.nl-key-btn.has-key img{display:inline-block}
 </style>
 </head>
 <!-- PC 기능 숨김: body 의 pc-off 클래스를 지우면 PC 레퍼런스 버튼과 Mobile/PC 전환이 다시 나타납니다 -->
@@ -730,11 +902,8 @@ img[src=""], img:not([src]) { background: var(--g10) }
   <span id="st"></span>
   <button class="reload-btn" id="reload-btn" onclick="doReloadAll()" title="앱 리로드">↻ 앱 리로드</button>
   <button class="reload-btn" id="r2-btn" onclick="openR2UploadModal()">☁️ PC 레퍼런스</button>
-  <div style="display:flex;align-items:center;background:linear-gradient(90deg,#5B3EEF,#7B4FFF,#9B6BFF,#7B4FFF,#5B3EEF);background-size:300% auto;animation:gradientMove 3s ease infinite;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(107,78,255,.4)">
-    <button id="paste-search-btn" onclick="openPasteSearch()" style="background:transparent;color:#fff;border:none;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">✦ AI 디자인 분석</button>
-    <div style="width:1px;height:16px;background:rgba(255,255,255,.3)"></div>
-    <button id="history-btn" onclick="toggleHistoryPanel()" style="background:transparent;color:#fff;border:none;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">📋 AI 분석기록</button>
-  </div>
+  <!-- 다크 모드: 상단 바 오른쪽 위 -->
+  <label class="theme-row top-theme" for="theme-sw"><span>다크 모드</span><button class="theme-sw" id="theme-sw" type="button" role="switch" aria-label="다크 모드" onclick="toggleTheme()"></button></label>
 </div>
 <!-- 조합 검색 모달 -->
 <div id="combo-panel" onclick="comboOvClick(event)">
@@ -762,18 +931,29 @@ img[src=""], img:not([src]) { background: var(--g10) }
 
 <div id="body">
   <nav id="sb">
-    <button class="home-btn" id="hbtn" onclick="toHome()">홈</button>
-    <button class="sb-likes-btn" id="cbtn" onclick="toCollection()" style="color:#E53E3E"><img src="assets/icons/021.svg" alt="" style="width:15px;height:15px;margin-right:6px;flex-shrink:0;vertical-align:-2px">컬렉션</button>
+    <!-- AI 디자인 분석 (분석기록은 분석 창 제목 줄 오른쪽) -->
+    <div class="ai-side"><button id="paste-search-btn" class="ai-side-btn" onclick="openPasteSearch()"><svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4" fill="none"/><path d="M22 5h-4" fill="none"/><path d="M4 17v2" fill="none"/><path d="M5 18H3" fill="none"/></svg>AI 디자인 분석</button></div>
+    <!-- 위쪽 카드 3개: 홈 / 컬렉션 / 업데이트 (off = 선택 안 됨) -->
+    <div class="nav-cards">
+      <button class="nav-card" id="hbtn" onclick="toHome()"><img src="assets/icons/061.svg" alt="">홈</button>
+      <button class="nav-card col off" id="cbtn" onclick="toCollection()"><img src="assets/icons/021.svg" alt="">컬렉션</button>
+      <button class="nav-card" id="ubtn" onclick="toggleUpdMenu()"><img src="assets/icons/122.svg" alt="">업데이트<span class="upd-dot" id="upd-dot"></span></button>
+    </div>
+    <div class="sb-group collapsed" id="upd-group" style="max-height:0">
+      <div class="sb-item" onclick="openChangelog()"><span class="sb-item-label">업데이트 내역</span></div>
+      <div class="sb-item" id="ver-check-btn" onclick="checkUpdateNow()"><span class="sb-item-label">업데이트 확인</span></div>
+      <div class="sb-item" id="fb-open-btn" onclick="openFeedback()"><span class="sb-item-label">의견 보내기</span></div>
+    </div>
+    <div class="sb-divider"></div>
     <div id="sb-scroll"></div>
     <div id="sb-mode-toggle" style="flex-shrink:0;padding:12px;border-top:1px solid var(--g09);display:flex;background:var(--g11);border-radius:0;gap:4px">
       <button id="mode-mobile-btn" onclick="setReferenceMode('mobile')" style="flex:1;padding:8px 0;border:none;border-radius:6px;background:var(--p600);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">📱 Mobile</button>
       <button id="mode-pc-btn" onclick="setReferenceMode('pc')" style="flex:1;padding:8px 0;border:none;border-radius:6px;background:transparent;color:var(--g05);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">🖥️ PC</button>
     </div>
     <div style="flex-shrink:0;padding:10px 12px;border-top:1px solid var(--g09);background:var(--g11)">
-      <div class="theme-row"><span>다크 모드</span><button class="theme-sw" id="theme-sw" type="button" role="switch" aria-label="다크 모드" onclick="toggleTheme()"></button></div>
       <!-- 레퍼런스 출처: 접어 두고 눌러서 펼침 (출처가 늘어나도 메뉴가 길어지지 않게) -->
       <details class="src-fold" style="font-size:9.5px;color:var(--g06);line-height:1.6">
-        <summary><span>📋 레퍼런스 출처</span><span class="src-cnt"></span></summary>
+        <summary><span>레퍼런스 출처</span><span class="src-cnt"></span></summary>
         <div>• <a href="https://wwit.design" target="_blank" style="color:var(--g05);text-decoration:none">WWIT</a> (wwit.design)</div>
         <div>• <a href="https://upa.userspoon.com/" target="_blank" style="color:var(--g05);text-decoration:none">UPA</a> (upa.userspoon.com)</div>
         <div>• <a href="https://ko.designus.design/reference" target="_blank" style="color:var(--g05);text-decoration:none">Designus</a> (designus.design)</div>
@@ -782,11 +962,6 @@ img[src=""], img:not([src]) { background: var(--g10) }
       </details>
       <div id="ver-row" style="display:none;margin-top:8px;padding-top:9px;border-top:1px solid var(--g09)">
         <div id="ver-text" style="font-size:10px;color:var(--g06);margin-bottom:6px">부찌</div>
-        <div class="ver-actions">
-          <button onclick="openChangelog()">업데이트 내역</button>
-          <button id="fb-open-btn" onclick="openFeedback()">의견 보내기</button>
-          <button id="ver-check-btn" onclick="checkUpdateNow()">업데이트 확인</button>
-        </div>
       </div>
     </div>
   </nav>
@@ -796,8 +971,8 @@ img[src=""], img:not([src]) { background: var(--g10) }
       <!-- 제작자 표시: 홈 화면 오른쪽 아래 구석에 고정 (홈에서만 보임) -->
       <div id="home-credit">Made by <b>솔리데오 크리에이티브그룹 UIUX팀 김선진</b></div>
       <div class="home-hdr">
-        <img src="assets/icon.png" alt="">
-        <div><h1>부찌 🍲</h1><p>Korean App UIUX Reference</p></div>
+        <div id="home-total"></div>
+        <div><h1>필요한 앱 화면을 찾아보세요</h1><p>국내 앱 UI/UX 레퍼런스를 한곳에서</p></div>
       </div>
       <div id="guide-box">
         <div class="nl-search-wrap">
@@ -812,7 +987,6 @@ img[src=""], img:not([src]) { background: var(--g10) }
               </div>
               <!-- 검색 인풋 -->
               <div class="nl-search-input-wrap">
-                <img class="nl-search-icon" src="assets/icons/025.svg" alt="">
                 <input id="nl-inline-input" type="text" placeholder="어떤 화면을 찾고 있나요?  예) 토스 같은 송금 화면" class="nl-search-input"
                   onfocus="this.closest('.nl-search-bar').classList.add('focused')"
                   onblur="this.closest('.nl-search-bar').classList.remove('focused')"
@@ -821,16 +995,18 @@ img[src=""], img:not([src]) { background: var(--g10) }
               <!-- API 키 버튼 -->
               <button onclick="promptApiKey()" class="nl-key-btn" title="AI 대화형 검색용 API 키 설정">
                 <img src="assets/icons/070.svg" alt="" width="13" height="13">
-                <span id="nl-key-label">API 키</span>
+                <span id="nl-key-label">API 키 등록</span>
               </button>
               <!-- 검색 버튼 -->
-              <button onclick="doSmartSearch()" class="nl-search-btn-inline">검색</button>
+              <button onclick="doSmartSearch()" class="nl-search-btn-inline" aria-label="검색" title="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
             </div>
           </div>
           <div id="home-autocomplete"></div>
         </div>
 
         <div id="nl-inline-status" style="display:none;font-size:12px;color:var(--g05);margin-top:8px"></div>
+        <!-- 최근 본 앱: 검색창 아래 작은 앱 카드 -->
+        <div id="recent-mini"></div>
 
 <!-- API 키 모달 -->
 <div id="apikey-modal-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center" onclick="if(event.target===this)closeApiKeyModal()">
@@ -839,10 +1015,11 @@ img[src=""], img:not([src]) { background: var(--g10) }
     <div style="font-size:12px;color:var(--g05);margin-bottom:16px">대화형 자연어 검색에 사용됩니다</div>
     <input id="apikey-modal-input" type="text" placeholder="sk-ant-..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g08);border-radius:10px;font-size:13px;font-family:inherit;outline:none;color:var(--g01);transition:border-color .15s" onfocus="this.style.borderColor='var(--p600)'" onblur="this.style.borderColor='var(--g08)'" onkeydown="if(event.key==='Enter')saveApiKey()">
     <div id="apikey-modal-current" style="display:none;margin-top:8px;font-size:11px;color:var(--g05)"></div>
+    <div id="apikey-modal-err" style="display:none;margin-top:8px;font-size:12px;font-weight:600;color:var(--danger)"></div>
     <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
       <button onclick="deleteApiKey()" id="apikey-delete-btn" style="display:none;padding:8px 16px;border:1px solid var(--danger);background:transparent;color:var(--danger);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">삭제</button>
       <button onclick="closeApiKeyModal()" style="padding:8px 16px;border:1px solid var(--g08);background:transparent;color:var(--g05);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">취소</button>
-      <button onclick="saveApiKey()" style="padding:8px 20px;background:var(--p600);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">저장</button>
+      <button onclick="saveApiKey()" id="apikey-save-btn" style="padding:8px 20px;background:var(--p600);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">저장</button>
     </div>
   </div>
 </div>
@@ -1359,7 +1536,7 @@ function buildColView() {
   const grid = document.getElementById('col-grid'); grid.innerHTML = ''
   const items = collections[curColFolder] || []
   if (!items.length) {
-    grid.innerHTML = '<div class="col-empty">저장된 이미지가 없어요</div>'
+    grid.innerHTML = emptyResultHtml('저장된 이미지가 없어요', '마음에 드는 화면을 컬렉션에 저장하면 여기에 모여요')
     return
   }
   items.forEach((item, idx) => {
@@ -1578,7 +1755,7 @@ async function init() {
   setupHomeAutocomplete()
   // API 키 버튼 초기 상태 반영
   const savedKey = localStorage.getItem(APIKEY_STORE) || ''
-  if (savedKey) _updateApiKeyBtn(true)
+  if (savedKey) { if (typeof _updateApiKeyBtn === 'function') _updateApiKeyBtn(true); else setTimeout(() => { try { _updateApiKeyBtn(true) } catch {} }, 0) }
 
   window.api.onCacheLoaded(({ appCount }) => {
     setSt('✓ ' + appCount + '개 앱 로드', 'ok')
@@ -1605,9 +1782,11 @@ async function init() {
     document.getElementById('uc-bar').classList.remove('on')
     setSt('✓ 총 ' + count + '개 유즈케이스 준비 완료', 'ok')
     loadGallery()
+    updateHomeTotals()
   })
   window.api.onUcLoaded(({ count }) => {
     try { _tagsLoaded = false } catch {}   // 새 자료가 들어왔으니 다음 검색 때 태그를 다시 읽음
+    updateHomeTotals()
     setSt('✓ 레퍼런스 준비 완료', 'ok')
     loadGallery()
   })
@@ -1652,7 +1831,7 @@ function buildSidebarSections(sections) {
     secEl.onclick = () => {
       const collapsed = secEl.classList.toggle('collapsed')
       arrow.textContent = collapsed ? '+' : '-'
-      group.style.maxHeight = collapsed ? '0' : maxH
+      group.style.maxHeight = collapsed ? '0' : (group.scrollHeight + 8) + 'px'   // 항목 간격이 바뀌어도 잘리지 않게 실제 높이로
     }
 
     items.forEach(([label, path, kw, dot]) => {
@@ -1774,35 +1953,7 @@ async function buildHomeChips() {
   const el = document.getElementById('home-body')
   el.innerHTML = ''
 
-  // ── 최근 본 앱 ──────────────────────────────────────────────
-  const recentApps = (JSON.parse(localStorage.getItem('bucci_recent_apps')||'[]')).slice(0,8)
-  if (recentApps.length) {
-    const sec = document.createElement('div')
-    sec.innerHTML = '<div class="home-sec-title">최근 본 앱</div>'
-    const row = document.createElement('div')
-    // 가로 스크롤 영역은 위아래로 넘치는 부분도 잘라내므로, 카드가 호버로 떠오르거나 테두리·그림자가
-    // 생길 자리를 안쪽 여백으로 확보하고 같은 만큼 바깥 여백을 빼서 원래 위치를 유지
-    row.style.cssText = 'display:flex;gap:8px;overflow-x:auto;padding:8px 6px 12px;margin:-8px -6px -8px;scrollbar-width:none;-webkit-overflow-scrolling:touch'
-    recentApps.forEach(app => {
-      // gal-card 스타일과 동일한 미니 앱 카드
-      const card = document.createElement('div')
-      card.className = 'gal-card'
-      card.style.cssText = 'flex-shrink:0;width:80px;cursor:pointer'
-      const thumbWrap = document.createElement('div'); thumbWrap.className = 'gal-thumb-wrap recent-thumb-wrap'
-      const img = document.createElement('img'); img.className = 'gal-thumb'; img.loading = 'lazy'; img.alt = app.name
-      img.onerror = () => { img.style.display='none' }
-      thumbWrap.appendChild(img)
-      const info = document.createElement('div'); info.className = 'gal-info'
-      const nm = document.createElement('div'); nm.className = 'gal-name'; nm.textContent = app.name
-      info.appendChild(nm)
-      card.appendChild(thumbWrap); card.appendChild(info)
-      card.onclick = () => app.slug ? loadBySlug(app.slug, app.name) : loadByUcApp(app.name)
-      loadAppThumb(app.name, img, () => {})
-      row.appendChild(card)
-    })
-    sec.appendChild(row)
-    el.appendChild(sec)
-  }
+  renderRecentMini()
 
   // ── 앱 유형 카테고리 카드 ──────────────────────────────────
   const catSec = SIDEBAR.find(s => s.sec === '앱 유형')
@@ -1815,9 +1966,7 @@ async function buildHomeChips() {
       const meta = CATEGORY_META[label] || {color:'#6B7280',bg:'#F3F4F6'}
       const svgIcon = CAT_ICONS[label] || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`
       const card = document.createElement('button')
-      card.style.cssText = `display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:14px 4px 12px;background:var(--surface);border:1px solid var(--g09);border-radius:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,box-shadow .15s`
-      card.onmouseover = () => { card.style.borderColor = 'var(--g07)'; card.style.boxShadow = '0 2px 8px rgba(0,0,0,.07)' }
-      card.onmouseout = () => { card.style.borderColor = 'var(--g09)'; card.style.boxShadow = 'none' }
+      card.className = 'home-cat-card'   // 최근 본 앱 카드와 같은 호버 효과
       card.innerHTML = `<span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center">${svgIcon}</span><span style="font-size:10.5px;font-weight:500;color:var(--g03);text-align:center;line-height:1.3">${label}</span>`
       card.onclick = () => showCatView(label, path)
       grid.appendChild(card)
@@ -1890,6 +2039,30 @@ async function buildHomeChipsPc() {
   }
 }
 
+// ── 최근 본 앱: 검색창 아래 작은 앱 카드 (검색 결과의 앱 카드와 같은 모양) ──
+function renderRecentMini() {
+  const rm = document.getElementById('recent-mini')
+  const recentApps = (JSON.parse(localStorage.getItem('bucci_recent_apps')||'[]')).slice(0,8)
+  if (rm) {
+    rm.innerHTML = ''
+    if (recentApps.length) {
+      const t = document.createElement('div'); t.className = 'rm-title'; t.textContent = '최근 본 앱'
+      const row = document.createElement('div'); row.className = 'rm-row'
+      recentApps.forEach(app => {
+        const badge = document.createElement('div'); badge.className = 'app-badge'
+        const icon = document.createElement('img'); icon.className = 'app-badge-icon'; icon.alt = ''
+        icon.onerror = () => { icon.style.visibility = 'hidden' }
+        const nm = document.createElement('span'); nm.className = 'app-badge-name'; nm.textContent = app.name
+        badge.appendChild(icon); badge.appendChild(nm)
+        badge.onclick = () => app.slug ? loadBySlug(app.slug, app.name) : loadByUcApp(app.name)
+        loadAppThumbFirst(app.name, icon)
+        row.appendChild(badge)
+      })
+      rm.appendChild(t); rm.appendChild(row)
+    }
+  }
+}
+
 // 최근 앱 기록
 function recordRecentApp(name, slug) {
   const key = 'bucci_recent_apps'
@@ -1897,6 +2070,7 @@ function recordRecentApp(name, slug) {
   arr = arr.filter(a => a.name !== name)
   arr.unshift({ name, slug: slug||null })
   localStorage.setItem(key, JSON.stringify(arr.slice(0,10)))
+  try { renderRecentMini() } catch {}   // 홈으로 돌아왔을 때 바로 보이게
 }
 
 // ── 카테고리 2단계 UX ──────────────────────────────────────────────
@@ -2220,6 +2394,9 @@ function pushNav(state) {
 function showView(id) {
   ['home','result','cat-view','gallery','likes-view','col-view'].forEach(v => document.getElementById(v).classList.remove('on'))
   document.getElementById(id).classList.add('on')
+  try { closeUpdMenu() } catch {}
+  // 컬렉션 화면일 때만 왼쪽 '컬렉션' 메뉴를 선택된 모습으로
+  try { document.getElementById('cbtn').classList[id === 'col-view' ? 'remove' : 'add']('off') } catch {}
   const scrollEls = document.querySelectorAll('#result,#gal-scroll,.gal-scroll,.cat-scroll,.likes-scroll')
   scrollEls.forEach(el => { if(el) el.scrollTop = 0 })
   if (id === 'gallery') {
@@ -2340,6 +2517,34 @@ async function mergePcData(data, kw) {
 
 // ── PC/Mobile 레�런스 모드 토글 (완전 전환) ──────────────────────────
 const REF_MODE_KEY = 'bucci_ref_mode'
+// 메인화면 제목 아래 "앱 ○개 · 화면 ○장" (모바일 레퍼런스 기준, 자료가 새로 들어오면 다시 셈)
+// 숫자는 0부터(이미 보이고 있으면 지금 숫자부터) 새 숫자까지 쭈르륵 올라감
+let _homeTot = { apps: 0, screens: 0 }, _homeTotRaf = 0
+async function updateHomeTotals() {
+  const el = document.getElementById('home-total'); if (!el || !window.api.getTotals) return
+  try {
+    const t = await window.api.getTotals()
+    if (!t || !t.screens) return
+    if (!el.firstChild) el.innerHTML = '앱 <b id="ht-apps">0</b>개 · 화면 <b id="ht-screens">0</b>장'
+    const ea = document.getElementById('ht-apps'), es = document.getElementById('ht-screens')
+    const from = { ..._homeTot }, to = { apps: t.apps, screens: t.screens }
+    if (from.apps === to.apps && from.screens === to.screens) return
+    _homeTot = to
+    const f = n => Math.round(n).toLocaleString('ko-KR')
+    cancelAnimationFrame(_homeTotRaf)
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { ea.textContent = f(to.apps); es.textContent = f(to.screens); return }
+    const dur = from.screens ? 900 : 1600, t0 = performance.now()
+    const ease = x => 1 - Math.pow(1 - x, 3)            // 처음엔 빠르게, 끝에서 천천히 멈춤
+    const step = now => {
+      const k = ease(Math.min(1, (now - t0) / dur))
+      ea.textContent = f(from.apps + (to.apps - from.apps) * k)
+      es.textContent = f(from.screens + (to.screens - from.screens) * k)
+      if (k < 1) _homeTotRaf = requestAnimationFrame(step)
+    }
+    _homeTotRaf = requestAnimationFrame(step)
+  } catch {}
+}
+
 function getReferenceMode() {
   // PC 기능을 숨긴 상태(body.pc-off)에서는 예전에 PC 모드로 저장돼 있어도 항상 Mobile 로 동작
   if (document.body && document.body.classList.contains('pc-off')) return 'mobile'
@@ -2354,7 +2559,9 @@ async function setReferenceMode(mode) {
     pcBtn.style.background = '#0E7C7B'; pcBtn.style.color = '#fff'
     mobileBtn.style.background = 'transparent'; mobileBtn.style.color = 'var(--g05)'
     topbar.classList.add('pc-mode')
+    document.body.classList.add('pc-mode-on')
   } else {
+    document.body.classList.remove('pc-mode-on')
     mobileBtn.style.background = 'var(--p600)'; mobileBtn.style.color = '#fff'
     pcBtn.style.background = 'transparent'; pcBtn.style.color = 'var(--g05)'
     topbar.classList.remove('pc-mode')
@@ -2364,6 +2571,7 @@ async function setReferenceMode(mode) {
   // 홈 화면 콘텐츠를 새 모드 기준으로 다시 빌드하고, 해당 모드의 홈으로 이동
   await buildHomeChips()
   toHome()
+  updateHomeTotals()
 }
 async function initReferenceModeUI() {
   await setReferenceMode(getReferenceMode())
@@ -2419,7 +2627,7 @@ async function buildSidebarPcCategories() {
     secEl.onclick = () => {
       const collapsed = secEl.classList.toggle('collapsed')
       arrow.textContent = collapsed ? '+' : '-'
-      group.style.maxHeight = collapsed ? '0' : maxH
+      group.style.maxHeight = collapsed ? '0' : (group.scrollHeight + 8) + 'px'   // 항목 간격이 바뀌어도 잘리지 않게 실제 높이로
     }
 
     items.forEach(b => {
@@ -3661,7 +3869,7 @@ function buildLikesGrid() {
 
 function setSt(msg,type=''){
   const el=document.getElementById('st');el.textContent=msg
-  el.style.color=type==='ok'?'#6EE7B7':type==='warn'?'var(--warn)':type==='danger'?'#FCA5A5':'#8BA3D4'
+  el.style.color=type==='ok'?'var(--st-ok)':type==='warn'?'var(--warn)':type==='danger'?'var(--st-danger)':'var(--st-info)'
 }
 
 let _toastTimer=null
@@ -3829,10 +4037,13 @@ init()
 </div>
 
 <!-- AI 유사 화면 검색 모달 -->
-<div id="paste-search-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center">
+<div id="paste-search-modal" onclick="if(event.target===this)closePasteSearch()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center">
   <div style="background:var(--surface);border-radius:16px;width:min(480px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden">
     <div style="background:linear-gradient(135deg,#6B4EFF,#9B6BFF);padding:16px 24px 0">
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px">✦ AI 디자인 분석</div>
+      <div style="display:flex;align-items:center;font-size:15px;font-weight:700;color:#fff;margin-bottom:12px">
+        <span class="ai-title" style="display:inline-flex;align-items:center;gap:7px"><svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4" fill="none"/><path d="M22 5h-4" fill="none"/><path d="M4 17v2" fill="none"/><path d="M5 18H3" fill="none"/></svg>AI 디자인 분석</span>
+        <button id="history-btn" class="ai-hist-link" onclick="openHistoryFromPaste()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>분석기록<span id="hist-cnt" class="ai-hist-cnt"></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
       <div style="display:flex;gap:4px">
         <button id="paste-tab-similar" onclick="switchPasteTab('similar')" style="padding:7px 14px;border:none;border-radius:8px 8px 0 0;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--surface);color:var(--ai-fg)">🔍 유사화면 탐색</button>
         <button id="paste-tab-analysis" onclick="switchPasteTab('analysis')" style="padding:7px 14px;border:none;border-radius:8px 8px 0 0;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.25);color:#fff">📊 UIUX 분석</button>
@@ -4020,7 +4231,7 @@ function sqPanelShow() {
     const clear = Object.assign(document.createElement('button'), { className: 'sq-clear', type: 'button', textContent: '전체 지우기' })
     clear.onclick = () => { sqRecentSave([]); sqPanelShow() }
     head.appendChild(clear); panel.appendChild(head)
-    recent.forEach(e => {
+    recent.slice(0, 5).forEach(e => {
       const row = document.createElement('div'); row.className = 'sq-item'; row.setAttribute('role', 'button')
       row.innerHTML = '<img class="ic" src="assets/icons/120.svg" alt="">'
       row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-text', textContent: e.q }))
@@ -4036,7 +4247,7 @@ function sqPanelShow() {
   head2.appendChild(Object.assign(document.createElement('span'), { textContent: '이렇게 찾아보세요' }))
   panel.appendChild(head2)
   const recentSet = new Set(recent.map(e => e.q))
-  ;(SQ_EXAMPLES[_searchMode] || SQ_EXAMPLES.ai).filter(q => !recentSet.has(q)).forEach(q => {
+  ;(SQ_EXAMPLES[_searchMode] || SQ_EXAMPLES.ai).filter(q => !recentSet.has(q)).slice(0, 4).forEach(q => {
     const row = document.createElement('div'); row.className = 'sq-item'; row.setAttribute('role', 'button')
     row.innerHTML = '<img class="ic" src="assets/icons/025.svg" alt="">'
     row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-text', textContent: q }))
@@ -4045,6 +4256,9 @@ function sqPanelShow() {
   })
   host.style.position = 'relative'
   host.appendChild(panel)
+  // 창 아래로 넘치지 않게: 남은 높이까지만 보이고 나머지는 패널 안에서 스크롤
+  const room = window.innerHeight - panel.getBoundingClientRect().top - 12
+  panel.style.maxHeight = Math.max(160, room) + 'px'
 }
 function sqPanelInit() {
   const input = document.getElementById('nl-inline-input')
@@ -4219,7 +4433,7 @@ window.__bucciUpdatePrompt = function (info) {
     if (info.notes) { _upEl('up-notes').textContent = info.notes; _upEl('up-notes').style.display = '' }
     _upEl('up-desc').textContent = '바뀐 파일만 받아서 적용한 뒤 부찌를 다시 시작합니다.'
     _upButtons([
-      ['나중에', false, () => { _upClose(); resolve('later') }],
+      ['나중에', false, () => { _upClose(); setUpdDot(true); resolve('later') }],
       ['지금 업데이트', true, () => {
         _upButtons([])
         _upEl('up-title').textContent = '업데이트 받는 중'
@@ -4501,10 +4715,26 @@ function whatsNewOpen(version, list) {
   document.addEventListener('keydown', _wnEsc)
   setTimeout(() => { try { document.getElementById('wn-ok').focus() } catch {} }, 0)
 }
+// 왼쪽 위 '업데이트' 카드: 누르면 아래 세 항목을 펼치고 접음
+function toggleUpdMenu() {
+  const g = document.getElementById('upd-group'), b = document.getElementById('ubtn')
+  const open = g.classList.toggle('collapsed') === false
+  g.style.maxHeight = open ? (g.scrollHeight + 8) + 'px' : '0'
+  b.classList.toggle('open', open)
+}
+// 다른 화면으로 이동하면 펼쳐 둔 업데이트 메뉴는 접음
+function closeUpdMenu() {
+  const g = document.getElementById('upd-group'), b = document.getElementById('ubtn')
+  if (!g || g.classList.contains('collapsed')) return
+  g.classList.add('collapsed'); g.style.maxHeight = '0'; if (b) b.classList.remove('open')
+}
+// 새 버전이 있으면 업데이트 카드에 빨간 점
+function setUpdDot(on) { const d = document.getElementById('upd-dot'); if (d) d.classList.toggle('on', !!on) }
+
 async function checkUpdateNow() {
   const btn = document.getElementById('ver-check-btn')
   if (!btn || btn.disabled) return
-  btn.disabled = true; btn.textContent = '확인 중…'
+  btn.disabled = true; btn.innerHTML = '<span class="sb-item-label">확인 중…</span>'
   try {
     const r = await window.api.checkUpdate()
     const msg = {
@@ -4515,8 +4745,10 @@ async function checkUpdateNow() {
       dev: '작업 폴더에서는 업데이트를 받지 않습니다 (설치된 부찌에서 확인하세요)'
     }[r && r.status]
     if (msg) showToast(msg)
+    if (r && r.status === 'later') setUpdDot(true)
+    if (r && r.status === 'latest') setUpdDot(false)
   } catch { showToast('업데이트를 확인하지 못했습니다') }
-  btn.disabled = false; btn.textContent = '업데이트 확인'
+  btn.disabled = false; btn.innerHTML = '<span class="sb-item-label">업데이트 확인</span>'
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initVersionRow)
 else setTimeout(initVersionRow, 0)
@@ -5478,6 +5710,8 @@ function promptApiKey(retryQuery) {
   if (!bg || !input) return
   // 이 창은 홈 화면 안에 들어 있어서 결과 화면에서는 보이지 않음 → 열 때 문서 맨 바깥으로 옮김
   if (bg.parentElement !== document.body) document.body.appendChild(bg)
+  const err = document.getElementById('apikey-modal-err'); if (err) err.style.display = 'none'
+  input.style.borderColor = 'var(--g08)'
   if (saved) {
     input.value = saved
     currentDiv.style.display = 'block'
@@ -5495,9 +5729,26 @@ function closeApiKeyModal() {
   const bg = document.getElementById('apikey-modal-bg')
   if (bg) bg.style.display = 'none'
 }
-function saveApiKey() {
+// 저장 전에 진짜 쓸 수 있는 키인지 확인하고, 아니면 창에 이유를 보여줌
+async function saveApiKey() {
   const input = document.getElementById('apikey-modal-input')
   const trimmed = (input?.value || '').trim()
+  const err = document.getElementById('apikey-modal-err'), btn = document.getElementById('apikey-save-btn')
+  const showErr = (msg) => { if (err) { err.textContent = msg; err.style.display = 'block' } if (input) input.style.borderColor = 'var(--danger)' }
+  if (err) err.style.display = 'none'
+  if (!trimmed) { closeApiKeyModal(); return }
+  if (window.api && window.api.checkApiKey) {
+    if (btn) { btn.disabled = true; btn.textContent = '확인 중…' }
+    let r = null
+    try { r = await window.api.checkApiKey(trimmed) } catch {}
+    if (btn) { btn.disabled = false; btn.textContent = '저장' }
+    if (r && !r.ok) {
+      if (r.reason === 'format') return showErr('키 형식이 올바르지 않아요. sk-ant- 로 시작하는 키를 그대로 붙여넣어 주세요.')
+      if (r.reason === 'invalid') return showErr('사용할 수 없는 키예요. 키가 맞는지, 삭제되지 않았는지 확인해 주세요.')
+      if (r.reason === 'network') { try { showToast('인터넷 연결 문제로 키를 확인하지 못했어요. 일단 저장했어요.') } catch {} }
+      else return showErr('키를 확인하지 못했어요 (오류 ' + (r.status || '') + '). 잠시 후 다시 시도해 주세요.')
+    }
+  }
   if (trimmed) {
     localStorage.setItem(APIKEY_STORE, trimmed)
     _updateApiKeyBtn(true)
@@ -5523,7 +5774,7 @@ function _updateApiKeyBtn(hasKey) {
   const label = document.getElementById('nl-key-label')
   if (!btn || !label) return
   if (hasKey) { btn.classList.add('has-key'); label.textContent = '키 등록됨' }
-  else { btn.classList.remove('has-key'); label.textContent = 'API 키' }
+  else { btn.classList.remove('has-key'); label.textContent = 'API 키 등록' }
 }
 
 // ── 검색 모드 세그먼트 ('keyword' | 'ai') ─────────────────────
@@ -5535,8 +5786,10 @@ function nlApplyKeyState() {
   const bar = document.getElementById('nl-search-bar')
   if (!input || !bar || _searchMode !== 'ai') return
   const hasKey = !!localStorage.getItem(APIKEY_STORE)
+  try { _updateApiKeyBtn(hasKey) } catch {}   // 버튼 문구('API 키 등록' / '키 등록됨')도 함께 맞춤
   if (!hasKey) {
-    input.setAttribute('placeholder', '⚠️ API 키가 없어요 — 우측 버튼에서 등록해주세요')
+    // 노란 경고 대신 평소 안내 문구를 두고, 오른쪽 'API 키 등록' 버튼으로 알려줌
+    input.setAttribute('placeholder', NL_PLACEHOLDER)
     input.classList.add('no-key-warn')
     bar.classList.add('no-key')
   } else {
@@ -6533,10 +6786,16 @@ async function addToHistory(type, label, imageBase64, mediaType, resultHtml) {
 }
 
 function updateHistoryBadge() {
-  const btn = document.getElementById('history-btn')
-  if (!btn) return
+  const el = document.getElementById('hist-cnt')
+  if (!el) return
   const count = loadHistory().length
-  btn.textContent = count > 0 ? `📋 AI 분석기록 (${count})` : '📋 AI 분석기록'
+  el.textContent = count > 0 ? String(count) : ''
+}
+// 분석 창의 '분석기록': 분석 창을 닫고 오른쪽 기록 창을 엶 (기록 창이 분석 창 아래 층이라 가려지지 않게)
+function openHistoryFromPaste() {
+  try { closePasteSearch() } catch {}
+  renderHistoryList(); updateHistoryBadge()
+  slidePanel('history-panel', true)
 }
 
 function renderHistoryList() {

@@ -88,6 +88,49 @@ function saveUcCache() {
   catch {}
 }
 
+// ── 화면 이미지 저장 (한 번 본 화면은 PC에 저장해 두고, 인터넷이 없어도 보여줌) ──
+// 레퍼런스 사이트 이미지 요청만 가로채서: 저장본이 있으면 바로 주고, 없으면 받아서 저장한 뒤 줌.
+// 그 밖의 요청(API, 설문 등)은 손대지 않고 그대로 보냄.
+const IMG_HOSTS = /(^|\.)(wwit\.design|wouldyoutest\.com|designus\.design)$/i
+const IMG_CACHE_MAX = 1024 * 1024 * 1024        // 1GB 넘으면 오래 안 본 것부터 지움
+function setupImageCache() {
+  try {
+    const { protocol, net } = require('electron')
+    const mimeOf = b => b[0] === 0x89 ? 'image/png' : b[0] === 0xFF ? 'image/jpeg' : b[0] === 0x47 ? 'image/gif'
+      : (b[0] === 0x52 && b[8] === 0x57) ? 'image/webp' : (b[0] === 0x3C ? 'image/svg+xml' : 'application/octet-stream')
+    const fromDisk = cp => { const b = fs.readFileSync(cp); try { const t = new Date(); fs.utimesSync(cp, t, t) } catch {} ; return new Response(b, { headers: { 'content-type': mimeOf(b), 'x-bucci-cache': 'hit' } }) }
+    protocol.handle('https', async (req) => {
+      let u; try { u = new URL(req.url) } catch { return net.fetch(req, { bypassCustomProtocolHandlers: true }) }
+      const isImg = req.method === 'GET' && IMG_HOSTS.test(u.hostname) && /\.(png|jpe?g|webp|gif)$/i.test(u.pathname)
+      if (!isImg) return net.fetch(req, { bypassCustomProtocolHandlers: true })
+      const cp = imgCachePath(req.url)
+      if (fs.existsSync(cp)) { try { return fromDisk(cp) } catch {} }
+      try {
+        const res = await net.fetch(req, { bypassCustomProtocolHandlers: true })
+        if (!res.ok || !/^image\//.test(res.headers.get('content-type') || 'image/')) return res
+        const buf = Buffer.from(await res.arrayBuffer())
+        try { fs.writeFileSync(cp, buf) } catch {}
+        return new Response(buf, { status: 200, headers: { 'content-type': res.headers.get('content-type') || mimeOf(buf) } })
+      } catch (e) {
+        if (fs.existsSync(cp)) { try { return fromDisk(cp) } catch {} }
+        throw e
+      }
+    })
+    setTimeout(pruneImageCache, 20000)
+    console.log('[img-cache] on')
+  } catch (e) { console.log('[img-cache] error:', e.message) }
+}
+function pruneImageCache() {
+  try {
+    const files = fs.readdirSync(IMG_CACHE).map(f => { const p = path.join(IMG_CACHE, f); const st = fs.statSync(p); return { p, size: st.size, t: st.mtimeMs } })
+    let total = files.reduce((a, f) => a + f.size, 0)
+    if (total <= IMG_CACHE_MAX) return
+    files.sort((a, b) => a.t - b.t)
+    for (const f of files) { if (total <= IMG_CACHE_MAX * 0.8) break; try { fs.unlinkSync(f.p); total -= f.size } catch {} }
+    console.log('[img-cache] pruned to', Math.round(total / 1048576), 'MB')
+  } catch {}
+}
+
 function imgCachePath(url) {
   return path.join(IMG_CACHE, crypto.createHash('md5').update(url).digest('hex') + '.jpg')
 }
@@ -1292,6 +1335,7 @@ app.whenReady().then(async () => {
     })
     console.log('[asset] protocol registered')
   } catch(e) { console.log('[asset] protocol error:', e.message) }
+  setupImageCache()
   loadTags()
   const wwit_cached = loadCache()
   const uc_cached   = loadUcCache()
@@ -2209,6 +2253,21 @@ ipcMain.handle('fetch-image-base64', async (_, url) => {
   } catch(e) { return null }
 })
 
+// 메인화면에 보여줄 전체 앱·화면 수 (영상 제외, 같은 앱·같은 이미지는 한 번만)
+ipcMain.handle('get-totals', () => {
+  const isVideo = u => /\.(mp4|mov|webm)(\?|$)/i.test(u)
+  const apps = new Set(), screens = new Set()
+  WWIT_APPS.forEach(a => { const k = normAppKey(a.name); if (k) apps.add(k) })
+  Object.keys(tagsDb).forEach(u => { if (/wwit\.design/.test(u) && !isVideo(u)) screens.add(u) })
+  ucCache.forEach(uc => {
+    const imgs = (uc.images || []).filter(i => i && i.src && !isVideo(i.src))
+    if (!imgs.length) return
+    const k = normAppKey(uc.appName); if (k) apps.add(k)
+    imgs.forEach(i => screens.add(i.src))
+  })
+  return { apps: apps.size, screens: screens.size }
+})
+
 ipcMain.handle('load-dz-tags', () => { const o = {}; dzTagKeys.forEach(k => { o[k] = tagsDb[k] }); return o })
 
 ipcMain.handle('get-upa-urls', () => {
@@ -2330,6 +2389,27 @@ ipcMain.handle('claude-api', async (_, { apiKey, base64Image, prompt, mediaType,
       req.end()
     })
   } catch(e) { throw new Error(e.message) }
+})
+
+// API 키가 실제로 쓸 수 있는 키인지 확인 (모델 목록을 1개만 조회 — 요금 없음)
+ipcMain.handle('check-api-key', async (_, apiKey) => {
+  const key = String(apiKey || '').trim()
+  if (!/^sk-ant-[A-Za-z0-9_\-]{20,}$/.test(key)) return { ok: false, reason: 'format' }
+  return await new Promise(resolve => {
+    const req = https.request({
+      hostname: 'api.anthropic.com', path: '/v1/models?limit=1', method: 'GET',
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' }, timeout: 10000
+    }, res => {
+      res.resume()
+      const c = res.statusCode
+      if (c === 200 || c === 429 || c >= 500) resolve({ ok: true, status: c })   // 429·5xx: 키는 맞고 서버가 바쁜 것
+      else if (c === 401 || c === 403) resolve({ ok: false, reason: 'invalid', status: c })
+      else resolve({ ok: false, reason: 'other', status: c })
+    })
+    req.on('timeout', () => { req.destroy(); resolve({ ok: false, reason: 'network' }) })
+    req.on('error', () => resolve({ ok: false, reason: 'network' }))
+    req.end()
+  })
 })
 
 // 로컬 이미지 저장 (클립보드/파일 드롭)

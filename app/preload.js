@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld('api', {
   rebuildUc:     ()         => ipcRenderer.invoke('rebuild-uc'),
   cacheStatus:   ()         => ipcRenderer.invoke('cache-status'),
   getAppList:    ()         => ipcRenderer.invoke('get-app-list'),
+  getTotals:     ()         => ipcRenderer.invoke('get-totals'),
+  checkApiKey:   (key)      => ipcRenderer.invoke('check-api-key', key),
   getUpaCats:    ()         => ipcRenderer.invoke('get-upa-cats'),
   scrapeUpaCat:  (id, name) => ipcRenderer.invoke('scrape-upa-cat', id, name),
   saveFile:      (opts)     => ipcRenderer.invoke('save-file', opts),
