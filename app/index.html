@@ -848,6 +848,7 @@ html.dark{--st-ok:#6EE7B7;--st-danger:#FCA5A5;--st-info:#8BA3D4}
 #sb{width:236px;min-width:236px}
 .ai-side{margin:14px 16px 12px}
 #upd-group.collapsed{margin-top:0}   /* 접혀 있을 때는 카드와 AI 버튼 사이에 빈 간격이 남지 않게 */
+#upd-group{transition:max-height .25s ease,margin-top .25s ease}   /* 위 간격도 높이와 같이 서서히 줄어들게 (한 번에 툭 사라지지 않게) */
 .ai-side-btn{padding:13px 0;border-radius:12px;font-size:13.5px}
 .ai-side + .nav-cards{margin-top:14px}
 .nav-cards{gap:8px;margin:18px 16px 0}
@@ -922,6 +923,8 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 .ix-left{flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--g09)}
 .ix-big{flex:1;min-height:0;position:relative;overflow:hidden}
 .ix-big .ix-bg{opacity:1;top:12px;left:12px}
+.ix-img-btn{position:absolute;top:10px;right:10px;font-family:inherit;font-size:11.5px;font-weight:700;color:var(--g01);background:var(--surface);border:1px solid var(--g09);border-radius:8px;padding:6px 10px;cursor:pointer;box-shadow:0 2px 6px rgba(15,23,42,.08)}
+.ix-img-btn:hover{border-color:var(--p600);color:var(--p600)}
 .ix-info{padding:14px 18px}
 .ix-info h3{margin:0;font-size:15px;font-weight:800;color:var(--g01)}
 .ix-info p{margin:4px 0 0;font-size:11.5px;color:var(--g05)}
@@ -1018,7 +1021,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
         <div>• <a href="https://wwit.design" target="_blank" style="color:var(--g05);text-decoration:none">WWIT</a> (wwit.design)</div>
         <div>• <a href="https://upa.userspoon.com/" target="_blank" style="color:var(--g05);text-decoration:none">UPA</a> (upa.userspoon.com)</div>
         <div>• <a href="https://ko.designus.design/reference" target="_blank" style="color:var(--g05);text-decoration:none">Designus</a> (designus.design)</div>
-        <div>• <a href="https://uiverse.io" target="_blank" style="color:var(--g05);text-decoration:none">Uiverse</a> (uiverse.io) — 인터랙션 효과</div>
+        <div>• <a href="https://uiverse.io" target="_blank" style="color:var(--g05);text-decoration:none">Uiverse</a> (uiverse.io)</div>
         <div>• <a href="https://krds.go.kr" target="_blank" style="color:var(--g05);text-decoration:none">KRDS</a> — 행정안전부</div>
         <div style="margin-top:4px;font-size:9px;color:var(--g07)">KRDS는 공공누리 제1유형(출처표시) 라이선스 적용</div>
         <div style="font-size:9px;color:var(--g07)">Uiverse 효과는 MIT License · 각 효과의 만든 사람 표시</div>
@@ -1148,7 +1151,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
       <div class="ix-head">
         <div class="ix-top"><div><div class="ix-title">인터랙션</div>
           <div class="ix-sub">Uiverse 효과 <b id="ix-total">-</b>개 · 코드를 바로 복사해서 쓸 수 있어요</div></div>
-          <div class="ix-hint">마우스를 올리면 움직여요 · 누르면 코드와 함께 크게 볼 수 있어요</div></div>
+          <div class="ix-hint">마우스를 올리면 움직여요 · 누르면 코드와 함께 크게 보기 · Ctrl+C로 이미지 복사</div></div>
         <div class="ix-chips" id="ix-chips"></div>
       </div>
       <div class="ix-scroll" id="ix-scroll"><div class="ix-grid" id="ix-grid"></div><div class="ix-more" id="ix-more"></div></div>
@@ -7440,7 +7443,7 @@ JSON 배열만 반환:`
 // 스크립트는 처음부터 빼 두었음. 평소엔 멈춰 있고 마우스를 올린 카드만 움직임.
 const IX_CATS = ['전체', '버튼', '로딩', '카드', '토글', '입력창', '체크박스', '폼', '패턴', '라디오', '툴팁', '알림']
 const IX_BATCH = 40
-let _ixByCode = {}
+let _ixByCode = {}, _ixHoverCard = null
 // 공유 코드: 효과 id로 항상 똑같이 만들어지는 6자리 (예: #ix-k3f9a2). 받은 사람이 검색창에 붙여넣으면 바로 열림
 function ixCodeOf(id) {
   let h = 0x811c9dc5
@@ -7551,6 +7554,7 @@ function ixMount(host, e, play) {
 .ix-fit{display:inline-flex;align-items:center;justify-content:center;transform-origin:center center}
 .ix-fit.fill{display:flex;width:100%;height:100%}
 :host(:not(.play)) *,:host(:not(.play)) *::before,:host(:not(.play)) *::after{animation-play-state:paused!important}
+:host(.snap) *,:host(.snap) *::before,:host(.snap) *::after{transition:none!important}
 </style><style>${ixScopeCss(e.s)}</style><div class="ix-root"><div class="ix-fit">${ixCleanHtml(e.h)}</div></div>`
   if (play) host.classList.add('play')
   // 링크 이동·폼 제출로 부찌 화면이 바뀌지 않게 막음
@@ -7655,8 +7659,8 @@ function ixCard(e) {
   meta.appendChild(l); meta.appendChild(btn)
   card.onclick = () => ixOpen(e)
   card.appendChild(stage); card.appendChild(meta)
-  card.addEventListener('mouseenter', () => { host._hover = true; host.classList.add('play'); ixDemo(host, true) })
-  card.addEventListener('mouseleave', () => { host._hover = false; host.classList.remove('play'); ixDemo(host, false) })
+  card.addEventListener('mouseenter', () => { host._hover = true; _ixHoverCard = { stage, host }; host.classList.add('play'); ixDemo(host, true) })
+  card.addEventListener('mouseleave', () => { host._hover = false; if (_ixHoverCard && _ixHoverCard.host === host) _ixHoverCard = null; host.classList.remove('play'); ixDemo(host, false) })
   ixMount(host, e, false)
   return card
 }
@@ -7671,12 +7675,15 @@ function ixOpen(e) {
     <button class="ix-share" type="button" title="부찌를 쓰는 사람에게 보낼 공유 코드를 복사">공유 코드</button><button class="ix-copy" type="button">코드 복사</button><button class="ix-x" type="button" title="닫기">✕</button></div><pre class="ix-code"></pre></div></div>`
   document.body.appendChild(ov)
   const big = ov.querySelector('.ix-big'); big.appendChild(ixBgBtn(big))
+  const imgBtn = Object.assign(document.createElement('button'), { className: 'ix-img-btn', type: 'button', textContent: '이미지 복사', title: '배경 없이 이미지로 복사 (Ctrl+C) · Figma에 바로 붙여넣기' })
+  big.appendChild(imgBtn)
   const bh = ov.querySelector('.ix-host')
   ixMount(bh, e, true)
   // 크게 보기: 자동 시연하다가, 마우스를 미리보기에 올리면 멈추고 직접 눌러볼 수 있음
   setTimeout(() => ixDemo(bh, true), 300)
-  big.addEventListener('mouseenter', () => ixDemo(bh, false))
-  big.addEventListener('mouseleave', () => ixDemo(bh, true))
+  big.addEventListener('mouseenter', () => { big._in = true; ixDemo(bh, false) })
+  big.addEventListener('mouseleave', () => { big._in = false; if (!big._busy) ixDemo(bh, true) })
+  imgBtn.onclick = ev => { ev.stopPropagation(); ixCopyImage(big, bh) }
   const tags = ixTags(e)
   ov.querySelector('h3').textContent = e.c + (tags.length ? ' · ' + tags.join(' · ') : '')
   const p = ov.querySelector('.ix-info p')
@@ -7717,8 +7724,76 @@ function ixOpen(e) {
   ov.querySelector('.ix-x').onclick = ixClose
   ov.addEventListener('mousedown', ev => { if (ev.target === ov) ixClose() })
 }
+// 배경 없이 이미지 복사: 흰 배경·검은 배경으로 한 번씩 찍어서, 두 장의 차이로 투명도를 계산 (그림자·빛 번짐도 반투명으로 살아남)
+async function ixCopyImage(big, host) {
+  if (big._busy || !window.api || !window.api.captureRect) return
+  big._busy = true
+  const hide = big.querySelectorAll('.ix-bg, .ix-img-btn')
+  const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 40))))
+  try {
+    host.classList.add('snap')   // 전환 효과 없이 바로 기본 모습으로 (두 번 찍는 사이에 모양이 달라지지 않게)
+    ixDemo(host, false); host.classList.remove('play')   // 기본 모습, 지금 장면에서 멈춤
+    hide.forEach(b => { b.style.visibility = 'hidden' })
+    big.style.transition = 'none'
+    const r = big.getBoundingClientRect()
+    const rect = { x: r.left, y: r.top, width: r.width, height: r.height }
+    big.style.setProperty('background', '#ffffff', 'important'); await frame()
+    const wUrl = await window.api.captureRect(rect)
+    big.style.setProperty('background', '#000000', 'important'); await frame()
+    const kUrl = await window.api.captureRect(rect)
+    if (!wUrl || !kUrl) throw new Error('capture')
+    const load = u => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = u })
+    const [wi, ki] = await Promise.all([load(wUrl), load(kUrl)])
+    const W = wi.naturalWidth, H = wi.naturalHeight
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H
+    const cx = cv.getContext('2d', { willReadFrequently: true })
+    cx.drawImage(wi, 0, 0); const wd = cx.getImageData(0, 0, W, H).data
+    cx.clearRect(0, 0, W, H); cx.drawImage(ki, 0, 0); const kImg = cx.getImageData(0, 0, W, H); const kd = kImg.data
+    const cr = Math.ceil(18 * W / r.width)   // 둥근 모서리 바깥은 미리보기가 아니라서 제외
+    let x0 = W, y0 = H, x1 = -1, y1 = -1
+    for (let i = 0, p = 0; i < kd.length; i += 4, p++) {
+      const diff = ((wd[i] - kd[i]) + (wd[i + 1] - kd[i + 1]) + (wd[i + 2] - kd[i + 2])) / 3
+      const a = Math.max(0, Math.min(255, 255 - diff))
+      const px = p % W, py = (p / W) | 0
+      if (a < 3 || ((px < cr || px >= W - cr) && (py < cr || py >= H - cr))) { kd[i] = kd[i + 1] = kd[i + 2] = kd[i + 3] = 0; continue }
+      const f = 255 / a
+      kd[i] = Math.min(255, kd[i] * f); kd[i + 1] = Math.min(255, kd[i + 1] * f); kd[i + 2] = Math.min(255, kd[i + 2] * f); kd[i + 3] = a
+      const x = p % W, y = (p / W) | 0
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y
+    }
+    if (x1 < 0) { showToast('복사할 모양이 없어요'); return }
+    cx.putImageData(kImg, 0, 0)
+    const pad = 4; x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(W - 1, x1 + pad); y1 = Math.min(H - 1, y1 + pad)
+    const out = document.createElement('canvas'); out.width = x1 - x0 + 1; out.height = y1 - y0 + 1
+    out.getContext('2d').drawImage(cv, x0, y0, out.width, out.height, 0, 0, out.width, out.height)
+    const ok = await window.api.copyPng(out.toDataURL('image/png'))
+    showToast(ok ? '배경 없는 이미지로 복사했어요 · Figma에 붙여넣으세요' : '이미지를 복사하지 못했어요')
+  } catch (err) {
+    console.error('[ix copy image]', err); showToast('이미지를 복사하지 못했어요')
+  } finally {
+    big.style.removeProperty('background'); hide.forEach(b => { b.style.visibility = '' })
+    requestAnimationFrame(() => { big.style.transition = '' })
+    host.classList.remove('snap'); big._busy = false
+    const active = big.classList.contains('ix-big') || host._hover   // 크게 보기는 계속 재생, 목록 카드는 마우스가 올라가 있을 때만
+    if (active) host.classList.add('play')
+    if (active && !big._in) ixDemo(host, true)
+  }
+}
 function ixClose() { const o = document.getElementById('ix-ov'); if (o) { o.querySelectorAll('.ix-host').forEach(h => ixDemo(h, false)); o.remove() } }
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && document.getElementById('ix-ov')) ixClose() })
+// Ctrl+C: 크게 보기 창이 열려 있으면 그 효과를, 목록에서는 마우스를 올린 카드를 배경 없는 이미지로 복사
+// (코드를 드래그해 선택했거나 입력칸에 있을 때는 원래대로 글자 복사)
+document.addEventListener('keydown', ev => {
+  if (!(ev.ctrlKey || ev.metaKey) || ev.key.toLowerCase() !== 'c' || ev.shiftKey || ev.altKey) return
+  if (String(window.getSelection() || '').trim()) return
+  const t = ev.composedPath ? ev.composedPath()[0] : ev.target
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+  const ov = document.getElementById('ix-ov')
+  if (ov) { ev.preventDefault(); ixCopyImage(ov.querySelector('.ix-big'), ov.querySelector('.ix-big .ix-host')); return }
+  if (_ixHoverCard && document.getElementById('ix-view').classList.contains('on') && _ixHoverCard.stage.isConnected) {
+    ev.preventDefault(); ixCopyImage(_ixHoverCard.stage, _ixHoverCard.host)
+  }
+})
 window.addEventListener('resize', () => { document.querySelectorAll('#ix-ov .ix-host').forEach(ixFit) })
 </script>
 </body>

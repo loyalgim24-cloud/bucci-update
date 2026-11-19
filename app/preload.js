@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld('api', {
   scrapeUpaCat:  (id, name) => ipcRenderer.invoke('scrape-upa-cat', id, name),
   saveFile:      (opts)     => ipcRenderer.invoke('save-file', opts),
   copyImage:     (url)      => ipcRenderer.invoke('copy-image', url),
+  captureRect:   (r)        => ipcRenderer.invoke('capture-rect', r),
+  copyPng:       (dataUrl)  => ipcRenderer.invoke('copy-png', dataUrl),
   downloadMultiple: (urls)   => ipcRenderer.invoke('download-multiple', urls),
   getAppPath:      ()        => ipcRenderer.invoke('get-app-path'),
   loadTags:        ()        => ipcRenderer.invoke('load-tags'),

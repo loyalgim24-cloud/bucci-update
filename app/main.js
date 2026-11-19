@@ -1348,6 +1348,7 @@ app.whenReady().then(async () => {
     createMainWindow()
     win.once('ready-to-show', () => {
       win.show()
+      startUpdaterSoon()
       win.webContents.send('cache-loaded', { appCount: Object.keys(urlCache.apps).length })
       win.webContents.send('uc-loaded', { count: ucCache.length })
     })
@@ -1368,6 +1369,7 @@ app.whenReady().then(async () => {
 
     win.once('ready-to-show', () => {
       win.show()
+      startUpdaterSoon()
       win.webContents.send('cache-loaded', { appCount: Object.keys(urlCache.apps).length })
       win.webContents.send('uc-loaded', { count: ucCache.length })
       splash.destroy()
@@ -1479,12 +1481,17 @@ ipcMain.handle('check-update', async () => {
   catch (e) { return { status: 'offline', error: String(e && e.message || e) } }
 })
 
-// 자동 업데이트: 창이 뜨고 잠시 뒤 새 버전 확인 (실패해도 앱 동작에는 영향 없음)
-app.whenReady().then(() => {
+// 자동 업데이트: 부찌 창이 실제로 화면에 뜬 뒤 잠시 있다가 새 버전 확인 (실패해도 앱 동작에는 영향 없음)
+// 예전엔 앱이 켜지고 8초 뒤에 확인했는데, 처음 설치했을 때(또는 저장해 둔 목록이 오래돼 다시 모을 때)는
+// 목록을 모으는 동안 부찌 창이 숨겨져 있어서 안내 창이 안 보이는 곳에 떴다가 사라졌음
+let _updStarted = false
+function startUpdaterSoon() {
+  if (_updStarted) return
+  _updStarted = true
   setTimeout(() => {
     try { require('./updater').start({ app, dialog, getWindow: () => win }) } catch (e) { console.log('[update] skip:', e.message) }
   }, 8000)
-})
+}
 
 // Ctrl+C를 before-input-event로 렌더러에 전달
 // createMainWindow 후 직접 등록 (browser-window-focus 보다 안정적)
@@ -2210,6 +2217,24 @@ ipcMain.handle('save-file', async (_, { url, defaultName }) => {
 })
 
 // 이미지 복사 - 렌더러에서 Canvas로 PNG 변환 후 클립보드
+// 인터랙션 '이미지 복사': 화면의 지정한 영역을 PNG로 찍어 돌려줌 (배경 빼기는 화면 쪽에서 계산)
+ipcMain.handle('capture-rect', async (e, r) => {
+  try {
+    const z = e.sender.getZoomFactor() || 1   // 화면 확대/축소 상태여도 같은 영역이 찍히게
+    const img = await e.sender.capturePage({ x: Math.round(r.x * z), y: Math.round(r.y * z), width: Math.round(r.width * z), height: Math.round(r.height * z) })
+    return img.isEmpty() ? null : img.toDataURL()
+  } catch (err) { console.error('[capture-rect]', err); return null }
+})
+// 투명 배경 PNG를 클립보드에 (Figma 등에 붙여넣기용)
+ipcMain.handle('copy-png', async (_, dataUrl) => {
+  try {
+    const { clipboard, nativeImage } = require('electron')
+    const ni = nativeImage.createFromDataURL(dataUrl)
+    if (ni.isEmpty()) return false
+    clipboard.writeImage(ni)
+    return true
+  } catch (err) { console.error('[copy-png]', err); return false }
+})
 ipcMain.handle('copy-image', async (_, url) => {
   try {
     url = designus.big(url)
