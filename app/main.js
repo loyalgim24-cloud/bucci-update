@@ -1093,10 +1093,14 @@ function resolveKw(kw) {
     const sameNameApp = findAppsByWholeQuery(w)
     if (!(sameNameApp && sameNameApp.exact)) {
       // 그 태그가 붙은 화면이 충분히 있을 때만 (거의 없으면 기존 방식대로 앱·패턴에서 찾음)
-      let n = 0
+      let n = 0, upaM = {}
+      try { upaM = upaAppMeta() } catch {}
+      const lvlMap = isLookTag(w) ? null : appLevelTags()
       for (const url in tagsDb) {
         const tags = tagsDb[url]
-        if (Array.isArray(tags) && tags.some(t => { const tl = String(t).toLowerCase(); return tl === w || tl.includes(w) })) { if (++n >= 8) break }
+        if (!Array.isArray(tags) || !url.startsWith('http')) continue
+        if (isLookTag(w) ? tags.some(t => { const tl = String(t).toLowerCase(); return tl === w || tl.includes(w) })
+                         : screenTagScore(tags, w, lvlKeyOf(url, upaM), lvlMap).score) { if (++n >= 8) break }
       }
       if (n >= 8) return { type:'screen_tag', keyword: w }
     }
@@ -1548,7 +1552,7 @@ function describeSearch(kw, res) {
     case 'screen_tag':
       return r.forced
         ? { text: `'${r.keyword}' 태그가 붙은 화면이에요.` }
-        : { text: `'${r.keyword}' 화면을 태그로 찾았어요.`, apps: relatedAppsFor(r.keyword) }
+        : { text: `'${r.keyword}' 화면을 태그로 찾았어요.`, apps: [...new Set([...(res && res.relApps || []), ...relatedAppsFor(r.keyword)])].slice(0, 6) }
     case 'wwit_app':        return appMeta([r.app.name])
     case 'mixed_app':       return appMeta([r.wwit.name])
     case 'wwit_multi':      return appMeta(r.apps.map(a => a.name))
@@ -1584,6 +1588,87 @@ function multiWordAndSearch(words) {
   return { data: filterVideoItems(andData), source:'mixed', meta: { text: `'${words.join("' + '")}' 조건이 모두 맞는 화면이에요.` } }
 }
 
+// ── 태그 검색 정확도 ──────────────────────────────────────────────────
+// 1) 앱 전체에 붙은 태그: 한 앱 화면의 80% 이상에 붙은 태그는 화면 내용이 아니라 "그 앱의 분류"로 봄
+//    (예: 네이버페이는 온보딩·로그인까지 모든 화면에 '결제'가 붙어 있음) → 화면 검색에서는 근거로 쓰지 않고 '관련 앱'으로 안내
+//    단, 탭바·카드·색상·다크모드처럼 모든 화면에 실제로 있을 수 있는 생김새 태그는 그대로 둠
+// 2) 비슷한 말: 같은 뜻으로 다르게 붙은 태그도 함께 찾음 (정확히 같은 태그만, 점수는 조금 낮게)
+// 3) 관련도 순서: 검색어 그대로인 태그 > 더 구체적인 태그(결제완료 등) > 비슷한 말, 그 앱에서 드문 태그일수록 앞으로
+const APP_LEVEL_RATIO = 0.8, APP_LEVEL_MIN = 8
+const LOOK_TAGS = new Set(['탭바','gnb','버튼','cta','카드','카드형','리스트','리스트형','목록','그리드형','입력폼','폼','텍스트필드','입력',
+  '체크박스','토글','드롭다운','검색바','칩','탭','모달','팝업','다이얼로그','바텀시트','헤더','배너','모바일','단일화면','피드형','스크린',
+  '미니멀','컬러풀','다크모드','라이트모드','상세','홈','홈화면'])
+const isLookTag = t => LOOK_TAGS.has(t) || /톤$/.test(t)
+const TAG_SYNONYMS = {
+  '송금':['이체'], '이체':['송금'], '채팅':['메시지','대화','챗봇','채팅방'], '지도':['맵','위치','지도형'], '자산':['잔액','자산관리'], '잔액':['자산'],
+  '투자':['주식'], '주식':['투자'], '쿠폰':['할인'], '포인트':['적립'], '적립':['포인트'], '캘린더':['달력','날짜선택'], '달력':['캘린더','날짜선택'],
+  '일정':['캘린더','달력'], '에러':['오류'], '오류':['에러'], '빈상태':['빈화면'], '후기':['리뷰','평점'], '프로필':['내정보'], '상담':['고객센터','문의'],
+  '고객센터':['상담','문의'], '문의':['상담','고객센터'], '배송':['주문내역','이용내역'], '예약':['예약 확인'], '모달':['팝업','다이얼로그'],
+  '비밀번호':['핀번호'], '인증':['본인인증','생체인증'], '권한':['권한요청'], '공유':['공유하기']
+}
+let _appLvl = null, _appLvlKey = ''
+function appOfTaggedUrl(url, upaMeta) {
+  const m = url.match(/\/+images\/posts\/([^/]+)\//)
+  if (m) return slug2name[m[1]] || m[1]
+  if (dzAppByUrl[url]) return dzAppByUrl[url]
+  const u = (upaMeta || {})[url]
+  return u && u[0] ? u[0] : null
+}
+// 앱 전체 태그는 출처별로 따로 셈 (WWIT 앱 묶음은 slug, 나머지는 앱 이름). 섞어서 세면 비율이 희석돼 못 잡음
+function lvlKeyOf(url, upaMeta) {
+  const m = url.match(/\/+images\/posts\/([^/]+)\//)
+  if (m) return 'w:' + m[1]
+  const a = appOfTaggedUrl(url, upaMeta)
+  return a ? 'a:' + a : null
+}
+function appLevelTags() {
+  let upaMeta = {}
+  try { upaMeta = upaAppMeta() } catch {}
+  const key = Object.keys(tagsDb).length + '|' + ucCache.length + '|' + Object.keys(dzAppByUrl).length
+  if (_appLvl && _appLvlKey === key) return _appLvl
+  const tot = {}, cnt = {}
+  for (const url in tagsDb) {
+    const tags = tagsDb[url]
+    if (!Array.isArray(tags) || !url.startsWith('http')) continue
+    const a = lvlKeyOf(url, upaMeta); if (!a) continue
+    tot[a] = (tot[a] || 0) + 1
+    const c = cnt[a] || (cnt[a] = {})
+    new Set(tags.map(t => String(t).toLowerCase())).forEach(t => { c[t] = (c[t] || 0) + 1 })
+  }
+  const lvl = {}
+  for (const a in tot) {
+    if (tot[a] < APP_LEVEL_MIN) continue
+    const set = new Map()
+    for (const [t, k] of Object.entries(cnt[a])) if (!isLookTag(t)) set.set(t, k / tot[a])
+    lvl[a] = { total: tot[a], ratio: set }
+  }
+  _appLvl = lvl; _appLvlKey = key
+  return lvl
+}
+// 태그 하나가 검색어와 얼마나 맞는지: 3 그대로 / 2.5 더 구체적인 태그(검색어를 포함) / 2 비슷한 말 / 0
+function tagMatchScore(tag, kl, syns) {
+  if (tag === kl) return 3
+  if (kl.length >= 2 && tag.includes(kl)) return 2.5
+  if (syns && syns.includes(tag)) return 2
+  return 0
+}
+// 화면 하나의 점수. 0이면 결과에서 뺌 (맞은 태그가 전부 "앱 전체 태그"인 경우 포함)
+// lvlMap: appLevelTags() 결과 (반복문 밖에서 한 번만 구해서 넘김)
+function screenTagScore(tags, kl, lvlKey, lvlMap) {
+  const syns = TAG_SYNONYMS[kl] || null
+  const lvl = lvlMap && lvlKey ? (lvlMap[lvlKey] || null) : null
+  let best = 0, appLevelOnly = false
+  for (const raw of tags) {
+    const t = String(raw).toLowerCase()
+    const sc = tagMatchScore(t, kl, syns)
+    if (!sc) continue
+    const r = lvl ? (lvl.ratio.get(t) || 0) : 0
+    if (r >= APP_LEVEL_RATIO) { appLevelOnly = true; continue }   // 앱 분류 태그는 근거로 안 씀
+    best = Math.max(best, sc + (1 - r))                            // 그 앱에서 드문 태그일수록 +
+  }
+  return { score: best, appLevelOnly: !best && appLevelOnly }
+}
+
 async function searchCore(kw) {
   const _searchKw = kw
   const r = resolveKw(kw)
@@ -1591,27 +1676,51 @@ async function searchCore(kw) {
   // 화면 종류 단어 / "#단어": 태그가 붙은 화면을 직접 찾음 (WWIT + UPA 모두)
   if (r?.type === 'screen_tag') {
     const kl = r.keyword.toLowerCase()
-    const data = {}
+    const data = {}, score = {}, relApps = []
     let upaMeta = {}
     try { upaMeta = upaAppMeta() } catch {}
+    // "#단어"로 직접 찾거나 생김새 태그(탭바·다크모드·○○톤 등)를 찾을 때는 예전처럼 그 태그가 붙은 화면을 모두 보여줌
+    const plain = r.forced || isLookTag(kl)
+    const lvlMap = plain ? null : appLevelTags()
     Object.entries(tagsDb).forEach(([url, tags]) => {
       if (!Array.isArray(tags) || !url.startsWith('http')) return
-      if (!tags.some(t => { const tl = String(t).toLowerCase(); return tl === kl || (kl.length >= 2 && tl.includes(kl)) })) return
       const m = url.match(/\/images\/posts\/([^/]+)\//)
       const appName = m ? (slug2name[m[1]] || m[1]) : ((upaMeta[url] || [])[0] || '기타 레퍼런스')
+      let sc
+      if (plain) {
+        if (!tags.some(t => { const tl = String(t).toLowerCase(); return tl === kl || (kl.length >= 2 && tl.includes(kl)) })) return
+        sc = 1
+      } else {
+        const res = screenTagScore(tags, kl, lvlKeyOf(url, upaMeta), lvlMap)
+        if (res.appLevelOnly && !relApps.includes(appName)) relApps.push(appName)
+        if (!res.score) return
+        sc = res.score
+      }
       if (!data[appName]) data[appName] = []
       data[appName].push({ type:'image', src:url, thumbnail:url, source: m ? 'wwit' : 'upa', tags })
+      score[url] = sc
     })
-    // UPA: 화면 묶음 제목에 그 단어가 있는 경우도 포함
+    // UPA: 화면 묶음 제목에 그 단어가 있는 경우도 포함 (태그 근거보다는 뒤에)
     ucCache.forEach(uc => {
       if (!uc.appName || !uc.images.length) return
       if (!String(uc.title || '').toLowerCase().includes(kl)) return
       if (!data[uc.appName]) data[uc.appName] = []
       const have = new Set(data[uc.appName].map(i => i.src))
-      uc.images.forEach(img => { if (!have.has(img.src)) data[uc.appName].push({
-        type:'image', src:img.src, thumbnail:img.src, screenName:img.screenName, source:'upa', ucTitle:uc.title, ucUrl:uc.url }) })
+      uc.images.forEach(img => { if (!have.has(img.src)) { data[uc.appName].push({
+        type:'image', src:img.src, thumbnail:img.src, screenName:img.screenName, source:'upa', ucTitle:uc.title, ucUrl:uc.url }); if (!(img.src in score)) score[img.src] = 1.5 } })
     })
-    return { data: sortDataByRelevance(filterVideoItems(data), r.keyword), source:'mixed' }
+    let out = filterVideoItems(data)
+    if (plain) out = sortDataByRelevance(out, r.keyword)
+    else {
+      // 앱 안에서는 점수 높은 화면부터, 앱은 상위 화면들의 평균 점수 → 화면 수 순서
+      const ranked = Object.entries(out).map(([app, items]) => {
+        items.sort((a, b) => (score[b.src] || 0) - (score[a.src] || 0))
+        const top = items.slice(0, 5)
+        return [app, items, top.reduce((s, i) => s + (score[i.src] || 0), 0) / top.length + Math.min(items.length, 12) * 0.03 - (app === '기타 레퍼런스' ? 9 : 0)]
+      }).sort((a, b) => b[2] - a[2])
+      out = {}; ranked.forEach(([app, items]) => { out[app] = items })
+    }
+    return { data: out, source:'mixed', relApps: relApps.filter(a => !out[a]) }
   }
 
   // AND 검색: 앱 + 패턴 (예: "토스 홈화면")

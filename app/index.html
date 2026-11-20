@@ -5122,9 +5122,9 @@ const SQ_DEFS = [
   ['검색결과','type',4,['검색결과'],['검색후','찾은결과','결과화면']],
   ['검색','type',4,['검색','검색바'],['검색창','서치','찾기화면']],
   ['필터','type',4,['필터'],['정렬','조건선택']],
-  ['결제','type',4,['결제'],['체크아웃','payment','계산화면','결제창','계산하는','계산할','계산','돈내는','결제하는']],
+  ['결제','type',4,['결제','결제수단','카드결제','결제화면','결제정보','바로결제','현장결제','간편결제'],['체크아웃','payment','계산화면','결제창','계산하는','계산할','계산','돈내는','결제하는']],
   ['장바구니','type',4,['장바구니','담기'],['카트','cart','물건담','상품담','담아두','담아놓','담고']],
-  ['주문','type',4,['주문','구매'],['주문내역','구매내역','주문하기']],
+  ['주문','type',4,['주문','구매','주문내역','구매확정'],['주문내역','구매내역','주문하기']],
   ['마이페이지','type',4,['마이페이지','내정보','프로필'],['내페이지','내계정','마이메뉴','mypage']],
   ['설정','type',4,['설정','환경설정'],['세팅','setting','옵션화면']],
   ['알림','type',4,['알림','노티','푸시'],['알림창','알림목록','알림함','notification']],
@@ -5138,12 +5138,14 @@ const SQ_DEFS = [
   ['호출','type',3,['호출'],['택시부르','택시잡','부르는','배차']],
   ['비밀번호','type',3,['비밀번호'],['비번','암호','핀번호','패스워드']],
   ['채팅','type',4,['채팅','채팅방','메시지','대화','상담'],['채팅창','메신저','대화창','대화방','문의창','상담창','고객센터','1대1문의','문의하기','문의','카톡','dm']],
-  ['지도','type',4,['지도','맵'],['map','위치찾기','주변찾기','길찾기']],
+  ['지도','type',4,['지도','맵','지도형','위치'],['map','위치찾기','주변찾기','길찾기']],
   ['통계','type',4,['통계','차트','그래프'],['대시보드','리포트','분석화면','수치']],
-  ['캘린더','type',4,['캘린더','달력','일정'],['일정화면','calendar','날짜선택','스케줄','일과']],
+  ['예약','type',4,['예약','예약 확인'],['예매','예약하기','부킹','booking','좌석선택','좌석']],
+  ['배송','type',3,['배송','주문내역','이용내역','배송방법 선택'],['택배','배송조회','배송현황','배송지']],
+  ['캘린더','type',4,['캘린더','달력','일정','날짜선택'],['일정화면','calendar','날짜선택','스케줄','일과']],
   ['쿠폰','type',3,['쿠폰','할인','혜택','멤버십'],['할인쿠폰','프로모션','이벤트']],
   ['포인트','type',3,['포인트','적립','리워드'],['마일리지','캐시','스탬프']],
-  ['송금','type',4,['송금'],['이체','돈보내','돈을보내','돈부치','송금하','보내기']],
+  ['송금','type',4,['송금','이체'],['이체','돈보내','돈을보내','돈부치','송금하','보내기']],
   ['자산','type',3,['자산','자산관리','잔액'],['계좌','내자산','통장']],
   ['투자','type',3,['투자','주식'],['증권','코인','펀드']],
   ['피드','type',3,['피드형','피드'],['타임라인','sns피드','인스타형']],
@@ -5268,15 +5270,58 @@ function sqHitScore(set, url, c) {
   if (c.kind === 'app') return (sqAppOf(url) === c.label || set.has(c.label.toLowerCase())) ? 3 : 0
   // 다크/라이트 태그는 WWIT 원본이거나 픽셀 분석(재태깅)을 거친 화면만 신뢰
   if (c.kind === 'mode' && !url.includes('wwit.design') && !SQ_RETAG_MARK.some(m => set.has(m))) return 0
+  // 화면 유형 조건은 앱 전체에 붙은 태그를 근거로 쓰지 않음
+  // (홈화면·상세처럼 화면 구성을 뜻하는 조건은 예전 그대로)
+  const lvl = c.kind === 'type' && c.label !== '홈화면' && c.label !== '상세' ? sqAppLevel(url) : null
+  const has = t => set.has(t) && !(lvl && lvl.has(t))
   let best = 0
   for (let i = 0; i < c.terms.length; i++) {
     const term = c.terms[i]
-    if (set.has(term)) { if (i === 0) return 3; best = Math.max(best, 2); continue }
-    if (!best && term.length >= 3) { for (const t of set) if (t.includes(term)) { best = 1; break } }
+    if (has(term)) { if (i === 0) return 3; best = Math.max(best, 2); continue }
+    if (!best && term.length >= 3) { for (const t of set) if (t.includes(term) && !(lvl && lvl.has(t))) { best = 1; break } }
   }
   return best
 }
 function sqHit(set, url, c) { return sqHitScore(set, url, c) > 0 }
+
+// 앱 전체에 붙은 태그: 한 앱 화면의 80% 이상에 붙은 태그는 화면 내용이 아니라 "그 앱의 분류"
+// (예: 네이버페이는 온보딩·로그인까지 모든 화면에 '결제'가 붙어 있음). 화면 유형 조건을 찾을 때는 근거로 쓰지 않음.
+let _sqAppLvl = null, _sqAppLvlN = -1
+// 검색할 때마다 한 번 호출 (데이터가 바뀌었을 때만 다시 계산)
+function sqAppLevelPrepare() {
+  const n = Object.keys(tagsDb).length * 7 + Object.keys(_upaMeta).length
+  if (!_sqAppLvl || _sqAppLvlN !== n) {
+    const tot = {}, cnt = {}
+    Object.keys(tagsDb).forEach(url => {
+      const tags = tagsDb[url]
+      if (!url.startsWith('http') || !Array.isArray(tags)) return
+      const a = sqLvlKey(url); if (!a) return
+      tot[a] = (tot[a] || 0) + 1
+      const c = cnt[a] || (cnt[a] = {})
+      new Set(tags.map(t => String(t).toLowerCase())).forEach(t => { c[t] = (c[t] || 0) + 1 })
+    })
+    _sqAppLvl = {}
+    Object.keys(tot).forEach(a => {
+      if (tot[a] < 8) return
+      const s = new Set()
+      Object.entries(cnt[a]).forEach(([t, k]) => { if (k / tot[a] >= 0.8) s.add(t) })
+      if (s.size) _sqAppLvl[a] = s
+    })
+    _sqAppLvlN = n
+  }
+}
+// 앱 전체 태그는 출처별로 따로 셈 (WWIT 앱 묶음은 slug, 나머지는 앱 이름). 섞어서 세면 비율이 희석돼 못 잡음
+function sqLvlKey(url) {
+  const slug = sqSlugOf(url)
+  if (slug) return 'w:' + slug
+  const a = sqAppOf(url)
+  return a === '기타 레퍼런스' ? null : 'a:' + a
+}
+function sqAppLevel(url) {
+  if (!_sqAppLvl) sqAppLevelPrepare()
+  const k = sqLvlKey(url)
+  return k ? (_sqAppLvl[k] || null) : null
+}
 // 결과 순서를 정할 때 앞에 두는, 널리 알려진 앱
 const SQ_POPULAR = new Set(['토스','카카오뱅크','카카오페이','네이버페이','쿠팡','배달의민족','당근마켓','당근','무신사','카카오T',
   '오늘의집','마켓컬리','29CM','지그재그','에이블리','스타벅스','넷플릭스','유튜브','인스타그램','카카오톡','네이버','야놀자','여기어때',
@@ -5288,6 +5333,7 @@ function sqSearch(concepts, opts) {
   const maxApps = opts.maxApps || 25, maxPerApp = opts.maxPerApp || 10
   const n = concepts.length
   if (!n) return { data: {}, used: [], dropped: [], total: 0 }
+  sqAppLevelPrepare()
   const masks = []           // [url, bitmask]
   const maskCount = new Map()
   Object.keys(tagsDb).forEach(url => {
