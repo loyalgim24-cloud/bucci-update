@@ -941,6 +941,92 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 .ix-copy{font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:var(--p600);border:none;border-radius:7px;padding:6px 12px;cursor:pointer}
 .ix-x{font-family:inherit;color:#94A3B8;font-size:14px;margin-left:6px;border:none;background:none;cursor:pointer;padding:4px 6px}
 .ix-code{flex:1;margin:0;padding:14px 16px;font:12px/1.65 Consolas,'D2Coding',monospace;color:#CBD5E1;white-space:pre;overflow:auto;user-select:text;tab-size:2}
+/* ── 이스터에그 게임: 부찌 끓이기 ── */
+#egg-offer{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;z-index:99998;display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--g09);border-radius:14px;padding:12px 14px 12px 18px;box-shadow:0 12px 32px rgba(15,23,42,.18);
+  font-size:13px;color:var(--g01);transition:transform .35s cubic-bezier(.2,.9,.3,1.2),opacity .25s}
+#egg-offer.show{transform:translate(-50%,0);opacity:1}
+#egg-offer b{font-weight:800}
+#egg-offer button{font-family:inherit;font-size:12.5px;font-weight:700;border-radius:9px;padding:7px 12px;cursor:pointer;border:none}
+#egg-offer .go{background:var(--p600);color:#fff}
+#egg-offer .no{background:none;color:var(--g05)}
+/* 메인화면 요소들이 아래로 떨어지듯 내려감 */
+#home .home-hdr,#home #guide-box,#home #home-body{transition:transform .7s cubic-bezier(.5,0,.85,.35),opacity .25s ease .45s}
+#home.bg-out .home-hdr{transform:translateY(105vh) rotate(-5deg);opacity:0;transition-delay:0s,.45s}
+#home.bg-out #guide-box{transform:translateY(105vh) rotate(3deg);opacity:0;transition-delay:.09s,.54s}
+#home.bg-out #home-body{transform:translateY(105vh) rotate(-2deg);opacity:0;transition-delay:.18s,.63s}
+#home.bg-out #home-credit{opacity:0}
+#home.bg-back .home-hdr,#home.bg-back #guide-box,#home.bg-back #home-body{transition:transform .6s cubic-bezier(.2,.8,.3,1),opacity .3s ease}
+#home.bg-back #home-body{transition-delay:0s} #home.bg-back #guide-box{transition-delay:.08s} #home.bg-back .home-hdr{transition-delay:.16s}
+/* 게임판: 메인화면 영역 안에서 아래에서 올라옴 */
+#bg-game{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;overflow:hidden;user-select:none;
+  transform:translateY(100%);transition:transform .6s cubic-bezier(.2,.8,.3,1)}
+#bg-game.on{display:flex}
+#bg-game.up{transform:translateY(0)}
+#bg-hud{position:relative;margin-top:clamp(18px,6vh,56px);text-align:center;pointer-events:none;z-index:2}
+#bg-hud .stat{font-size:13.5px;font-weight:500;color:var(--g05)}
+#bg-hud .stat b{font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--p600);margin:0 1px;font-variant-numeric:tabular-nums}
+#bg-hud .stat b.low{color:var(--danger,#E5484D)}
+#bg-hud h1{font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--g01);margin:8px 0 0}
+#bg-hud p{font-size:13px;color:var(--g05);margin:6px 0 0;min-height:18px}
+#bg-hud .fever{color:#E5484D;font-weight:800}
+#bg-field{position:absolute;inset:0;cursor:none}
+#bg-field .it{position:absolute;left:0;top:0;font-size:34px;line-height:1;will-change:transform;pointer-events:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.12))}
+#bg-field .pop{position:absolute;font-size:15px;font-weight:800;color:var(--p600);pointer-events:none;white-space:nowrap;animation:bgPop .8s ease-out forwards}
+#bg-field .pop.bad{color:#E5484D}
+@keyframes bgPop{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-46px);opacity:0}}
+/* 냄비 */
+#bg-pot{position:absolute;bottom:26px;left:0;width:150px;height:84px;will-change:transform;pointer-events:none}
+#bg-pot .body{position:absolute;left:10px;right:10px;top:16px;bottom:0;border-radius:6px 6px 34px 34px;background:linear-gradient(180deg,#5A6170,#2F3440);box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),0 10px 18px rgba(15,23,42,.18)}
+#bg-pot .rim{position:absolute;left:4px;right:4px;top:8px;height:16px;border-radius:50%;background:#3B414D;box-shadow:inset 0 2px 0 rgba(255,255,255,.18)}
+#bg-pot .soup{position:absolute;left:12px;right:12px;top:11px;height:11px;border-radius:50%;background:var(--soup,#F2C29B);transition:background .4s}
+#bg-pot .h{position:absolute;top:26px;width:18px;height:10px;border-radius:5px;background:#3B414D}
+#bg-pot .h.l{left:-4px} #bg-pot .h.r{right:-4px}
+#bg-pot .steam{position:absolute;left:50%;top:-6px;width:0;height:0}
+#bg-pot .steam i{position:absolute;width:10px;height:22px;border-radius:50%;background:rgba(160,170,190,.35);animation:bgSteam 1.6s ease-out infinite;opacity:0}
+#bg-pot .steam i:nth-child(2){left:-26px;animation-delay:.5s} #bg-pot .steam i:nth-child(3){left:22px;animation-delay:1s}
+@keyframes bgSteam{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:var(--steam,.5)}100%{transform:translateY(-38px) scale(1.4);opacity:0}}
+#bg-pot.hot .body{background:linear-gradient(180deg,#C2413A,#7E1F1B)}
+#bg-pot.hot{filter:drop-shadow(0 0 14px rgba(229,72,77,.55))}
+#bg-pot.shake{animation:bgShake .35s}
+@keyframes bgShake{25%{margin-left:-7px}50%{margin-left:7px}75%{margin-left:-4px}}
+/* 준비·완성 카드 */
+#bg-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100% - 40px));z-index:3;
+  background:var(--surface);border:1px solid var(--g09);border-radius:18px;padding:22px 22px 18px;box-shadow:0 16px 40px rgba(15,23,42,.12);text-align:center}
+#bg-card h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--g01)}
+#bg-card .sub{font-size:12.5px;color:var(--g05);margin-top:6px;line-height:1.6}
+#bg-card .rules{margin:14px 0 4px;text-align:left;font-size:12.5px;color:var(--g03,var(--g01));line-height:1.9;background:var(--g10);border-radius:12px;padding:10px 14px}
+#bg-card .rules span{font-size:16px;vertical-align:-2px;margin-right:2px}
+#bg-card .big{font-size:40px;font-weight:800;color:var(--p600);letter-spacing:-.03em;margin:6px 0 0;font-variant-numeric:tabular-nums}
+#bg-card .rank{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:#fff;background:var(--p600);border-radius:999px;padding:4px 12px}
+#bg-card .got{font-size:20px;margin:12px 0 2px;letter-spacing:2px;word-break:break-all}
+#bg-card .got small{font-size:11px;font-weight:700;color:var(--g05);letter-spacing:0;margin:0 4px 0 1px;vertical-align:3px}
+#bg-card .got .lbl{display:block;font-size:11px;color:var(--g05);letter-spacing:0;margin-bottom:4px}
+#bg-card .best{font-size:12px;color:var(--g05);margin-top:4px}
+#bg-card .best b{color:var(--p600)}
+#bg-card .btns{display:flex;gap:8px;justify-content:center;margin-top:16px}
+#bg-card .btns button{font-family:inherit;font-size:13px;font-weight:700;border-radius:10px;padding:9px 18px;cursor:pointer;border:1px solid var(--g09);background:var(--surface);color:var(--g01)}
+#bg-card .btns button.pri{background:var(--p600);border-color:var(--p600);color:#fff}
+#bg-card .hint{font-size:11px;color:var(--g06,var(--g05));margin-top:10px}
+#bg-card .namebox{display:flex;gap:6px;justify-content:center;margin-top:12px}
+#bg-card .namebox input{font-family:inherit;font-size:13px;width:160px;padding:8px 10px;border:1.5px solid var(--g08);border-radius:9px;background:var(--surface);color:var(--g01);outline:none}
+#bg-card .namebox input:focus{border-color:var(--p600)}
+#bg-card .namebox button{font-family:inherit;font-size:12.5px;font-weight:700;border:none;border-radius:9px;padding:8px 12px;background:var(--p600);color:#fff;cursor:pointer}
+#bg-card .board{margin-top:14px;text-align:left;border-top:1px solid var(--g09);padding-top:10px}
+#bg-card .board h3{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--g05)}
+#bg-card .board ol{margin:0;padding:0;list-style:none;font-size:12.5px;color:var(--g01);max-height:190px;overflow:auto}
+#bg-card .board li{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:7px}
+#bg-card .board li.me{background:var(--g10);font-weight:700}
+#bg-card .board li i{font-style:normal;width:18px;color:var(--g05);font-variant-numeric:tabular-nums}
+#bg-card .board li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bg-card .board li em{font-style:normal;color:var(--g05);font-size:11px}
+#bg-card .board li b{color:var(--p600);font-variant-numeric:tabular-nums}
+#bg-count{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:96px;font-weight:800;color:var(--p600);z-index:3;pointer-events:none;animation:bgCount 1s ease-out}
+@keyframes bgCount{from{transform:translate(-50%,-50%) scale(1.6);opacity:0}30%{opacity:1}to{transform:translate(-50%,-50%) scale(1);opacity:.9}}
+@media (prefers-reduced-motion: reduce){
+  #home .home-hdr,#home #guide-box,#home #home-body,#bg-game{transition-duration:.01s !important}
+  #bg-pot.shake{animation:none}
+}
 </style>
 </head>
 <!-- PC 기능 숨김: body 의 pc-off 클래스를 지우면 PC 레퍼런스 버튼과 Mobile/PC 전환이 다시 나타납니다 -->
@@ -1091,6 +1177,8 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 </div>
       </div>
       <div id="home-body"></div>
+      <!-- 이스터에그 게임판 (평소엔 숨김) -->
+      <div id="bg-game" aria-hidden="true"><div id="bg-field"><div id="bg-pot"><div class="steam"><i></i><i></i><i></i></div><div class="h l"></div><div class="h r"></div><div class="body"></div><div class="rim"></div><div class="soup"></div></div></div><div id="bg-hud"></div></div>
     </div>
     <!-- 검색 결과 -->
     <div id="result">
@@ -2473,6 +2561,7 @@ function pushNav(state) {
 }
 
 function showView(id) {
+  try { if (window.bgAbort) window.bgAbort() } catch {}   // 이스터에그 게임 중에 다른 화면으로 가면 바로 정리
   ['home','result','cat-view','gallery','likes-view','col-view','ix-view'].forEach(v => document.getElementById(v).classList.remove('on'))
   try { document.getElementById('t-ix').classList.toggle('on', id === 'ix-view'); if (id !== 'ix-view') ixClose() } catch {}
   document.getElementById(id).classList.add('on')
@@ -7440,6 +7529,7 @@ JSON 배열만 반환:`
   // (라면사리와 치즈는 두 번 넣어 더 자주 나오게 함)
   const FOODS = ['🍜', '🍜', '🧀', '🧀', '🥫', '🥓', '🥩', '🥬', '🌶️', '🧅', '🧄', '🍄', '🥚']
   let clicks = [], running = false
+  window.__eggRain = () => rain()
   function rain() {
     if (running) return
     running = true
@@ -7472,7 +7562,7 @@ JSON 배열만 반환:`
     const logo = document.querySelector('#topbar .logo')
     if (logo) { logo.classList.add('egg-wobble'); setTimeout(() => logo.classList.remove('egg-wobble'), 1600) }
     try { if (typeof showToast === 'function') showToast('라면사리 추가요!') } catch {}
-    setTimeout(() => { layer.remove(); running = false }, (longest + 0.3) * 1000)
+    setTimeout(() => { layer.remove(); running = false; try { if (window.bgOfferGame) window.bgOfferGame() } catch {} }, (longest + 0.3) * 1000)
   }
   function init() {
     const logo = document.querySelector('#topbar .logo')
@@ -7845,6 +7935,269 @@ document.addEventListener('keydown', ev => {
   }
 })
 window.addEventListener('resize', () => { document.querySelectorAll('#ix-ov .ix-host').forEach(ixFit) })
+</script>
+<script>
+// ── 이스터에그 게임: 부찌 끓이기 ─────────────────────────────────────
+// 로고 5번 → 재료 비가 끝나면 "한 냄비 끓여볼까요?" 제안 → 메인화면이 아래로 내려가고 게임판이 올라옴
+// 30초 동안 떨어지는 재료를 냄비로 받기. 기록은 이 PC에만 저장(상위 10개 리더보드).
+;(function () {
+  const GOOD = [
+    { e:'🥫', n:'햄', p:10, w:3 }, { e:'🥬', n:'김치', p:10, w:3 }, { e:'🥓', n:'베이컨', p:8, w:2 },
+    { e:'🧅', n:'양파', p:5, w:2 }, { e:'🧄', n:'마늘', p:5, w:2 }, { e:'🍄', n:'버섯', p:5, w:2 }, { e:'🥚', n:'달걀', p:5, w:2 },
+    { e:'🍜', n:'라면사리', p:15, w:2 }, { e:'🧀', n:'치즈', p:20, w:1 }, { e:'🌶️', n:'고추', p:5, w:2, chili:true }
+  ]
+  const BAD = [ { e:'🍫', n:'초콜릿' }, { e:'🍍', n:'파인애플' }, { e:'🍓', n:'딸기' }, { e:'🍰', n:'케이크' }, { e:'🍦', n:'아이스크림' } ]
+  const RANKS = [[800,'전설의 부찌 장인'],[600,'의정부 원조 부찌'],[400,'동네 맛집 부찌'],[200,'편의점 부찌'],[0,'맹물 부찌']]
+  const SOUPS = ['#F2C29B','#EFA977','#E98A55','#E06A3C','#D14A2A']   // 점수가 오를수록 진해지는 국물
+  const DURATION = 30, BOARD_KEY = 'bucci_bg_board', NAME_KEY = 'bucci_bg_name'
+  const calm = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const pickGood = (() => { const bag = []; GOOD.forEach(g => { for (let i = 0; i < g.w; i++) bag.push(g) }); return () => bag[Math.floor(Math.random() * bag.length)] })()
+
+  let st = null   // 게임 상태 (null이면 게임 꺼짐)
+  let lastClosed = 0
+  const $ = id => document.getElementById(id)
+
+  // ── 기록 (이 PC) ──
+  const loadBoard = () => { try { const b = JSON.parse(localStorage.getItem(BOARD_KEY) || '[]'); return Array.isArray(b) ? b : [] } catch { return [] } }
+  const saveBoard = b => { try { localStorage.setItem(BOARD_KEY, JSON.stringify(b.slice(0, 10))) } catch {} }
+  const bestScore = () => loadBoard().reduce((m, r) => Math.max(m, r.score || 0), 0)
+  const rankOf = s => RANKS.find(r => s >= r[0])[1]
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
+
+  // ── 제안 카드 ──
+  function offer() {
+    if (document.getElementById('egg-offer') || st || Date.now() - lastClosed < 8000) return   // 게임 끝난 직후의 축하 재료 비에는 다시 제안하지 않음
+    const o = document.createElement('div'); o.id = 'egg-offer'
+    o.innerHTML = '<span><b>재료가 다 모였네요.</b> 한 냄비 끓여볼까요?</span><button class="go" type="button">끓이기</button><button class="no" type="button">다음에</button>'
+    document.body.appendChild(o)
+    requestAnimationFrame(() => o.classList.add('show'))
+    const close = () => { o.classList.remove('show'); setTimeout(() => o.remove(), 300) }
+    o.querySelector('.go').onclick = () => { close(); start() }
+    o.querySelector('.no').onclick = close
+    setTimeout(() => { if (o.isConnected) close() }, 9000)
+  }
+  window.bgOfferGame = offer
+
+  // ── 시작: 메인화면 요소가 내려가고 게임판이 올라옴 ──
+  function start() {
+    if (st) return
+    const home = $('home')
+    if (!home.classList.contains('on')) { try { toHome() } catch {} }
+    st = { phase:'ready', items:[], score:0, combo:0, chili:0, fever:0, got:{}, left:DURATION, potX:0, keys:{}, raf:0, last:0, spawnT:0, endT:0, mouse:false }
+    home.classList.remove('bg-back'); home.classList.add('bg-out')
+    const g = $('bg-game'); g.classList.add('on'); void g.offsetWidth
+    setTimeout(() => { if (st) g.classList.add('up') }, calm() ? 0 : 520)
+    st.potX = g.clientWidth / 2
+    renderHud(); placePot(); readyCard()
+    document.addEventListener('keydown', onKey, true); document.addEventListener('keyup', onKeyUp, true)
+    document.addEventListener('visibilitychange', onVis)
+  }
+
+  function renderHud(msg) {
+    const best = bestScore()
+    $('bg-hud').innerHTML = `<div class="stat">점수 <b id="bg-score">${st.score}</b>점 · 남은 시간 <b id="bg-time" class="${st.left <= 5 && st.phase === 'play' ? 'low' : ''}">${Math.ceil(st.left)}</b>초${best ? ` · 최고 <b>${best}</b>` : ''}</div>
+      <h1>${st.phase === 'end' ? '부찌 완성!' : '부찌 한 냄비 끓이는 중…'}</h1><p id="bg-msg">${msg || ''}</p>`
+  }
+  function setMsg(t, cls) { const m = $('bg-msg'); if (m) { m.className = cls || ''; m.textContent = t } }
+
+  function readyCard() {
+    const best = bestScore()
+    card(`<h2>부찌 끓이기</h2>
+      <div class="rules"><span>🥫</span> 떨어지는 재료를 냄비로 받으세요<br><span>🍫</span> 부대찌개에 안 어울리는 건 피하세요<br><span>🌶️</span> 고추 3개를 연속으로 받으면 얼큰 모드 (점수 2배)</div>
+      <div class="sub">마우스나 ← → 키로 냄비를 움직여요 · 30초</div>
+      ${best ? `<div class="best">내 최고 기록 <b>${best}</b>점</div>` : ''}
+      <div class="btns"><button class="pri" type="button" data-a="go">시작하기</button><button type="button" data-a="close">나가기</button></div>
+      <div class="hint">스페이스바로 시작 · ESC로 나가기</div>`)
+  }
+  function card(html) {
+    let c = $('bg-card'); if (!c) { c = document.createElement('div'); c.id = 'bg-card'; $('bg-game').appendChild(c) }
+    c.innerHTML = html
+    c.onclick = ev => { const a = ev.target.closest('[data-a]'); if (!a) return; if (a.dataset.a === 'go') countdown(); else if (a.dataset.a === 'close') stop() }
+  }
+  function hideCard() { const c = $('bg-card'); if (c) c.remove() }
+
+  function countdown() {
+    if (!st || st.phase === 'count' || st.phase === 'play') return
+    hideCard()
+    Object.assign(st, { phase:'count', items:[], score:0, combo:0, chili:0, fever:0, got:{}, left:DURATION })
+    $('bg-field').querySelectorAll('.it,.pop').forEach(n => n.remove())
+    $('bg-pot').classList.remove('hot'); soup()
+    renderHud()
+    let n = 3
+    const tick = () => {
+      if (!st || st.phase !== 'count') return
+      const old = $('bg-count'); if (old) old.remove()
+      if (n === 0) { play(); return }
+      const c = document.createElement('div'); c.id = 'bg-count'; c.textContent = n; $('bg-game').appendChild(c)
+      n--; setTimeout(tick, 700)
+    }
+    tick()
+  }
+
+  function play() {
+    st.phase = 'play'; st.last = performance.now(); st.spawnT = 0
+    renderHud('재료를 받아보세요!')
+    st.raf = requestAnimationFrame(loop)
+  }
+
+  // ── 게임 진행 ──
+  function loop(now) {
+    if (!st || st.phase !== 'play') return
+    const dt = Math.min(0.05, (now - st.last) / 1000); st.last = now
+    if (st.paused) { st.raf = requestAnimationFrame(loop); return }
+    st.left -= dt
+    const g = $('bg-game'), W = g.clientWidth, H = g.clientHeight
+    const prog = 1 - Math.max(0, st.left) / DURATION   // 0 → 1 로 갈수록 빨라지고 많아짐
+    // 냄비 키보드 이동
+    const kd = (st.keys.ArrowRight || st.keys.d ? 1 : 0) - (st.keys.ArrowLeft || st.keys.a ? 1 : 0)
+    if (kd) { st.potX += kd * (520 + prog * 220) * dt; st.mouse = false }
+    st.potX = Math.max(75, Math.min(W - 75, st.potX)); placePot()
+    // 재료 만들기
+    st.spawnT -= dt
+    if (st.spawnT <= 0 && st.left > 0.6) {
+      st.spawnT = 0.62 - prog * 0.34 + Math.random() * 0.15
+      const bad = Math.random() < 0.16 + prog * 0.08
+      const kind = bad ? Object.assign({ bad:true }, BAD[Math.floor(Math.random() * BAD.length)]) : pickGood()
+      const el = document.createElement('span'); el.className = 'it'; el.textContent = kind.e
+      $('bg-field').appendChild(el)
+      st.items.push({ el, k:kind, x: 30 + Math.random() * (W - 60), y: -40, v: 170 + prog * 230 + Math.random() * 60, r: (Math.random() - .5) * 240, a: 0 })
+      if (st.fever) setMsg('얼큰 모드! 점수 2배', 'fever')
+    }
+    // 떨어뜨리고 받기
+    const potTop = H - 26 - 84 + 10, potL = st.potX - 62, potR = st.potX + 62
+    for (let i = st.items.length - 1; i >= 0; i--) {
+      const it = st.items[i]
+      it.y += it.v * dt; it.a += it.r * dt
+      it.el.style.transform = `translate(${it.x - 17}px,${it.y - 17}px) rotate(${it.a}deg)`
+      if (it.y >= potTop && it.y <= potTop + 34 && it.x >= potL && it.x <= potR) { catchIt(it, W, H); it.el.remove(); st.items.splice(i, 1); continue }
+      if (it.y > H + 40) { it.el.remove(); st.items.splice(i, 1) }   // 놓친 재료는 감점 없음
+    }
+    if (st.fever) { st.fever = Math.max(0, st.fever - dt); if (!st.fever) { $('bg-pot').classList.remove('hot'); setMsg('') } }
+    const t = $('bg-time'); if (t) { t.textContent = Math.max(0, Math.ceil(st.left)); t.classList.toggle('low', st.left <= 5) }
+    if (st.left <= 0) { end(); return }
+    st.raf = requestAnimationFrame(loop)
+  }
+
+  function catchIt(it, W, H) {
+    const k = it.k
+    let gain
+    if (k.bad) {
+      gain = -15; st.combo = 0; st.chili = 0
+      const pot = $('bg-pot'); pot.classList.remove('shake'); void pot.offsetWidth; if (!calm()) pot.classList.add('shake')
+      setMsg(`${k.n}는(은) 부찌에 안 어울려요`, '')
+    } else {
+      st.combo++
+      const mult = Math.min(3, 1 + Math.floor(st.combo / 4))   // 4개 연속마다 배수 +1 (최대 3배)
+      gain = k.p * mult * (st.fever ? 2 : 1)
+      st.got[k.e] = (st.got[k.e] || 0) + 1
+      if (k.chili) { st.chili++; if (st.chili >= 3) { st.chili = 0; st.fever = 5; $('bg-pot').classList.add('hot'); setMsg('얼큰 모드! 점수 2배', 'fever') } }
+    }
+    st.score = Math.max(0, st.score + gain)
+    const s = $('bg-score'); if (s) s.textContent = st.score
+    soup()
+    const p = document.createElement('span'); p.className = 'pop' + (gain < 0 ? ' bad' : '')
+    p.textContent = (gain > 0 ? '+' : '') + gain + (gain > 0 && st.combo >= 4 ? ` ×${Math.min(3, 1 + Math.floor(st.combo / 4))}` : '')
+    p.style.left = st.potX + 'px'; p.style.top = (H - 140) + 'px'
+    $('bg-field').appendChild(p); setTimeout(() => p.remove(), 800)
+  }
+
+  function soup() {
+    const pot = $('bg-pot'); if (!pot || !st) return
+    const i = Math.min(SOUPS.length - 1, Math.floor(st.score / 200))
+    pot.style.setProperty('--soup', SOUPS[i])
+    pot.style.setProperty('--steam', String(0.3 + Math.min(0.5, st.score / 1600)))
+  }
+  function placePot() { const p = $('bg-pot'); if (p && st) p.style.transform = `translateX(${st.potX - 75}px)` }
+
+  // ── 끝: 완성 카드 + 이 PC 리더보드 ──
+  function end() {
+    st.phase = 'end'; cancelAnimationFrame(st.raf)
+    st.items.forEach(it => it.el.remove()); st.items = []
+    $('bg-pot').classList.remove('hot')
+    renderHud()
+    const board = loadBoard()
+    const prevBest = bestScore()
+    const qualifies = st.score > 0 && (board.length < 10 || st.score > board[board.length - 1].score)
+    const got = Object.entries(st.got).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([e, n]) => `${e}<small>×${n}</small>`).join(' ')
+    const isBest = st.score > prevBest && st.score > 0
+    card(`<h2>${rankOf(st.score)}</h2>
+      <div class="big">${st.score}점</div>
+      ${isBest ? '<div class="rank">새 최고 기록!</div>' : `<div class="best">내 최고 기록 <b>${prevBest}</b>점</div>`}
+      <div class="got">${got ? '<span class="lbl">넣은 재료</span>' + got : '<span class="lbl">냄비가 비었어요</span>'}</div>
+      ${qualifies ? `<div class="namebox"><input id="bg-name" maxlength="12" placeholder="닉네임" value="${esc(localStorage.getItem(NAME_KEY) || '')}"><button type="button" data-a="save">기록 남기기</button></div>` : ''}
+      <div class="board" id="bg-board"></div>
+      <div class="btns"><button class="pri" type="button" data-a="go">한 판 더</button><button type="button" data-a="close">닫기</button></div>`)
+    const c = $('bg-card')
+    c.onclick = ev => {
+      const a = ev.target.closest('[data-a]'); if (!a) return
+      if (a.dataset.a === 'go') countdown()
+      else if (a.dataset.a === 'close') stop()
+      else if (a.dataset.a === 'save') saveRecord()
+    }
+    const nm = $('bg-name')
+    if (nm) { nm.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); saveRecord() } ev.stopPropagation() }); setTimeout(() => nm.focus(), 50) }
+    renderBoard(null)
+    if (isBest) { try { const r = document.getElementById('egg-rain'); if (!r && window.__eggRain) window.__eggRain() } catch {} }
+  }
+  function saveRecord() {
+    const nm = $('bg-name'); if (!nm || !st) return
+    const name = (nm.value || '').trim() || '이름 없는 셰프'
+    try { localStorage.setItem(NAME_KEY, name) } catch {}
+    const rec = { name, score: st.score, date: new Date().toISOString().slice(0, 10), id: Date.now() }
+    const board = loadBoard(); board.push(rec); board.sort((a, b) => b.score - a.score || a.id - b.id); saveBoard(board)
+    const box = nm.closest('.namebox'); if (box) box.remove()
+    renderBoard(rec.id)
+  }
+  function renderBoard(meId) {
+    const el = $('bg-board'); if (!el) return
+    const b = loadBoard()
+    if (!b.length) { el.innerHTML = '<h3>이 PC 명예의 전당</h3><div class="sub" style="margin:0">아직 기록이 없어요. 첫 번째 셰프가 되어보세요!</div>'; return }
+    el.innerHTML = '<h3>이 PC 명예의 전당</h3><ol>' + b.map((r, i) =>
+      `<li class="${r.id === meId ? 'me' : ''}"><i>${i + 1}</i><span>${esc(r.name)}</span><em>${esc(r.date || '')}</em><b>${r.score}</b></li>`).join('') + '</ol>'
+  }
+
+  // ── 나가기: 게임판이 내려가고 메인화면 요소들이 거꾸로 올라옴 ──
+  function stop(instant) {
+    if (!st) return
+    cancelAnimationFrame(st.raf)
+    document.removeEventListener('keydown', onKey, true); document.removeEventListener('keyup', onKeyUp, true)
+    document.removeEventListener('visibilitychange', onVis)
+    const g = $('bg-game'), home = $('home')
+    st = null; lastClosed = Date.now()
+    const cleanup = () => {
+      g.classList.remove('on', 'up')
+      $('bg-field').querySelectorAll('.it,.pop').forEach(n => n.remove())
+      hideCard(); const c = $('bg-count'); if (c) c.remove()
+    }
+    if (instant) { cleanup(); home.classList.remove('bg-out', 'bg-back'); return }
+    g.classList.remove('up')
+    setTimeout(() => { home.classList.add('bg-back'); home.classList.remove('bg-out') }, calm() ? 0 : 200)
+    setTimeout(() => { cleanup(); home.classList.remove('bg-back') }, calm() ? 50 : 900)
+  }
+  window.bgAbort = () => { if (st) stop(true) }
+
+  // ── 입력 ──
+  function onKey(ev) {
+    if (!st) return
+    if (ev.target && ev.target.id === 'bg-name') return
+    if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); stop(); return }
+    if ((ev.key === ' ' || ev.key === 'Enter') && st.phase === 'ready') { ev.preventDefault(); countdown(); return }
+    if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(ev.key)) { ev.preventDefault(); st.keys[ev.key] = true }
+  }
+  function onKeyUp(ev) { if (st) st.keys[ev.key] = false }
+  function onVis() { if (st) st.paused = document.hidden }
+  function onMove(ev) {
+    if (!st) return
+    const g = $('bg-game').getBoundingClientRect()
+    st.potX = ev.clientX - g.left; st.mouse = true
+    if (st.phase !== 'play') { st.potX = Math.max(75, Math.min(g.width - 75, st.potX)); placePot() }
+  }
+  function init() {
+    const g = $('bg-game'); if (!g) return
+    g.addEventListener('mousemove', onMove)
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init()
+})()
 </script>
 </body>
 </html>
