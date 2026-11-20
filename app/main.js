@@ -444,13 +444,20 @@ function getUpaCategory(appName) {
 const UPA_CAT_KEYWORDS = {}
 
 // 컴포넌트 태그 매핑
+// 컴포넌트 메뉴 → 그 컴포넌트를 뜻하는 실제 태그 (화면에 그 컴포넌트가 있다는 근거가 되는 태그만)
+// 예전엔 '토글/스위치'를 '설정' 태그로 찾아서 토글 없는 설정 화면까지 나왔음
 const COMPONENT_TAG_MAP = {
-  '달력/날짜':     ['캘린더','날짜선택','일정'],
-  '토글/스위치':   ['설정','환경설정'],
-  '태그/칩':       ['필터','선택','셀렉트'],
-  '빈 상태':       ['빈화면','에러'],
-  '드롭다운':      ['드롭다운','셀렉트','선택'],
-  '검색바':        ['검색바','검색','필터'],
+  '달력/날짜':     ['캘린더','달력','날짜선택'],
+  '토글/스위치':   ['토글'],
+  '체크박스':      ['체크박스'],
+  '라디오 버튼':   ['라디오','라디오버튼'],
+  '태그/칩':       ['칩'],
+  '토스트/스낵바': ['토스트','스낵바'],
+  '캐러셀/배너':   ['캐러셀','배너'],
+  '아코디언':      ['아코디언'],
+  '빈 상태':       ['빈상태','빈화면'],
+  '드롭다운':      ['드롭다운'],
+  '검색바':        ['검색바'],
   '탭/네비게이션': ['탭','탭바','GNB','네비게이션'],
   '바텀시트':      ['바텀시트','모달'],
   '팝업/모달':     ['팝업','다이얼로그','모달'],
@@ -1040,6 +1047,13 @@ function resolveKw(kw) {
 
   const kl = normalizeQuery(kw)
   const words = kl.split(/\s+/).filter(Boolean)
+
+  // 컴포넌트 메뉴 이름과 정확히 같으면 바로 그 컴포넌트 태그로 (WWIT 분류 페이지가 있는 컴포넌트는 제외)
+  const klNs = kl.replace(/\s/g, '')
+  for (const [compName, tagList] of Object.entries(COMPONENT_TAG_MAP)) {
+    if (WWIT_PATHS[compName] || compName === '뱃지/알림점') continue   // 뱃지는 태그 데이터가 거의 없어 예전 방식 유지
+    if (compName.toLowerCase().replace(/\s/g, '') === klNs) return { type:'tag_search', label:compName, tags:tagList }
+  }
 
   // 카테고리 매칭
   for (const [k, p] of Object.entries(WWIT_PATHS)) {
@@ -1669,6 +1683,59 @@ function screenTagScore(tags, kl, lvlKey, lvlMap) {
   return { score: best, appLevelOnly: !best && appLevelOnly }
 }
 
+// 화면 패턴 보강: WWIT 패턴 분류 페이지에는 일부 화면만 올라가 있고 나머지는 태그로만 달려 있음
+// (예: 약관 태그 화면은 WWIT에만 294장인데 패턴 페이지엔 27장). 기존 결과는 그대로 앞에 두고, 그 뒤에 태그로 찾은 화면을 덧붙임.
+// 앱 전체에 붙은 태그(앱 화면 80% 이상)는 근거로 쓰지 않음 → 엉뚱한 화면이 섞이지 않게
+// (홈화면은 이미 태그로 모으고, 검색/필터·리스트는 이미 범위가 넓어서 제외)
+const PATTERN_TAGS = {
+  'pattern/splash':       ['스플래시','온보딩','튜토리얼'],
+  'pattern/onboarding':   ['온보딩','튜토리얼'],
+  'pattern/signin':       ['로그인','소셜로그인','회원가입'],
+  'pattern/signup':       ['회원가입'],
+  'pattern/notification': ['알림','노티'],
+  'pattern/order':        ['결제','주문','구매'],
+  'pattern/mypage':       ['마이페이지','내정보'],
+  'pattern/setting':      ['설정','환경설정'],
+  'pattern/review':       ['리뷰','후기','평점'],
+  'pattern/loading':      ['로딩','스켈레톤','프로그레스'],
+  'pattern/success':      ['완료','성공'],
+  'pattern/cart':         ['장바구니'],
+  'pattern/password':     ['비밀번호'],
+  'pattern/t&c':          ['약관'],
+}
+function patternTagMerge(data, path) {
+  try {
+    const want = PATTERN_TAGS[path]; if (!want) return
+    const wantSet = new Set(want)
+    const norm = u => String(u).replace(/&amp;/g, '&').replace(/^(https?:\/\/[^/]+)\/+/, '$1/')
+    const have = new Set()
+    Object.values(data).forEach(list => list.forEach(i => have.add(norm(i.src))))
+    let upaMeta = {}
+    try { upaMeta = upaAppMeta() } catch {}
+    const lvlMap = appLevelTags()
+    const added = {}
+    for (const url in tagsDb) {
+      const tags = tagsDb[url]
+      if (!Array.isArray(tags) || !url.startsWith('http')) continue
+      const hit = tags.filter(t => wantSet.has(String(t).toLowerCase()))
+      if (!hit.length) continue
+      if (url.toLowerCase().includes('/logo')) continue
+      const lvl = lvlMap[lvlKeyOf(url, upaMeta)]
+      if (lvl && hit.every(t => (lvl.ratio.get(String(t).toLowerCase()) || 0) >= APP_LEVEL_RATIO)) continue   // 앱 분류 태그뿐이면 제외
+      const n = norm(url); if (have.has(n)) continue
+      const m = url.match(/\/+images\/posts\/([^/]+)\//)
+      const appName = m ? (slug2name[m[1]] || m[1]) : (dzAppByUrl[url] || (upaMeta[url] || [])[0])
+      if (!appName) continue
+      have.add(n)
+      ;(added[appName] = added[appName] || []).push({ type:'image', src:url, thumbnail:url, source: m ? 'wwit' : 'upa', tags })
+    }
+    // 이미 있는 앱은 그 앱 화면 뒤에, 새 앱은 맨 뒤에 화면 많은 순으로
+    Object.entries(added).sort((a, b) => b[1].length - a[1].length).forEach(([app, list]) => {
+      if (data[app]) data[app].push(...list); else data[app] = list
+    })
+  } catch (e) { console.log('[pattern tags]', e.message) }
+}
+
 async function searchCore(kw) {
   const _searchKw = kw
   const r = resolveKw(kw)
@@ -1820,16 +1887,19 @@ async function searchCore(kw) {
   if (r?.type === 'tag_search') {
     const data = {}
     const targetTags = new Set(r.tags)
+    let upaMeta = {}
+    try { upaMeta = upaAppMeta() } catch {}
     Object.entries(tagsDb).forEach(([url, imgTags]) => {
       if (!Array.isArray(imgTags)) return
       if (!imgTags.some(t => targetTags.has(t))) return
       if (!url.startsWith('http')) return
       // URL에서 slug 추출: https://wwit.design//images/posts/SLUG/...
       const slugMatch = url.match(/\/images\/posts\/([^\/]+)\//)
-      if (!slugMatch && !dzAppByUrl[url]) return
-      const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : dzAppByUrl[url]
+      const upaName = !slugMatch && !dzAppByUrl[url] ? ((upaMeta[url] || [])[0] || '') : ''
+      if (!slugMatch && !dzAppByUrl[url] && !upaName) return
+      const appName = slugMatch ? (slug2name[slugMatch[1]] || slugMatch[1]) : (dzAppByUrl[url] || upaName)
       if (!data[appName]) data[appName] = []
-      data[appName].push({ type:'image', src:url, thumbnail:url, source: dzAppByUrl[url] ? 'upa' : 'wwit', tags:imgTags })
+      data[appName].push({ type:'image', src:url, thumbnail:url, source: slugMatch ? 'wwit' : 'upa', tags:imgTags })
     })
     return { data: filterVideoItems(data), source:'tags' }
   }
@@ -2061,6 +2131,7 @@ async function searchCore(kw) {
     }
 
     dzMergeByPath(data, r.path)
+    patternTagMerge(data, r.path)
 
     return { data: filterVideoItems(data), source:'mixed' }
   }
