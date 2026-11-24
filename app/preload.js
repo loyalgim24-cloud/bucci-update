@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('api', {
   copyImage:     (url)      => ipcRenderer.invoke('copy-image', url),
   captureRect:   (r)        => ipcRenderer.invoke('capture-rect', r),
   copyPng:       (dataUrl)  => ipcRenderer.invoke('copy-png', dataUrl),
+  fetchImageData:(url)      => ipcRenderer.invoke('fetch-image-data', url),
+  savePng:       (opts)     => ipcRenderer.invoke('save-png', opts),
   downloadMultiple: (urls)   => ipcRenderer.invoke('download-multiple', urls),
   getAppPath:      ()        => ipcRenderer.invoke('get-app-path'),
   loadTags:        ()        => ipcRenderer.invoke('load-tags'),

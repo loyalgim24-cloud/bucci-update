@@ -1027,6 +1027,90 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
   #home .home-hdr,#home #guide-box,#home #home-body,#bg-game{transition-duration:.01s !important}
   #bg-pot.shake{animation:none}
 }
+/* ── 레퍼런스 팩 ── */
+#pack-view{flex:1;overflow-y:auto;display:none;padding:26px 30px 48px;position:relative}
+#pack-view.on{display:block}
+.pk-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.pk-t{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--g01)}
+.pk-t input{font:inherit;color:inherit;letter-spacing:inherit;border:none;background:none;outline:none;padding:0;width:100%;border-bottom:1.5px dashed transparent}
+.pk-t input:hover,.pk-t input:focus{border-bottom-color:var(--g08)}
+.pk-s{font-size:12.5px;color:var(--g05);margin-top:4px}
+.pk-cols{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;margin-top:18px}
+.pk-box{background:var(--surface);border:1px solid var(--g09);border-radius:14px;padding:18px}
+.pk-step{font-size:11px;font-weight:800;color:var(--p600);letter-spacing:.02em}
+.pk-bt{font-size:15px;font-weight:800;color:var(--g01);margin:4px 0 12px}
+.pk-lb{font-size:12px;font-weight:700;color:var(--g01);margin:14px 0 6px}
+.pk-lb span{font-weight:400;color:var(--g05)}
+.pk-in{width:100%;box-sizing:border-box;font-family:inherit;border:1.5px solid var(--g08);border-radius:10px;padding:11px 12px;font-size:13.5px;color:var(--g01);background:var(--surface);outline:none}
+.pk-in:focus{border-color:var(--p600)}
+.pk-in.sm{width:150px;padding:6px 10px;font-size:12px;border-radius:999px}
+.pk-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pk-chip{font-family:inherit;font-size:12px;padding:6px 11px;border-radius:999px;background:var(--g10);color:var(--g01);border:1px solid transparent;cursor:pointer}
+.pk-chip:hover{background:var(--g09)}
+.pk-chip.on{background:var(--p600);color:#fff;font-weight:700}
+.pk-chip .auto{font-size:9.5px;font-weight:800;margin-left:5px;opacity:.85}
+.pk-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pk-ck{display:flex;align-items:center;gap:8px;font-family:inherit;font-size:13px;color:var(--g01);padding:9px 10px;border-radius:10px;border:1px solid var(--g09);background:var(--surface);cursor:pointer;text-align:left}
+.pk-ck i{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--g07);flex-shrink:0;position:relative;box-sizing:border-box}
+.pk-ck.on{border-color:var(--p600);background:rgba(18,112,252,.06)}
+.pk-ck.on i{background:var(--p600);border-color:var(--p600)}
+.pk-ck.on i::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.pk-ck.add{border-style:dashed;color:var(--g05)}
+.pk-note{font-size:11.5px;color:var(--g05);margin-top:10px}
+.pk-btn{font-family:inherit;font-size:13px;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--g09);background:var(--surface);color:var(--g01);cursor:pointer;white-space:nowrap}
+.pk-btn:hover{border-color:var(--g07)}
+.pk-btn.pri{background:var(--p600);border-color:var(--p600);color:#fff}
+.pk-btn.pri:disabled{opacity:.45;cursor:default}
+.pk-btn.sm{font-size:12px;padding:6px 11px;border-radius:8px}
+.pk-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.pk-bar{display:flex;gap:8px;align-items:center;position:relative}
+.pk-dd{position:absolute;right:0;top:calc(100% + 6px);width:240px;background:var(--surface);border:1px solid var(--g09);border-radius:12px;box-shadow:0 14px 34px rgba(15,23,42,.16);padding:6px;z-index:20}
+.pk-dd button{display:block;width:100%;text-align:left;font-family:inherit;font-size:12.5px;color:var(--g01);padding:9px 10px;border-radius:8px;border:none;background:none;cursor:pointer}
+.pk-dd button:hover{background:var(--g10)}
+.pk-dd button small{display:block;font-size:11px;color:var(--g05);margin-top:2px}
+.pk-nav{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;position:sticky;top:-26px;z-index:5;padding:8px 0;background:var(--bg,var(--g10))}
+.pk-nav button{font-family:inherit;font-size:12px;padding:5px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--g09);color:var(--g01);cursor:pointer}
+.pk-nav button:hover{border-color:var(--p600);color:var(--p600)}
+.pk-sec{background:var(--surface);border:1px solid var(--g09);border-radius:14px;padding:14px 16px;margin-top:12px;scroll-margin-top:52px}
+.pk-sh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pk-sn{font-size:14.5px;font-weight:800;color:var(--g01)}
+.pk-sc{font-size:11.5px;color:var(--g05)}
+.pk-memo{margin-left:auto;font-family:inherit;font-size:12px;color:var(--g01);border:1px dashed var(--g08);border-radius:8px;padding:6px 10px;width:min(380px,45%);background:none;outline:none}
+.pk-memo:focus{border-style:solid;border-color:var(--p600)}
+.pk-memo:not(:placeholder-shown){border-style:solid;background:var(--g10)}
+.pk-x{font-family:inherit;font-size:11.5px;color:var(--g05);border:none;background:none;cursor:pointer;padding:4px 6px;border-radius:6px}
+.pk-x:hover{color:var(--g01);background:var(--g10)}
+.pk-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.pk-card{width:112px;flex-shrink:0;position:relative;cursor:pointer}
+.pk-card{background:none}
+.pk-card img{width:112px;height:200px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid var(--g09);display:block;background:var(--g10)}
+.pk-card:hover img{border-color:var(--p600);box-shadow:0 6px 16px rgba(18,112,252,.18)}
+.pk-card > span{display:block;font-size:11px;color:var(--g05);margin-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-act{position:absolute;top:6px;right:6px;display:none;gap:4px}
+.pk-card:hover .pk-act{display:flex}
+.pk-act button{font-family:inherit;font-size:10.5px;font-weight:700;background:rgba(15,23,42,.8);color:#fff;border:none;border-radius:6px;padding:3px 6px;cursor:pointer}
+.pk-act button:hover{background:var(--p600)}
+.pk-pin{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;background:var(--p600);color:#fff;border-radius:6px;padding:3px 6px}
+.pk-addc{width:112px;height:200px;flex-shrink:0;border:1.5px dashed var(--g08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:12px;color:var(--g05);background:none;cursor:pointer}
+.pk-addc:hover{border-color:var(--p600);color:var(--p600)}
+.pk-pool{margin-top:10px;padding:10px;border-radius:12px;background:var(--g10)}
+.pk-pool .pk-row{margin-top:6px}
+.pk-pool .pk-card,.pk-pool .pk-card img{width:84px}
+.pk-pool .pk-card img{height:150px}
+.pk-empty{font-size:12.5px;color:var(--g05);padding:18px 0 6px}
+.pk-plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:18px}
+.pk-pc{background:var(--surface);border:1px solid var(--g09);border-radius:14px;padding:14px;cursor:pointer;position:relative}
+.pk-pc:hover{border-color:var(--p600)}
+.pk-pc b{display:block;font-size:14px;color:var(--g01);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:40px}
+.pk-pc small{display:block;font-size:11.5px;color:var(--g05);margin-top:3px}
+.pk-pc .th{display:flex;gap:6px;margin-top:10px}
+.pk-pc .th img{width:52px;height:92px;object-fit:cover;object-position:top;border-radius:6px;border:1px solid var(--g09)}
+.pk-pc .del{position:absolute;top:10px;right:10px}
+.pk-new{border:1.5px dashed var(--g08);background:none;display:flex;align-items:center;justify-content:center;min-height:150px;font-weight:700;color:var(--p600);font-size:14px}
+.pk-busy{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:80px 0;color:var(--g05);font-size:13px}
+.pk-busy i{width:28px;height:28px;border-radius:50%;border:3px solid var(--g09);border-top-color:var(--p600);animation:pkSpin .8s linear infinite}
+@keyframes pkSpin{to{transform:rotate(360deg)}}
+.pk-typesel{position:absolute;z-index:20;background:var(--surface);border:1px solid var(--g09);border-radius:12px;box-shadow:0 14px 34px rgba(15,23,42,.16);padding:8px;display:flex;flex-wrap:wrap;gap:5px;width:320px}
 </style>
 </head>
 <!-- PC 기능 숨김: body 의 pc-off 클래스를 지우면 PC 레퍼런스 버튼과 Mobile/PC 전환이 다시 나타납니다 -->
@@ -1049,6 +1133,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
   <div class="tabs">
     <button class="tab"    id="t-gallery" onclick="toGallery()">모아보기</button>
     <button class="tab"    id="t-ix" onclick="toInteraction()">인터랙션<em class="tab-new">NEW</em></button>
+    <button class="tab"    id="t-pack" onclick="toPack()">레퍼런스 팩<em class="tab-new">NEW</em></button>
   </div>
   <span id="st"></span>
   <button class="reload-btn" id="reload-btn" onclick="doReloadAll()" title="앱 리로드">↻ 앱 리로드</button>
@@ -1234,6 +1319,8 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
       </div>
       <div class="likes-scroll"><div class="likes-grid" id="likes-grid"></div></div>
     </div>
+    <!-- 레퍼런스 팩 -->
+    <div id="pack-view"></div>
     <!-- 인터랙션 (Uiverse CSS 효과) -->
     <div id="ix-view">
       <div class="ix-head">
@@ -2536,6 +2623,7 @@ function goBack() {
   }
   else if (prev.type === 'col') { toCollection() }
   else if (prev.type === 'ix') { toInteraction() }
+  else if (prev.type === 'pack') { toPack() }
   else if (prev.type === 'portal') { loadPortalApp(prev.name, prev.mode) }
   _isBack = false
 }
@@ -2562,8 +2650,9 @@ function pushNav(state) {
 
 function showView(id) {
   try { if (window.bgAbort) window.bgAbort() } catch {}   // 이스터에그 게임 중에 다른 화면으로 가면 바로 정리
-  ['home','result','cat-view','gallery','likes-view','col-view','ix-view'].forEach(v => document.getElementById(v).classList.remove('on'))
+  ['home','result','cat-view','gallery','likes-view','col-view','ix-view','pack-view'].forEach(v => document.getElementById(v).classList.remove('on'))
   try { document.getElementById('t-ix').classList.toggle('on', id === 'ix-view'); if (id !== 'ix-view') ixClose() } catch {}
+  try { document.getElementById('t-pack').classList.toggle('on', id === 'pack-view'); if (id !== 'pack-view' && typeof pkSaveCur === 'function') pkSaveCur(true) } catch {}
   document.getElementById(id).classList.add('on')
   try { closeUpdMenu() } catch {}
   // 컬렉션 화면일 때만 왼쪽 '컬렉션' 메뉴를 선택된 모습으로
@@ -2574,7 +2663,7 @@ function showView(id) {
     document.getElementById('t-gallery').classList.add('on')
     document.getElementById('t-explore')?.classList.remove('on')
     document.getElementById('hbtn').classList.add('off')
-  } else if (id === 'ix-view') {
+  } else if (id === 'ix-view' || id === 'pack-view') {
     document.getElementById('t-explore')?.classList.remove('on')
     document.getElementById('t-gallery').classList.remove('on')
     document.getElementById('hbtn').classList.add('off')
@@ -8198,6 +8287,375 @@ window.addEventListener('resize', () => { document.querySelectorAll('#ix-ov .ix-
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init()
 })()
+</script>
+<script>
+// ── 레퍼런스 팩 ─────────────────────────────────────────────────────
+// 프로젝트 설명 → 앱 유형·필요한 화면 목록 → 화면 종류마다 서로 다른 앱에서 레퍼런스를 골라 한 묶음으로.
+// 편집(빼기·바꾸기·고정·추가·메모) 후 무드보드 PNG로 내보내거나 컬렉션에 저장. 팩은 이 PC에 자동 저장.
+const PK_KEY = 'bucci_packs'
+const PK_PER = 6, PK_POOL = 30
+const PK_INDS = [['금융','금융/핀테크'],['커머스','커머스/쇼핑'],['배달','배달/푸드'],['모빌리티','모빌리티'],['헬스','헬스/피트니스'],
+  ['소셜','소셜/커뮤니티'],['부동산','부동산'],['교육','교육'],['엔터','엔터테인먼트'],['패션','패션'],['생산성','생산성'],['공공','공공서비스'],['중고거래','중고거래'],['AI','AI']]
+// [대화형 검색 조건(여러 개면 모두 만족), 표시 이름, 기본 선택]
+const PK_PRESETS = {
+  '금융':   [[['온보딩'],'스플래시/온보딩',1],[['본인인증'],'로그인/본인인증',1],[['홈화면'],'홈',1],[['송금'],'송금',1],[['송금','완료'],'송금 완료',1],[['자산'],'자산/거래내역',1],[['알림'],'알림',1],[['설정'],'설정',1],[['투자'],'투자',0],[['쿠폰'],'혜택/쿠폰',0]],
+  '커머스': [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['검색결과'],'검색 결과',1],[['상세'],'상품 상세',1],[['장바구니'],'장바구니',1],[['결제'],'결제',1],[['결제','완료'],'주문 완료',1],[['리뷰'],'리뷰',1],[['마이페이지'],'마이페이지',1],[['쿠폰'],'쿠폰',0],[['필터'],'필터',0],[['배송'],'배송 조회',0]],
+  '배달':   [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['검색'],'검색',1],[['상세'],'가게·메뉴 상세',1],[['장바구니'],'장바구니',1],[['결제'],'결제',1],[['배송'],'주문 현황',1],[['리뷰'],'리뷰',1],[['쿠폰'],'쿠폰',0],[['지도'],'지도',0]],
+  '모빌리티':[[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['지도'],'지도',1],[['호출'],'호출',1],[['결제'],'결제',1],[['완료'],'이용 완료',1],[['마이페이지'],'마이페이지',1],[['예약'],'예약',0]],
+  '헬스':   [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['통계'],'기록/통계',1],[['캘린더'],'캘린더',1],[['알림'],'알림',1],[['마이페이지'],'마이페이지',1],[['설정'],'설정',1]],
+  '소셜':   [[['온보딩'],'스플래시/온보딩',1],[['회원가입'],'회원가입',1],[['피드'],'피드',1],[['상세'],'게시글 상세',1],[['채팅'],'채팅',1],[['알림'],'알림',1],[['마이페이지'],'프로필',1],[['검색'],'검색',1]],
+  '부동산': [[['온보딩'],'스플래시/온보딩',1],[['홈화면'],'홈',1],[['지도'],'지도',1],[['검색결과'],'매물 목록',1],[['상세'],'매물 상세',1],[['필터'],'필터',1],[['채팅'],'문의/채팅',1],[['마이페이지'],'마이페이지',1]],
+  '교육':   [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['상세'],'강의 상세',1],[['통계'],'학습 현황',1],[['캘린더'],'캘린더',1],[['마이페이지'],'마이페이지',1],[['결제'],'결제',0]],
+  '엔터':   [[['온보딩'],'스플래시/온보딩',1],[['홈화면'],'홈',1],[['검색'],'검색',1],[['상세'],'콘텐츠 상세',1],[['피드'],'피드',1],[['마이페이지'],'마이페이지',1],[['설정'],'설정',1],[['결제'],'구독/결제',0]],
+  '패션':   [[['온보딩'],'스플래시/온보딩',1],[['홈화면'],'홈',1],[['검색결과'],'검색 결과',1],[['상세'],'상품 상세',1],[['장바구니'],'장바구니',1],[['결제'],'결제',1],[['리뷰'],'리뷰',1],[['마이페이지'],'마이페이지',1],[['쿠폰'],'쿠폰',0]],
+  '생산성': [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['캘린더'],'캘린더',1],[['검색'],'검색',1],[['알림'],'알림',1],[['설정'],'설정',1],[['결제'],'구독/결제',0]],
+  '공공':   [[['로그인'],'로그인',1],[['본인인증'],'본인인증',1],[['홈화면'],'홈',1],[['약관'],'약관',1],[['검색'],'검색',1],[['완료'],'신청 완료',1],[['알림'],'알림',1],[['마이페이지'],'마이페이지',1]],
+  '중고거래':[[['온보딩'],'스플래시/온보딩',1],[['홈화면'],'홈',1],[['검색결과'],'검색 결과',1],[['상세'],'상품 상세',1],[['채팅'],'채팅',1],[['지도'],'동네/지도',1],[['마이페이지'],'마이페이지',1],[['결제'],'결제',0]],
+  'AI':     [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['채팅'],'대화',1],[['설정'],'설정',1],[['마이페이지'],'마이페이지',1],[['결제'],'구독/결제',0]],
+  '':       [[['온보딩'],'스플래시/온보딩',1],[['로그인'],'로그인/회원가입',1],[['홈화면'],'홈',1],[['검색'],'검색',1],[['상세'],'상세',1],[['알림'],'알림',1],[['마이페이지'],'마이페이지',1],[['설정'],'설정',1]]
+}
+const PK_MODES = [['','모드 상관없음'],['라이트모드','라이트 모드'],['다크모드','다크 모드']]
+const PK_COLORS = [['','색 상관없음'],['블루톤','블루'],['그린톤','그린'],['레드톤','레드'],['옐로우톤','옐로우'],['퍼플톤','퍼플'],['오렌지톤','오렌지'],['모노톤','모노']]
+
+let _pkForm = null, _pkCur = null, _pkSaveT = null
+const pkEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
+const pkLoad = () => { try { const a = JSON.parse(localStorage.getItem(PK_KEY) || '[]'); return Array.isArray(a) ? a : [] } catch { return [] } }
+const pkStore = list => { try { localStorage.setItem(PK_KEY, JSON.stringify(list)) } catch { showToast('저장 공간이 부족해 팩을 저장하지 못했어요') } }
+function pkSaveCur(now) {
+  if (!_pkCur) return
+  clearTimeout(_pkSaveT)
+  const run = () => { _pkCur.updated = Date.now(); const list = pkLoad().filter(p => p.id !== _pkCur.id); list.unshift(_pkCur); pkStore(list) }
+  if (now) run(); else _pkSaveT = setTimeout(run, 400)
+}
+
+function toPack() {
+  pushNav({ type: 'pack' })
+  showView('pack-view'); setSbActive(null)
+  pkHome()
+}
+function pkView() { return document.getElementById('pack-view') }
+
+// ── 내 팩 목록 ──
+function pkHome() {
+  _pkCur = null
+  const list = pkLoad()
+  if (!list.length) { pkNewForm(); return }
+  const v = pkView()
+  v.innerHTML = `<div class="pk-h"><div><div class="pk-t">레퍼런스 팩</div><div class="pk-s">프로젝트에 필요한 화면 레퍼런스를 한 묶음으로 모아 두세요</div></div></div>
+    <div class="pk-plist"><button class="pk-pc pk-new" type="button" id="pk-new">+ 새 팩 만들기</button>${list.map(p => {
+      const n = p.sections.reduce((s, x) => s + x.items.length, 0)
+      const th = p.sections.flatMap(x => x.items).slice(0, 5)
+      return `<div class="pk-pc" data-id="${p.id}"><b>${pkEsc(p.name)}</b><small>${pkEsc(pkIndName(p.ind))} · 화면 ${p.sections.length}종 ${n}장 · ${new Date(p.updated || p.created).toLocaleDateString('ko-KR')}</small>
+        <div class="th">${th.map(i => `<img src="${pkEsc(i.thumbnail || i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`).join('')}</div><button class="pk-x del" type="button" data-del="${p.id}">삭제</button></div>`
+    }).join('')}</div>`
+  v.querySelector('#pk-new').onclick = pkNewForm
+  v.querySelectorAll('.pk-pc[data-id]').forEach(c => c.onclick = ev => {
+    const del = ev.target.closest('[data-del]')
+    if (del) {
+      ev.stopPropagation()
+      if (!confirm('이 팩을 삭제할까요? 되돌릴 수 없어요.')) return
+      pkStore(pkLoad().filter(p => p.id !== del.dataset.del)); pkHome(); return
+    }
+    const p = pkLoad().find(x => x.id === c.dataset.id); if (p) { _pkCur = p; pkEdit() }
+  })
+}
+const pkIndName = k => (PK_INDS.find(x => x[0] === k) || [null, '앱 유형 미정'])[1]
+
+// ── 만들기: 프로젝트 입력 + 필요한 화면 ──
+function pkNewForm() {
+  _pkCur = null
+  _pkForm = { name: '', ind: '', indAuto: false, refs: [], mode: '', color: '', checks: null }
+  pkRenderForm()
+}
+function pkPresetFor(ind) { return (PK_PRESETS[ind] || PK_PRESETS['']).map(([q, label, on]) => ({ q, label, on: !!on })) }
+function pkRenderForm() {
+  const f = _pkForm
+  if (!f.checks) f.checks = pkPresetFor(f.ind)
+  const v = pkView()
+  const onCnt = f.checks.filter(c => c.on).length
+  v.innerHTML = `<div class="pk-h"><div><div class="pk-t">레퍼런스 팩 만들기</div>
+      <div class="pk-s">프로젝트를 알려주면 화면 종류마다 서로 다른 앱의 레퍼런스를 골라 한 묶음으로 모아드려요</div></div>
+      ${pkLoad().length ? '<button class="pk-btn" type="button" id="pk-back">내 팩 목록</button>' : ''}</div>
+    <div class="pk-cols"><div class="pk-box"><div class="pk-step">STEP 1</div><div class="pk-bt">어떤 프로젝트인가요?</div>
+      <input class="pk-in" id="pk-name" maxlength="60" placeholder="예) 20~30대 대상 핀테크 송금 앱 신규 구축" value="${pkEsc(f.name)}">
+      <div class="pk-lb">앱 유형</div><div class="pk-chips" id="pk-inds">${PK_INDS.map(([k, n]) => `<button type="button" class="pk-chip ${f.ind === k ? 'on' : ''}" data-ind="${k}">${n}${f.ind === k && f.indAuto ? '<span class="auto">자동</span>' : ''}</button>`).join('')}</div>
+      <div class="pk-lb">참고하고 싶은 앱 <span>(선택 · 각 화면에 먼저 넣어드려요)</span></div><div class="pk-chips" id="pk-refs">${f.refs.map(a => `<button type="button" class="pk-chip on" data-ref="${pkEsc(a)}">${pkEsc(a)} ✕</button>`).join('')}<input class="pk-in sm" id="pk-refin" placeholder="앱 이름 입력 후 Enter"></div>
+      <div class="pk-lb">분위기 <span>(선택 · 맞는 화면을 앞쪽에)</span></div>
+      <div class="pk-chips" id="pk-mode">${PK_MODES.map(([k, n]) => `<button type="button" class="pk-chip ${f.mode === k ? 'on' : ''}" data-mode="${k}">${n}</button>`).join('')}</div>
+      <div class="pk-chips" id="pk-color" style="margin-top:6px">${PK_COLORS.map(([k, n]) => `<button type="button" class="pk-chip ${f.color === k ? 'on' : ''}" data-color="${k}">${n}</button>`).join('')}</div>
+    </div>
+    <div class="pk-box"><div class="pk-step">STEP 2</div><div class="pk-bt">필요한 화면을 골라주세요</div>
+      <div class="pk-list" id="pk-checks">${f.checks.map((c, i) => `<button type="button" class="pk-ck ${c.on ? 'on' : ''}" data-i="${i}"><i></i>${pkEsc(c.label)}</button>`).join('')}<button type="button" class="pk-ck add" id="pk-addtype">+ 화면 추가</button></div>
+      <div class="pk-note">${f.ind ? `'${pkEsc(pkIndName(f.ind))}' 앱에서 자주 쓰는 화면 목록이에요` : '앱 유형을 고르면 그 분야에 맞는 화면 목록으로 바뀌어요'} · 화면마다 ${PK_PER}장씩 모아요</div>
+      <div class="pk-foot"><button class="pk-btn pri" type="button" id="pk-make" ${onCnt ? '' : 'disabled'}>팩 만들기 · ${onCnt}개 화면</button></div></div></div>`
+  const nameIn = v.querySelector('#pk-name')
+  nameIn.oninput = () => {
+    f.name = nameIn.value
+    // 설명에서 앱 유형을 알아보면 자동 선택 (직접 고른 뒤에는 건드리지 않음)
+    if (f.ind && !f.indAuto) return
+    let ind = ''
+    try { const p = sqParse(f.name); const c = p.labels.map(sqConcept).find(x => x && x.kind === 'ind'); if (c && PK_PRESETS[c.label]) ind = c.label } catch {}
+    if (ind !== f.ind) { f.ind = ind; f.indAuto = !!ind; f.checks = null; const pos = nameIn.selectionStart; pkRenderForm(); const n2 = pkView().querySelector('#pk-name'); n2.focus(); n2.setSelectionRange(pos, pos) }
+  }
+  setTimeout(() => { if (!f.name) nameIn.focus() }, 30)
+  const back = v.querySelector('#pk-back'); if (back) back.onclick = pkHome
+  v.querySelectorAll('[data-ind]').forEach(b => b.onclick = () => { const k = b.dataset.ind; f.ind = f.ind === k ? '' : k; f.indAuto = false; f.checks = null; pkRenderForm() })
+  v.querySelectorAll('[data-ref]').forEach(b => b.onclick = () => { f.refs = f.refs.filter(a => a !== b.dataset.ref); pkRenderForm() })
+  const refIn = v.querySelector('#pk-refin')
+  refIn.onkeydown = ev => {
+    if (ev.key !== 'Enter') return
+    ev.preventDefault()
+    const q = refIn.value.trim(); if (!q) return
+    const names = (typeof sqAppNames === 'function' ? sqAppNames() : [])
+    const norm = s => String(s).toLowerCase().replace(/[\s.·]/g, '')
+    const hit = names.find(n => norm(n) === norm(q)) || names.find(n => norm(n).includes(norm(q)))
+    if (!hit) { showToast(`'${q}' 앱을 찾지 못했어요`); return }
+    if (!f.refs.includes(hit)) f.refs.push(hit)
+    pkRenderForm(); pkView().querySelector('#pk-refin').focus()
+  }
+  v.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { f.mode = b.dataset.mode; pkRenderForm() })
+  v.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { f.color = b.dataset.color; pkRenderForm() })
+  v.querySelectorAll('#pk-checks [data-i]').forEach(b => b.onclick = () => { const c = f.checks[+b.dataset.i]; c.on = !c.on; pkRenderForm() })
+  v.querySelector('#pk-addtype').onclick = ev => pkTypePicker(ev.currentTarget, f.checks.map(c => c.label), (q, label) => { f.checks.push({ q: [q], label, on: true }); pkRenderForm() })
+  v.querySelector('#pk-make').onclick = pkMake
+}
+// 화면 종류 고르기 (대화형 검색이 아는 화면 종류)
+function pkTypePicker(anchor, have, onPick) {
+  document.querySelectorAll('.pk-typesel').forEach(x => x.remove())
+  const types = Object.values(SQ_CONCEPTS).filter(c => c.kind === 'type' && !have.includes(c.label)).map(c => c.label)
+  const box = document.createElement('div'); box.className = 'pk-typesel'
+  box.innerHTML = types.map(t => `<button type="button" class="pk-chip" data-t="${pkEsc(t)}">${pkEsc(t === '홈화면' ? '홈' : t)}</button>`).join('')
+  const v = pkView(), r = anchor.getBoundingClientRect(), vr = v.getBoundingClientRect()
+  box.style.left = Math.min(r.left - vr.left, v.clientWidth - 340) + 'px'
+  box.style.top = (r.bottom - vr.top + v.scrollTop + 6) + 'px'
+  v.appendChild(box)
+  box.onclick = ev => { const b = ev.target.closest('[data-t]'); if (!b) return; box.remove(); onPick(b.dataset.t, b.dataset.t === '홈화면' ? '홈' : b.dataset.t) }
+  setTimeout(() => document.addEventListener('mousedown', function off(e) { if (!box.contains(e.target)) { box.remove(); document.removeEventListener('mousedown', off) } }), 0)
+}
+
+// ── 자동으로 모으기 ──
+function pkItem(src, extra) {
+  return Object.assign({ type: 'image', src, thumbnail: src, source: src.includes('wwit.design') ? 'wwit' : 'upa', app: sqAppOf(src) }, extra || {})
+}
+// 한 섹션의 후보: 참고 앱 → 분위기 맞는 화면 → 서로 다른 앱을 번갈아가며
+function pkCollect(q, ind, refs, mode, color, used) {
+  const typeCs = q.map(sqConcept).filter(Boolean)
+  if (!typeCs.length) return []
+  const indC = ind ? sqConcept(ind) : null
+  const r = sqSearch(indC ? [indC, ...typeCs] : typeCs, { maxApps: 40, maxPerApp: 5 })
+  const moodOk = url => { const t = tagsDb[url] || []; return (!mode || t.includes(mode)) && (!color || t.includes(color)) }
+  const lists = Object.entries(r.data).map(([app, items]) => {
+    const urls = items.map(i => i.src).filter(u => !used.has(u))
+    if (mode || color) urls.sort((a, b) => moodOk(b) - moodOk(a))
+    return [app, urls]
+  }).filter(([, u]) => u.length)
+  if (mode || color) lists.sort((a, b) => moodOk(b[1][0]) - moodOk(a[1][0]))
+  const out = [], seen = new Set()
+  const push = (u, app) => { if (!seen.has(u) && !used.has(u)) { seen.add(u); out.push(pkItem(u, { app })) } }
+  // 참고 앱은 맨 앞에 한 장씩
+  refs.forEach(app => {
+    const own = lists.find(([a]) => a === app)
+    if (own) { push(own[1][0], app); return }
+    try {
+      const rr = sqSearch([{ label: app, kind: 'app', w: 5, terms: [] }, ...typeCs], { maxApps: 1, maxPerApp: 1 })
+      if (rr.used.includes(app) && typeCs.every(c => rr.used.includes(c.label))) Object.entries(rr.data).forEach(([a, items]) => items[0] && push(items[0].src, a))
+    } catch {}
+  })
+  // 나머지는 앱을 번갈아 가며 (한 앱에 몰리지 않게)
+  for (let round = 0; out.length < PK_PER + PK_POOL && round < 5; round++) {
+    let any = false
+    lists.forEach(([app, urls]) => { if (urls[round]) { any = true; if (out.length < PK_PER + PK_POOL) push(urls[round], app) } })
+    if (!any) break
+  }
+  return out
+}
+// 조건이 여러 개(예: 송금+완료)라 결과가 모자라면 마지막 조건(완료)만으로 채움. 그래도 모자라면 앱 유형 없이 채움
+function pkCollectFill(q, ind, refs, mode, color, used) {
+  let out = pkCollect(q, ind, refs, mode, color, used)
+  const add = more => { const have = new Set(out.map(i => i.src)); more.forEach(i => { if (!have.has(i.src)) { have.add(i.src); out.push(i) } }) }
+  if (out.length < PK_PER && q.length > 1) add(pkCollect(q.slice(-1), ind, [], mode, color, used))
+  if (out.length < PK_PER && ind) add(pkCollect(q.length > 1 ? q.slice(-1) : q, '', [], mode, color, used))
+  return out
+}
+async function pkMake() {
+  const f = _pkForm
+  const checks = f.checks.filter(c => c.on)
+  if (!checks.length) return
+  const v = pkView()
+  v.innerHTML = '<div class="pk-busy"><i></i>레퍼런스를 모으고 있어요…</div>'
+  try { await ensureTagsLoaded(); await sqLoadUpaMeta() } catch {}
+  await new Promise(r => setTimeout(r, 30))
+  const used = new Set()
+  const sections = checks.map(c => {
+    const all = pkCollectFill(c.q, f.ind, f.refs, f.mode, f.color, used)
+    const items = all.slice(0, PK_PER); items.forEach(i => used.add(i.src))
+    return { id: 's' + Math.random().toString(36).slice(2, 8), label: c.label, q: c.q, items, pool: all.slice(PK_PER).map(i => ({ src: i.src, app: i.app })), pinned: [], memo: '' }
+  })
+  _pkCur = { id: 'p' + Date.now().toString(36), name: (f.name || '').trim() || (pkIndName(f.ind) + ' 레퍼런스 팩'), ind: f.ind, refs: f.refs, mode: f.mode, color: f.color, sections, created: Date.now(), updated: Date.now() }
+  pkSaveCur(true)
+  pkEdit()
+  const empty = sections.filter(s => !s.items.length).map(s => s.label)
+  if (empty.length) showToast(`'${empty.join(', ')}' 화면은 아직 맞는 레퍼런스가 없어요`)
+}
+
+// ── 편집 ──
+function pkEdit() {
+  const p = _pkCur; if (!p) return
+  const v = pkView()
+  const total = p.sections.reduce((s, x) => s + x.items.length, 0)
+  const apps = new Set(p.sections.flatMap(s => s.items.map(i => i.app))).size
+  v.innerHTML = `<div class="pk-h"><div style="flex:1;min-width:0"><div class="pk-t"><input id="pk-title" value="${pkEsc(p.name)}" maxlength="60" title="이름 바꾸기"></div>
+      <div class="pk-s">${pkEsc(pkIndName(p.ind))} · 화면 ${p.sections.length}종 ${total}장 · ${apps}개 앱 · 자동 저장됨</div></div>
+      <div class="pk-bar"><button class="pk-btn" type="button" id="pk-list">내 팩 목록</button><button class="pk-btn" type="button" id="pk-col">컬렉션에 저장</button><button class="pk-btn pri" type="button" id="pk-exp">내보내기 ▾</button></div></div>
+    <div class="pk-nav">${p.sections.map(s => `<button type="button" data-go="${s.id}">${pkEsc(s.label)}</button>`).join('')}<button type="button" id="pk-addsec">+ 화면 종류 추가</button></div>
+    <div id="pk-secs">${p.sections.map(pkSecHtml).join('')}</div>`
+  const t = v.querySelector('#pk-title'); t.oninput = () => { p.name = t.value.trim() || p.name; pkSaveCur() }
+  v.querySelector('#pk-list').onclick = () => { pkSaveCur(true); pkHome() }
+  v.querySelector('#pk-col').onclick = pkToCollection
+  v.querySelector('#pk-exp').onclick = ev => { ev.stopPropagation(); pkExportMenu(ev.currentTarget) }
+  v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { const s = v.querySelector('#' + b.dataset.go); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }) })
+  v.querySelector('#pk-addsec').onclick = ev => pkTypePicker(ev.currentTarget, p.sections.map(s => s.q.join('+')), async (q, label) => {
+    try { await ensureTagsLoaded(); await sqLoadUpaMeta() } catch {}
+    const used = new Set(p.sections.flatMap(s => s.items.map(i => i.src)))
+    const all = pkCollectFill([q], p.ind, p.refs || [], p.mode, p.color, used)
+    p.sections.push({ id: 's' + Math.random().toString(36).slice(2, 8), label, q: [q], items: all.slice(0, PK_PER), pool: all.slice(PK_PER).map(i => ({ src: i.src, app: i.app })), pinned: [], memo: '' })
+    pkSaveCur(); pkEdit()
+    setTimeout(() => { const secs = pkView().querySelectorAll('.pk-sec'); secs[secs.length - 1].scrollIntoView({ behavior: 'smooth' }) }, 50)
+  })
+  pkBindSecs()
+}
+function pkSecHtml(s) {
+  const card = (i, k) => `<div class="pk-card" data-k="${k}"><img src="${pkEsc(i.thumbnail || i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">${s.pinned.includes(i.src) ? '<em class="pk-pin">고정</em>' : ''}
+    <div class="pk-act"><button type="button" data-a="pin">${s.pinned.includes(i.src) ? '고정 해제' : '고정'}</button><button type="button" data-a="swap" ${s.pool.length ? '' : 'disabled'}>바꾸기</button><button type="button" data-a="del">빼기</button></div><span>${pkEsc(i.app)}</span></div>`
+  return `<div class="pk-sec" id="${s.id}"><div class="pk-sh"><span class="pk-sn">${pkEsc(s.label)}</span><span class="pk-sc">${s.items.length}장 · ${new Set(s.items.map(i => i.app)).size}개 앱</span>
+      <button class="pk-x" type="button" data-a="refresh" ${s.pool.length ? '' : 'disabled'} title="고정하지 않은 화면을 다른 후보로 바꿔요">다른 화면 보기</button><button class="pk-x" type="button" data-a="delsec">섹션 삭제</button>
+      <input class="pk-memo" data-a="memo" placeholder="+ 메모 남기기 (무드보드에 함께 나와요)" value="${pkEsc(s.memo)}" maxlength="80"></div>
+    <div class="pk-row">${s.items.length ? s.items.map(card).join('') : '<div class="pk-empty">아직 맞는 레퍼런스가 없어요. 오른쪽 후보에서 직접 추가해 보세요.</div>'}${s.pool.length ? '<button type="button" class="pk-addc" data-a="add">+ 후보에서 추가</button>' : ''}</div></div>`
+}
+function pkBindSecs() {
+  const p = _pkCur, v = pkView()
+  v.querySelectorAll('.pk-sec').forEach(el => {
+    const s = p.sections.find(x => x.id === el.id); if (!s) return
+    const redraw = () => { el.outerHTML = pkSecHtml(s); pkBindSecs(); pkSaveCur() }
+    el.querySelector('[data-a="memo"]').oninput = ev => { s.memo = ev.target.value; pkSaveCur() }
+    el.onclick = ev => {
+      const a = ev.target.closest('[data-a]'); const cardEl = ev.target.closest('.pk-card')
+      if (ev.target.closest('.pk-pool')) return
+      if (!a) { if (cardEl) { const k = +cardEl.dataset.k; try { openPop(s.items[k], s.items, k) } catch {} } return }
+      const act = a.dataset.a, k = cardEl ? +cardEl.dataset.k : -1
+      if (act === 'memo') return
+      if (act === 'pin') { const src = s.items[k].src; s.pinned = s.pinned.includes(src) ? s.pinned.filter(x => x !== src) : [...s.pinned, src]; redraw() }
+      else if (act === 'del') { const it = s.items.splice(k, 1)[0]; s.pinned = s.pinned.filter(x => x !== it.src); s.pool.push({ src: it.src, app: it.app }); redraw() }
+      else if (act === 'swap') { const nx = s.pool.shift(); if (!nx) return; const old = s.items[k]; s.items[k] = pkItem(nx.src, { app: nx.app }); s.pinned = s.pinned.filter(x => x !== old.src); s.pool.push({ src: old.src, app: old.app }); redraw() }
+      else if (act === 'refresh') {
+        s.items = s.items.map(it => {
+          if (s.pinned.includes(it.src) || !s.pool.length) return it
+          const nx = s.pool.shift(); s.pool.push({ src: it.src, app: it.app }); return pkItem(nx.src, { app: nx.app })
+        }); redraw()
+      }
+      else if (act === 'delsec') { if (!confirm(`'${s.label}' 섹션을 삭제할까요?`)) return; p.sections = p.sections.filter(x => x !== s); pkSaveCur(); pkEdit() }
+      else if (act === 'add') pkShowPool(el, s)
+    }
+  })
+}
+function pkShowPool(el, s) {
+  const old = el.querySelector('.pk-pool'); if (old) { old.remove(); return }
+  const box = document.createElement('div'); box.className = 'pk-pool'
+  box.innerHTML = `<div class="pk-sc">후보 ${s.pool.length}장 · 누르면 이 섹션에 추가돼요</div><div class="pk-row">${s.pool.map((i, k) => `<div class="pk-card" data-pk="${k}"><img src="${pkEsc(i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span>${pkEsc(i.app)}</span></div>`).join('')}</div>`
+  el.appendChild(box)
+  box.onclick = ev => {
+    const c = ev.target.closest('[data-pk]'); if (!c) return
+    const nx = s.pool.splice(+c.dataset.pk, 1)[0]; s.items.push(pkItem(nx.src, { app: nx.app }))
+    el.outerHTML = pkSecHtml(s); pkBindSecs(); pkSaveCur()
+    const again = pkView().querySelector('#' + s.id); if (again && s.pool.length) pkShowPool(again, s)
+  }
+}
+function pkExportMenu(anchor) {
+  const bar = anchor.parentElement
+  const old = bar.querySelector('.pk-dd'); if (old) { old.remove(); return }
+  const dd = document.createElement('div'); dd.className = 'pk-dd'
+  dd.innerHTML = `<button type="button" data-x="save">무드보드 이미지로 저장 (PNG)<small>섹션별 격자 한 장 · 회의 자료용</small></button>
+    <button type="button" data-x="copy">무드보드 이미지 복사<small>Figma·메신저에 Ctrl+V로 붙여넣기</small></button>`
+  bar.appendChild(dd)
+  dd.onclick = ev => { const b = ev.target.closest('[data-x]'); if (!b) return; dd.remove(); pkExport(b.dataset.x) }
+  setTimeout(() => document.addEventListener('mousedown', function off(e) { if (!dd.contains(e.target)) { dd.remove(); document.removeEventListener('mousedown', off) } }), 0)
+}
+function pkToCollection() {
+  const p = _pkCur; if (!p) return
+  const items = p.sections.flatMap(s => s.items)
+  if (!items.length) { showToast('담을 화면이 없어요'); return }
+  const name = p.name.slice(0, 30)   // 같은 이름 컬렉션이 있으면 거기에 이어 담음
+  const list = collections[name] || (collections[name] = [])
+  items.forEach(i => { if (!list.some(x => x.src === i.src)) list.push({ type: 'image', src: i.src, thumbnail: i.thumbnail || i.src, source: i.source }) })
+  saveCollections()
+  showToast(`'${name}' 컬렉션에 ${items.length}장을 담았어요`)
+}
+
+// ── 무드보드 PNG (캔버스에 직접 그림) ──
+async function pkExport(kind) {
+  const p = _pkCur; if (!p) return
+  const secs = p.sections.filter(s => s.items.length)
+  if (!secs.length) { showToast('내보낼 화면이 없어요'); return }
+  if (!window.api || !window.api.fetchImageData) { showToast('부찌를 다시 시작한 뒤 내보낼 수 있어요'); return }
+  showToast('무드보드를 만들고 있어요…')
+  const W = 1600, M = 60, GAP = 40, COLW = (W - M * 2 - GAP) / 2, N = 5, IG = 10
+  const IW = (COLW - IG * (N - 1)) / N, IH = IW * 16 / 9
+  const SEC_H = 34 + 26 + IH + 28, ROW_GAP = 34
+  const rows = Math.ceil(secs.length / 2)
+  const H = M + 92 + 30 + rows * SEC_H + (rows - 1) * ROW_GAP + 60 + 40
+  const dpr = 1.25
+  const cv = document.createElement('canvas'); cv.width = W * dpr; cv.height = H * dpr
+  const cx = cv.getContext('2d'); cx.scale(dpr, dpr)
+  const FONT = "'Pretendard','Pretendard Variable','Malgun Gothic',system-ui,sans-serif"
+  cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H)
+  const text = (t, x, y, size, color, weight, align) => { cx.font = `${weight || 400} ${size}px ${FONT}`; cx.fillStyle = color; cx.textAlign = align || 'left'; cx.textBaseline = 'alphabetic'; cx.fillText(t, x, y) }
+  const fit = (t, size, weight, max) => { cx.font = `${weight || 400} ${size}px ${FONT}`; if (cx.measureText(t).width <= max) return t; while (t.length > 1 && cx.measureText(t + '…').width > max) t = t.slice(0, -1); return t + '…' }
+  // 머리
+  text(fit(p.name, 40, 800, W - M * 2 - 320), M, M + 42, 40, '#0D1B40', 800)
+  text(`레퍼런스 무드보드 · ${pkIndName(p.ind)} · 화면 ${secs.length}종`, M, M + 76, 16, '#6B7280', 400)
+  text(new Date().toLocaleDateString('ko-KR') + ' · 부찌 레퍼런스 팩', W - M, M + 76, 14, '#6B7280', 400, 'right')
+  cx.fillStyle = '#0D1B40'; cx.fillRect(M, M + 96, W - M * 2, 2)
+  // 이미지 미리 받기
+  const want = secs.flatMap(s => s.items.slice(0, N))
+  const imgs = {}
+  await Promise.all(want.map(async it => {
+    try {
+      const d = await window.api.fetchImageData(it.thumbnail || it.src); if (!d) return
+      await new Promise(res => { const im = new Image(); im.onload = () => { imgs[it.src] = im; res() }; im.onerror = res; im.src = d })
+    } catch {}
+  }))
+  const rr = (x, y, w, h, r) => { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath() }
+  secs.forEach((s, i) => {
+    const x0 = M + (i % 2) * (COLW + GAP), y0 = M + 126 + Math.floor(i / 2) * (SEC_H + ROW_GAP)
+    text(s.label, x0, y0 + 22, 20, '#0D1B40', 800)
+    cx.font = `800 20px ${FONT}`; const lw = cx.measureText(s.label).width
+    const chip = `${s.items.length}장`; cx.font = `600 13px ${FONT}`; const cw = cx.measureText(chip).width + 20
+    cx.fillStyle = '#EEF4FF'; rr(x0 + lw + 10, y0 + 6, cw, 22, 11); cx.fill(); text(chip, x0 + lw + 20, y0 + 22, 13, '#1270FC', 600)
+    if (s.memo) text(fit(s.memo, 13.5, 400, COLW), x0, y0 + 48, 13.5, '#4B5563', 400)
+    s.items.slice(0, N).forEach((it, k) => {
+      const ix = x0 + k * (IW + IG), iy = y0 + 60
+      cx.save(); rr(ix, iy, IW, IH, 10); cx.clip()
+      cx.fillStyle = '#F3F4F6'; cx.fillRect(ix, iy, IW, IH)
+      const im = imgs[it.src]
+      if (im) { const sc = Math.max(IW / im.naturalWidth, IH / im.naturalHeight), dw = im.naturalWidth * sc; cx.drawImage(im, ix + (IW - dw) / 2, iy, dw, im.naturalHeight * sc) }
+      cx.restore()
+      cx.strokeStyle = '#E5E7EB'; cx.lineWidth = 1; rr(ix + .5, iy + .5, IW - 1, IH - 1, 10); cx.stroke()
+      text(fit(it.app || '', 11.5, 400, IW), ix + IW / 2, iy + IH + 18, 11.5, '#6B7280', 400, 'center')
+    })
+  })
+  // 출처
+  const fy = H - 40
+  cx.fillStyle = '#E5E7EB'; cx.fillRect(M, fy - 26, W - M * 2, 1)
+  text('출처: WWIT (wwit.design) · UPA (wouldyoutest.com) · 디자이너스 (designus.design) — 각 화면의 저작권은 해당 서비스에 있어요', M, fy, 12.5, '#9CA3AF', 400)
+  text('Made with 부찌', W - M, fy, 12.5, '#9CA3AF', 400, 'right')
+  const url = cv.toDataURL('image/png')
+  const safe = p.name.replace(/[\\/:*?"<>|]/g, '').slice(0, 40) || '레퍼런스 팩'
+  let ok = false
+  if (kind === 'copy') { ok = await window.api.copyPng(url); showToast(ok ? '무드보드를 복사했어요 · Ctrl+V로 붙여넣으세요' : '복사하지 못했어요') }
+  else { ok = await window.api.savePng({ dataUrl: url, defaultName: safe + ' 무드보드.png' }); if (ok) showToast('무드보드를 저장했어요') }
+  const miss = want.length - Object.keys(imgs).length
+  if (ok && miss) setTimeout(() => showToast(`화면 ${miss}장은 이미지를 불러오지 못해 빈칸으로 나왔어요`), 1800)
+}
 </script>
 </body>
 </html>

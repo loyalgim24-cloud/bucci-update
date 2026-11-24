@@ -2377,6 +2377,28 @@ ipcMain.handle('scrape-upa-cat', async (_, catId, catName) => {
   return items
 })
 
+// 레퍼런스 팩 무드보드: 화면 이미지를 data URL로 (화면 쪽 캔버스에 그리려면 다른 사이트 이미지를 직접 못 씀)
+ipcMain.handle('fetch-image-data', async (_, url) => {
+  try {
+    if (!/^https?:\/\//.test(String(url))) return null
+    const cp = imgCachePath(url)
+    const buf = fs.existsSync(cp) ? fs.readFileSync(cp) : await fetchBinary(url)
+    if (!buf || !buf.length) return null
+    const b = buf.subarray(0, 12)
+    const mime = b[0] === 0x89 ? 'image/png' : (b[0] === 0xFF && b[1] === 0xD8) ? 'image/jpeg'
+      : (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') ? 'image/webp' : b.toString('ascii', 0, 3) === 'GIF' ? 'image/gif' : 'image/jpeg'
+    return 'data:' + mime + ';base64,' + buf.toString('base64')
+  } catch (e) { console.log('[fetch-image-data]', e.message); return null }
+})
+// 레퍼런스 팩 무드보드: 만든 PNG를 저장 위치를 물어보고 저장
+ipcMain.handle('save-png', async (_, { dataUrl, defaultName }) => {
+  try {
+    const res = await dialog.showSaveDialog(win, { defaultPath: defaultName || 'moodboard.png', filters: [{ name:'PNG 이미지', extensions:['png'] }] })
+    if (res.canceled || !res.filePath) return false
+    fs.writeFileSync(res.filePath, Buffer.from(String(dataUrl).split(',')[1] || '', 'base64'))
+    return true
+  } catch (e) { console.log('[save-png]', e.message); return false }
+})
 ipcMain.handle('save-file', async (_, { url, defaultName }) => {
   url = designus.big(url)
   const res = await dialog.showSaveDialog(win, {
