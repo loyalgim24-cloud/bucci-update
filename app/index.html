@@ -1086,13 +1086,45 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 .pk-card img{width:112px;height:200px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid var(--g09);display:block;background:var(--g10)}
 .pk-card:hover img{border-color:var(--p600);box-shadow:0 6px 16px rgba(18,112,252,.18)}
 .pk-card > span{display:block;font-size:11px;color:var(--g05);margin-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pk-act{position:absolute;top:6px;right:6px;display:none;gap:4px}
+/* 마우스를 올리면 썸네일 위에 살짝 어둡게 깔리고 버튼 3개가 세로로 (글자는 항상 한 줄) */
+.pk-act{position:absolute;left:0;top:0;width:112px;height:200px;border-radius:10px;background:rgba(13,27,64,.42);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 .pk-card:hover .pk-act{display:flex}
-.pk-act button{font-family:inherit;font-size:10.5px;font-weight:700;background:rgba(15,23,42,.8);color:#fff;border:none;border-radius:6px;padding:3px 6px;cursor:pointer}
-.pk-act button:hover{background:var(--p600)}
+.pk-act button{font-family:inherit;font-size:11.5px;font-weight:700;white-space:nowrap;width:78px;padding:6px 0;background:rgba(255,255,255,.96);color:#0D1B40;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.pk-act button:hover{background:var(--p600);color:#fff}
+.pk-act button[data-a="del"]{color:#D93025}
+.pk-act button[data-a="del"]:hover{background:#D93025;color:#fff}
+.pk-act button:disabled{opacity:.5;cursor:default;background:rgba(255,255,255,.96);color:#0D1B40}
 .pk-pin{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;background:var(--p600);color:#fff;border-radius:6px;padding:3px 6px}
 .pk-addc{width:112px;height:200px;flex-shrink:0;border:1.5px dashed var(--g08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:12px;color:var(--g05);background:none;cursor:pointer}
 .pk-addc:hover{border-color:var(--p600);color:var(--p600)}
+.pk-pick-ov{position:fixed;inset:0;background:rgba(10,16,35,.42);display:flex;align-items:center;justify-content:center;z-index:880}
+.pk-pick{width:min(1120px,calc(100vw - 60px));height:calc(100vh - 60px);background:var(--surface);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+.pk-pick-h{display:flex;align-items:center;gap:12px;padding:18px 22px 14px;border-bottom:1px solid var(--g09)}
+.pk-pick-h > div:first-child{flex:1;min-width:0}
+.pk-pick-h b{display:block;font-size:16px;font-weight:800;color:var(--g01)}
+.pk-pick-h small{display:block;font-size:12px;color:var(--g05);margin-top:3px}
+.pk-pick-sz{display:flex;background:var(--g10);border-radius:9px;padding:3px}
+.pk-pick-sz button{font-family:inherit;font-size:12px;font-weight:700;border:none;background:none;color:var(--g05);padding:5px 12px;border-radius:7px;cursor:pointer}
+.pk-pick-sz button.on{background:var(--surface);color:var(--g01);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.pk-pick-x{font-family:inherit;border:none;background:none;font-size:16px;color:var(--g05);cursor:pointer;width:32px;height:32px;border-radius:8px}
+.pk-pick-x:hover{background:var(--g10);color:var(--g01)}
+.pk-pick-g{flex:1;overflow-y:auto;padding:18px 22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 14px;align-content:start}
+.pk-pick-g.big{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.pk-pick-c{cursor:pointer;min-width:0}
+.pk-pick-c .im{position:relative;aspect-ratio:9/19.5;border-radius:12px;overflow:hidden;border:2px solid var(--g09);background:var(--g10);transition:border-color .12s,box-shadow .12s}
+.pk-pick-c .im img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.pk-pick-c:hover .im{border-color:var(--g07)}
+.pk-pick-c.on .im{border-color:var(--p600);box-shadow:0 0 0 3px rgba(18,112,252,.22)}
+.pk-pick-c .ck{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.92);border:1.5px solid rgba(13,27,64,.25);box-sizing:border-box}
+.pk-pick-c.on .ck{background:var(--p600);border-color:var(--p600)}
+.pk-pick-c.on .ck::after{content:'';position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.pk-pick-c .zm{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:8px;border:none;background:rgba(13,27,64,.62);color:#fff;font-size:16px;cursor:zoom-in;opacity:0;transition:opacity .12s;font-family:inherit}
+.pk-pick-c:hover .zm{opacity:1}
+.pk-pick-c .zm:hover{background:var(--p600)}
+.pk-pick-c > span{display:block;font-size:12px;color:var(--g05);margin-top:7px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-pick-c.on > span{color:var(--p600);font-weight:700}
+.pk-pick-f{display:flex;align-items:center;gap:8px;padding:14px 22px;border-top:1px solid var(--g09)}
+.pk-pick-f span{flex:1;font-size:13px;color:var(--g05);font-weight:600}
 .pk-pool{margin-top:10px;padding:10px;border-radius:12px;background:var(--g10)}
 .pk-pool .pk-row{margin-top:6px}
 .pk-pool .pk-card,.pk-pool .pk-card img{width:84px}
@@ -1110,6 +1142,152 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 .pk-busy{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:80px 0;color:var(--g05);font-size:13px}
 .pk-busy i{width:28px;height:28px;border-radius:50%;border:3px solid var(--g09);border-top-color:var(--p600);animation:pkSpin .8s linear infinite}
 @keyframes pkSpin{to{transform:rotate(360deg)}}
+/* ── 와이어프레임 초안 ── */
+.pk-wfc{width:112px;height:200px;flex-shrink:0;border:1.5px dashed rgba(123,79,255,.5);border-radius:10px;background:rgba(123,79,255,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;cursor:pointer;padding:8px 6px;box-sizing:border-box;color:#7B4FFF}
+.pk-wfc:hover{border-style:solid;background:rgba(123,79,255,.09)}
+.pk-wfc .ic{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px}
+.pk-wfc b{font-size:11.5px;font-weight:800;white-space:nowrap}
+.pk-wfc small{font-size:10px;color:var(--g05);white-space:nowrap}
+.pk-wfc.has{justify-content:flex-start;border-style:solid;border-color:rgba(123,79,255,.35)}
+.pk-wfc .pv{width:66px;border-radius:7px;overflow:hidden;border:1px solid #E5E7EB;line-height:0;background:#fff;margin-bottom:4px;box-shadow:0 2px 6px rgba(15,23,42,.08)}
+.pk-wfc .pv svg{width:100%;height:auto;display:block}
+.pk-wfb{font-family:inherit;font-size:11.5px;font-weight:700;color:#7B4FFF;border:1px solid #7B4FFF;background:none;border-radius:8px;padding:4px 9px;cursor:pointer;white-space:nowrap}
+.pk-wfb:hover{background:#7B4FFF;color:#fff}
+.pk-wfb:disabled{opacity:.4;cursor:default;background:none;color:#7B4FFF}
+.wf-ov{position:fixed;inset:0;background:rgba(10,16,35,.42);display:flex;align-items:center;justify-content:center;z-index:900}
+.wf-modal{width:min(640px,calc(100vw - 60px));max-height:calc(100vh - 60px);overflow:auto;box-sizing:border-box;background:var(--surface);border-radius:18px;padding:22px 24px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.wf-mt{font-size:17px;font-weight:800;color:var(--g01);display:flex;align-items:center;gap:8px}
+.wf-ms{font-size:12.5px;color:var(--g05);margin-top:4px}
+.wf-lb{font-size:12px;font-weight:700;color:var(--g01);margin:16px 0 7px}
+.wf-lb span{font-weight:400;color:var(--g05)}
+.wf-ta{width:100%;box-sizing:border-box;font-family:inherit;border:1.5px solid var(--g08);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;color:var(--g01);background:var(--surface);resize:none;outline:none}
+.wf-ta:focus{border-color:var(--p600)}
+.wf-refs{display:flex;gap:8px;flex-wrap:wrap}
+.wf-ref{position:relative;cursor:pointer;width:76px}
+.wf-ref img{width:76px;height:136px;object-fit:cover;object-position:top;border-radius:8px;border:2px solid var(--p600);display:block;box-sizing:border-box;background:var(--g10)}
+.wf-ref.off img{border-color:var(--g09);opacity:.4}
+.wf-ref i{position:absolute;top:5px;right:5px;width:16px;height:16px;border-radius:5px;background:var(--p600)}
+.wf-ref i::after{content:'';position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.wf-ref.off i{background:var(--surface);border:1.5px solid var(--g07);box-sizing:border-box}
+.wf-ref.off i::after{display:none}
+.wf-ref span{display:block;font-size:10.5px;color:var(--g05);text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf-ways{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.wf-way{font-family:inherit;text-align:left;border:1.5px solid var(--g09);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;color:var(--g01)}
+.wf-way b{display:block;font-size:13.5px;font-weight:800}
+.wf-way small{display:block;font-size:11.5px;color:var(--g05);margin-top:3px;line-height:1.45}
+.wf-way:hover{border-color:var(--p600)}
+.wf-way.pri{border-color:var(--p600);background:rgba(18,112,252,.06)}
+.wf-way.ai b{color:#7B4FFF}
+.wf-way.ai:hover{border-color:#7B4FFF}
+.wf-way:disabled{opacity:.5;cursor:default;border-color:var(--g09)}
+.wf-mfoot{display:flex;justify-content:flex-end;margin-top:14px}
+.wf-badge{font-size:9.5px;font-weight:800;color:#fff;background:#7B4FFF;border-radius:4px;padding:2px 5px;letter-spacing:.02em}
+.wf-badge.free{background:var(--g05)}
+.wf-res{display:grid;grid-template-columns:auto minmax(260px,1fr) 168px;gap:20px;margin-top:16px;align-items:start}
+.wf-phone{width:316px;border-radius:30px;border:8px solid #1F2430;background:#fff;overflow:hidden;box-shadow:0 14px 34px rgba(15,23,42,.15);line-height:0}
+.wf-phone svg{width:100%;height:auto;display:block}
+.wf-scr{position:relative;aspect-ratio:375/812;background:#fff;overflow:hidden}
+.wf-l{position:absolute;left:0;right:0;line-height:0}
+.wf-l svg{width:100%;height:auto;display:block}
+.wf-l.top{top:0}.wf-l.bot{bottom:0}
+.wf-l.body{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#C9CDD4 transparent}
+.wf-l.body::-webkit-scrollbar{width:4px}.wf-l.body::-webkit-scrollbar-thumb{background:#C9CDD4;border-radius:2px}
+.wf-l.over{inset:0;pointer-events:none}.wf-l.over svg{height:100%}
+.wf-l.over [data-e]{pointer-events:auto}
+.wf-scr [data-e]{cursor:text}
+.wf-scr [data-e]:hover{fill:#7B4FFF}
+.wf-edit{position:absolute;z-index:5;box-sizing:border-box;font-family:Pretendard,'Malgun Gothic',sans-serif;font-weight:700;color:#111827;background:#fff;border:2px solid #7B4FFF;border-radius:6px;padding:0 6px;outline:none;box-shadow:0 4px 14px rgba(123,79,255,.25)}
+.wf-hint{font-size:11.5px;color:var(--g05);margin-top:6px;line-height:1.5}
+.wf-res{position:relative}
+.wf-l.over [data-p],.wf-l.over [data-b]{pointer-events:auto}
+.wf-scr [data-p],.wf-scr [data-b]{cursor:pointer}
+.wf-scr [data-p]:hover > .hit{stroke:#7B4FFF;stroke-opacity:.45;stroke-width:1.5;stroke-dasharray:4 3}
+.wf-drop{position:absolute;height:3px;border-radius:2px;background:#7B4FFF;box-shadow:0 0 0 3px rgba(123,79,255,.2);z-index:6;pointer-events:none}
+.wf-tool{position:sticky;top:8px;align-self:start;z-index:5;min-width:0;box-sizing:border-box;background:var(--surface);border:1px solid var(--g09);border-radius:16px;box-shadow:0 16px 40px rgba(15,23,42,.18);padding:14px 14px 10px}
+.wf-tool svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wf-tool-h{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+.wf-tool-h b{font-size:14px;font-weight:800;color:var(--g01)}
+.wf-tool-h small{font-size:11.5px;color:var(--g05)}
+.wf-tool-h button{margin-left:auto;border:none;background:none;color:var(--g05);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:6px;font-family:inherit}
+.wf-tool-h button:hover{background:var(--g10);color:var(--g01)}
+.wf-ibs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding-bottom:12px;border-bottom:1px solid var(--g09)}
+.wf-ibs .ib{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;border:none;background:none;border-radius:10px;padding:7px 0 6px;color:var(--g01);cursor:pointer}
+.wf-ibs .ib svg{width:18px;height:18px}
+.wf-ibs .ib span{font-size:10.5px;font-weight:600;color:var(--g05);white-space:nowrap}
+.wf-ibs .ib:hover{background:rgba(123,79,255,.08);color:#7B4FFF}
+.wf-ibs .ib:hover span{color:#7B4FFF}
+.wf-ibs .ib.danger:hover{background:rgba(217,48,37,.08);color:#D93025}
+.wf-ibs .ib.danger:hover span{color:#D93025}
+.wf-ibs .ib:disabled{opacity:.3;cursor:default;background:none;color:var(--g01)}
+.wf-ibs .ib:disabled span{color:var(--g05)}
+.wf-tool-s{padding:12px 0;border-bottom:1px solid var(--g09)}
+.wf-tool-s:last-child{border-bottom:none}
+.wf-tool-t{display:flex;align-items:center;font-size:12px;font-weight:800;color:var(--g01);margin-bottom:8px}
+.wf-tool-t button{margin-left:auto;font-family:inherit;font-size:11.5px;color:var(--g05);border:none;background:none;cursor:pointer}
+.wf-tool-l{font-size:11px;font-weight:700;color:var(--g05);margin:10px 0 6px}
+.wf-tool-l:first-child{margin-top:0}
+.wf-pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.wf-pvg.c3{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.wf-pv{font-family:inherit;display:flex;flex-direction:column;gap:5px;border:1.5px solid var(--g09);background:var(--surface);border-radius:10px;padding:6px;cursor:pointer;text-align:left;color:var(--g01);min-width:0}
+.wf-pv .pv{border-radius:6px;overflow:hidden;line-height:0;background:#fff;border:1px solid #EEF0F3;height:58px;display:flex;align-items:center}
+.wf-pvg.c3 .wf-pv .pv{height:64px;align-items:flex-start}
+.wf-pv .pv svg{width:100%;height:auto;stroke:none;fill:initial}
+.wf-pv span{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf-pv:hover{border-color:#7B4FFF}
+.wf-pv.on{border-color:#7B4FFF;background:rgba(123,79,255,.06);cursor:default}
+.wf-pv.on span{color:#7B4FFF}
+.wf-tr{display:flex;align-items:center;gap:10px;margin-top:8px}
+.wf-tr:first-child{margin-top:0}
+.wf-tr > span{width:42px;flex-shrink:0;font-size:11.5px;font-weight:700;color:var(--g05)}
+.wf-seg{flex:1;display:flex;background:var(--g10);border-radius:9px;padding:3px;gap:2px}
+.wf-seg button{flex:1;font-family:inherit;font-size:11.5px;font-weight:600;border:none;background:none;color:var(--g05);padding:6px 2px;border-radius:7px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center}
+.wf-seg button svg{width:16px;height:16px}
+.wf-seg button.on{background:var(--surface);color:var(--g01);font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.wf-step{display:flex;align-items:center;gap:6px}
+.wf-step button{width:30px;height:30px;border-radius:8px;border:1px solid var(--g09);background:var(--surface);color:var(--g01);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.wf-step button svg{width:14px;height:14px}
+.wf-step button:hover{border-color:#7B4FFF;color:#7B4FFF}
+.wf-step button:disabled{opacity:.3;cursor:default}
+.wf-step b{min-width:34px;text-align:center;font-size:13px;color:var(--g01)}
+.wf-addbs{display:flex;flex-direction:column;gap:6px}
+.wf-addb{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;color:#7B4FFF;border:1.5px dashed rgba(123,79,255,.45);background:rgba(123,79,255,.04);border-radius:10px;padding:9px 0;cursor:pointer}
+.wf-addb svg{width:15px;height:15px}
+.wf-addb:hover{background:rgba(123,79,255,.1);border-style:solid}
+.wf-tool-f{padding-top:8px}
+.wf-tool-f button{font-family:inherit;font-size:12px;border:none;padding:2px 0;color:#7B4FFF;font-weight:700;background:none;cursor:pointer}
+.wf-tool-k{font-size:10.5px;color:var(--g05);margin-top:8px;padding-top:8px;border-top:1px solid var(--g09)}
+.wf-tool-n{font-size:11px;color:var(--g05);margin-top:10px;line-height:1.45}
+.wf-card{background:var(--surface);border:1px solid var(--g09);border-radius:14px;padding:14px 16px}
+.wf-ct{font-size:13px;font-weight:800;color:var(--g01);margin-bottom:4px}
+.wf-cs{font-size:11.5px;color:var(--g05);margin-bottom:10px;line-height:1.5}
+.wf-li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-size:12.5px;color:var(--g01);cursor:default}
+.wf-li b{font-weight:700}
+.wf-li small{display:block;font-size:11px;color:var(--g05);font-weight:400;margin-top:1px}
+.wf-li em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:var(--p600);background:rgba(18,112,252,.08);border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0}
+.wf-li em.base{color:var(--g05);background:var(--g10)}
+.wf-li.on{background:rgba(123,79,255,.08);outline:1.5px solid #7B4FFF}
+.wf-li .n{width:18px;height:18px;border-radius:50%;background:var(--g10);font-size:10.5px;font-weight:800;color:var(--g05);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wf-li.on .n{background:#7B4FFF;color:#fff}
+.wf-mini{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.wf-mini img{width:44px;height:80px;object-fit:cover;object-position:top;border-radius:6px;border:1.5px solid var(--g09);cursor:pointer;background:var(--g10);transition:opacity .15s}
+.wf-mini.hl img{opacity:.3}
+.wf-mini.hl img.on{opacity:1;border-color:#7B4FFF;box-shadow:0 0 0 2px rgba(123,79,255,.25)}
+.wf-var{display:flex;flex-direction:column;gap:10px}
+.wf-vt{font-size:12px;font-weight:800;color:var(--g05)}
+.wf-v{font-family:inherit;text-align:left;border:1.5px solid var(--g09);border-radius:12px;padding:8px;background:var(--surface);cursor:pointer;color:var(--g01)}
+.wf-v:hover{border-color:var(--g07)}
+.wf-v.on{border-color:var(--p600)}
+.wf-v .vp{width:100%;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden;line-height:0;background:#fff}
+.wf-v .vp svg{width:100%;height:auto;display:block}
+.wf-v span{display:block;font-size:11.5px;font-weight:700;margin-top:6px}
+.wf-v small{display:block;font-size:10.5px;color:var(--g05);margin-top:1px;line-height:1.4}
+.wf-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.wf-tg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--g05);cursor:pointer;user-select:none;margin-top:12px}
+.wf-tg input{accent-color:#7B4FFF}
+.wf-busy{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:90px 0;color:var(--g05);font-size:13px}
+.wf-busy i{width:26px;height:26px;border-radius:50%;border:3px solid var(--g09);border-top-color:#7B4FFF;animation:wfspin .8s linear infinite}
+@keyframes wfspin{to{transform:rotate(360deg)}}
+@media (max-width:1180px){.wf-res{grid-template-columns:auto 1fr}.wf-var{grid-column:1/-1;flex-direction:row}.wf-var .wf-vt{display:none}.wf-v{width:150px}}
 .pk-typesel{position:absolute;z-index:20;background:var(--surface);border:1px solid var(--g09);border-radius:12px;box-shadow:0 14px 34px rgba(15,23,42,.16);padding:8px;display:flex;flex-wrap:wrap;gap:5px;width:320px}
 </style>
 </head>
@@ -1249,7 +1427,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 <div id="apikey-modal-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center" onclick="if(event.target===this)closeApiKeyModal()">
   <div style="background:var(--surface);border-radius:16px;padding:28px 28px 24px;width:400px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.18)">
     <div style="font-size:15px;font-weight:700;color:var(--g01);margin-bottom:4px">Anthropic API 키</div>
-    <div style="font-size:12px;color:var(--g05);margin-bottom:16px">대화형 자연어 검색에 사용됩니다</div>
+    <div style="font-size:12px;color:var(--g05);margin-bottom:16px">대화형 검색 · AI 디자인분석 · 와이어프레임 초안에 함께 쓰여요</div>
     <input id="apikey-modal-input" type="text" placeholder="sk-ant-..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g08);border-radius:10px;font-size:13px;font-family:inherit;outline:none;color:var(--g01);transition:border-color .15s" onfocus="this.style.borderColor='var(--p600)'" onblur="this.style.borderColor='var(--g08)'" onkeydown="if(event.key==='Enter')saveApiKey()">
     <div id="apikey-modal-current" style="display:none;margin-top:8px;font-size:11px;color:var(--g05)"></div>
     <div id="apikey-modal-err" style="display:none;margin-top:8px;font-size:12px;font-weight:600;color:var(--danger)"></div>
@@ -6039,6 +6217,7 @@ function promptApiKey(retryQuery) {
 function closeApiKeyModal() {
   const bg = document.getElementById('apikey-modal-bg')
   if (bg) bg.style.display = 'none'
+  window._apiKeyAfter = null   // 등록 후 이어서 할 일 (와이어프레임 AI 초안 등) — 그냥 닫으면 취소
 }
 // 저장 전에 진짜 쓸 수 있는 키인지 확인하고, 아니면 창에 이유를 보여줌
 async function saveApiKey() {
@@ -6066,7 +6245,9 @@ async function saveApiKey() {
     // 대화형 모드였으면 경고 해제
     if (_searchMode === 'ai') setSearchMode('ai')
   }
+  const after = window._apiKeyAfter
   closeApiKeyModal()
+  if (after && trimmed.startsWith('sk-ant-')) { try { after() } catch {} }
   // 결과 화면에서 키를 등록했으면, 방금 그 문장으로 다시 검색 (이번엔 AI가 문장을 이해)
   const retry = _apiKeyRetryQuery
   _apiKeyRetryQuery = ''
@@ -8524,13 +8705,23 @@ function pkEdit() {
   })
   pkBindSecs()
 }
+// 섹션 줄 끝의 와이어프레임 초안 카드 (만든 적 있으면 미리보기)
+function pkWfCard(s) {
+  if (!s.items.length) return ''
+  const vr = s.wf && s.wf.variants && (s.wf.variants[s.wf.sel] || s.wf.variants[0])
+  let pv = ''
+  try { if (vr && typeof wfSvg === 'function') pv = wfSvg(vr.blocks, { q: s.q, id: 'pk' + s.id }) } catch {}
+  return `<button type="button" class="pk-wfc ${vr ? 'has' : ''}" data-a="wf" title="이 레퍼런스들의 공통 구조로 회색 박스 와이어프레임을 만들어요">
+    ${vr ? `<div class="pv">${pv}</div>` : `<svg class="ic" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>`}
+    <b>와이어프레임 초안</b><small>${vr ? '눌러서 보기 · 편집' : '공통 구조로 만들기'}</small></button>`
+}
 function pkSecHtml(s) {
   const card = (i, k) => `<div class="pk-card" data-k="${k}"><img src="${pkEsc(i.thumbnail || i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">${s.pinned.includes(i.src) ? '<em class="pk-pin">고정</em>' : ''}
     <div class="pk-act"><button type="button" data-a="pin">${s.pinned.includes(i.src) ? '고정 해제' : '고정'}</button><button type="button" data-a="swap" ${s.pool.length ? '' : 'disabled'}>바꾸기</button><button type="button" data-a="del">빼기</button></div><span>${pkEsc(i.app)}</span></div>`
   return `<div class="pk-sec" id="${s.id}"><div class="pk-sh"><span class="pk-sn">${pkEsc(s.label)}</span><span class="pk-sc">${s.items.length}장 · ${new Set(s.items.map(i => i.app)).size}개 앱</span>
       <button class="pk-x" type="button" data-a="refresh" ${s.pool.length ? '' : 'disabled'} title="고정하지 않은 화면을 다른 후보로 바꿔요">다른 화면 보기</button><button class="pk-x" type="button" data-a="delsec">섹션 삭제</button>
       <input class="pk-memo" data-a="memo" placeholder="+ 메모 남기기 (무드보드에 함께 나와요)" value="${pkEsc(s.memo)}" maxlength="80"></div>
-    <div class="pk-row">${s.items.length ? s.items.map(card).join('') : '<div class="pk-empty">아직 맞는 레퍼런스가 없어요. 오른쪽 후보에서 직접 추가해 보세요.</div>'}${s.pool.length ? '<button type="button" class="pk-addc" data-a="add">+ 후보에서 추가</button>' : ''}</div></div>`
+    <div class="pk-row">${s.items.length ? s.items.map(card).join('') : '<div class="pk-empty">아직 맞는 레퍼런스가 없어요. 오른쪽 후보에서 직접 추가해 보세요.</div>'}${s.pool.length ? '<button type="button" class="pk-addc" data-a="add">+ 후보에서 추가</button>' : ''}${pkWfCard(s)}</div></div>`
 }
 function pkBindSecs() {
   const p = _pkCur, v = pkView()
@@ -8555,19 +8746,46 @@ function pkBindSecs() {
       }
       else if (act === 'delsec') { if (!confirm(`'${s.label}' 섹션을 삭제할까요?`)) return; p.sections = p.sections.filter(x => x !== s); pkSaveCur(); pkEdit() }
       else if (act === 'add') pkShowPool(el, s)
+      else if (act === 'wf') wfOpen(s)
     }
   })
 }
+// 후보 고르기: 큰 썸네일 창에서 여러 장을 골라 한 번에 추가
 function pkShowPool(el, s) {
-  const old = el.querySelector('.pk-pool'); if (old) { old.remove(); return }
-  const box = document.createElement('div'); box.className = 'pk-pool'
-  box.innerHTML = `<div class="pk-sc">후보 ${s.pool.length}장 · 누르면 이 섹션에 추가돼요</div><div class="pk-row">${s.pool.map((i, k) => `<div class="pk-card" data-pk="${k}"><img src="${pkEsc(i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span>${pkEsc(i.app)}</span></div>`).join('')}</div>`
-  el.appendChild(box)
-  box.onclick = ev => {
-    const c = ev.target.closest('[data-pk]'); if (!c) return
-    const nx = s.pool.splice(+c.dataset.pk, 1)[0]; s.items.push(pkItem(nx.src, { app: nx.app }))
-    el.outerHTML = pkSecHtml(s); pkBindSecs(); pkSaveCur()
-    const again = pkView().querySelector('#' + s.id); if (again && s.pool.length) pkShowPool(again, s)
+  document.querySelectorAll('.pk-pick-ov').forEach(x => x.remove())
+  const sel = new Set()
+  let big = localStorage.getItem('bucci_pk_pick_big') === '1'
+  const ov = document.createElement('div'); ov.className = 'pk-pick-ov'
+  ov.innerHTML = `<div class="pk-pick"><div class="pk-pick-h"><div><b>'${pkEsc(s.label)}' 후보에서 추가</b><small>후보 ${s.pool.length}장 · 눌러서 고른 뒤 한 번에 추가해요 · 돋보기로 크게 볼 수 있어요</small></div>
+      <div class="pk-pick-sz"><button type="button" data-sz="0">보통</button><button type="button" data-sz="1">크게</button></div><button type="button" class="pk-pick-x" title="닫기">✕</button></div>
+    <div class="pk-pick-g">${s.pool.map((i, k) => `<div class="pk-pick-c" data-k="${k}"><div class="im"><img src="${pkEsc(i.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><i class="ck"></i><button type="button" class="zm" title="크게 보기">⤢</button></div><span>${pkEsc(i.app)}</span></div>`).join('')}</div>
+    <div class="pk-pick-f"><span id="pk-pick-n">화면을 골라주세요</span><button type="button" class="pk-btn" data-x="cancel">취소</button><button type="button" class="pk-btn pri" data-x="add" disabled>추가</button></div></div>`
+  document.body.appendChild(ov)
+  const g = ov.querySelector('.pk-pick-g'), n = ov.querySelector('#pk-pick-n'), addB = ov.querySelector('[data-x="add"]')
+  const setSz = v => { big = v; g.classList.toggle('big', big); ov.querySelectorAll('[data-sz]').forEach(b => b.classList.toggle('on', (b.dataset.sz === '1') === big)); try { localStorage.setItem('bucci_pk_pick_big', big ? '1' : '0') } catch {} }
+  setSz(big)
+  const upd = () => { n.textContent = sel.size ? `${sel.size}장 선택됨` : '화면을 골라주세요'; addB.disabled = !sel.size; addB.textContent = sel.size ? `${sel.size}장 추가` : '추가' }
+  const close = () => { ov.remove(); document.removeEventListener('keydown', onKey, true) }
+  const onKey = ev => { if (ev.key === 'Escape' && !document.getElementById('pop-ov').classList.contains('on')) close() }
+  document.addEventListener('keydown', onKey, true)   // 크게 보기 창이 먼저 닫히기 전에 확인
+  ov.onmousedown = ev => { if (ev.target === ov) close() }
+  ov.querySelector('.pk-pick-x').onclick = close
+  ov.querySelector('[data-x="cancel"]').onclick = close
+  ov.querySelectorAll('[data-sz]').forEach(b => b.onclick = () => setSz(b.dataset.sz === '1'))
+  g.onclick = ev => {
+    const c = ev.target.closest('.pk-pick-c'); if (!c) return
+    const k = +c.dataset.k
+    if (ev.target.closest('.zm')) { const items = s.pool.map(i => pkItem(i.src, { app: i.app })); try { openPop(items[k], items, k) } catch {} return }
+    sel.has(k) ? sel.delete(k) : sel.add(k); c.classList.toggle('on', sel.has(k)); upd()
+  }
+  addB.onclick = () => {
+    const picked = [...sel].sort((a, b) => a - b).map(k => s.pool[k])
+    s.pool = s.pool.filter((_, k) => !sel.has(k))
+    picked.forEach(i => s.items.push(pkItem(i.src, { app: i.app })))
+    close()
+    const cur = pkView().querySelector('#' + s.id) || el
+    cur.outerHTML = pkSecHtml(s); pkBindSecs(); pkSaveCur()
+    showToast(`'${s.label}'에 ${picked.length}장을 추가했어요`)
   }
 }
 function pkExportMenu(anchor) {
@@ -8655,6 +8873,900 @@ async function pkExport(kind) {
   else { ok = await window.api.savePng({ dataUrl: url, defaultName: safe + ' 무드보드.png' }); if (ok) showToast('무드보드를 저장했어요') }
   const miss = want.length - Object.keys(imgs).length
   if (ok && miss) setTimeout(() => showToast(`화면 ${miss}장은 이미지를 불러오지 못해 빈칸으로 나왔어요`), 1800)
+}
+</script>
+<script>
+// ── 와이어프레임 초안 ───────────────────────────────────────────────
+// 팩 섹션의 레퍼런스들에 공통으로 있는 구성요소로 회색 박스 와이어프레임을 그림.
+// 무료: 화면 태그 빈도 + 화면 종류별 기본 구성으로 계산 / AI: 레퍼런스 이미지를 보고 구조를 뽑음 (API 키 사용)
+const WF_W = 375, WF_H = 812   // 아이폰 X·11 Pro 기준, 고정
+// 구성요소: [이름, 위치(top·body·bottom·float·over), 태그]
+const WF_KINDS = {
+  header:   ['상단 바', 'top', ['GNB', '네비게이션']],
+  title:    ['큰 제목·설명', 'top', []],
+  search:   ['검색바', 'top', ['검색바']],
+  tabs:     ['상단 탭', 'top', ['탭']],
+  chips:    ['칩·필터', 'top', ['칩', '필터']],
+  summary:  ['요약 카드', 'body', ['잔액', '포인트', '계좌']],
+  hero:     ['대표 이미지', 'body', []],
+  info:     ['정보 영역', 'body', []],
+  banner:   ['배너·캐러셀', 'body', ['배너', '캐러셀']],
+  chart:    ['그래프', 'body', ['그래프', '차트']],
+  map:      ['지도', 'body', ['지도', '맵']],
+  calendar: ['캘린더', 'body', ['캘린더']],
+  form:     ['입력 폼', 'body', ['입력폼', '텍스트필드', '폼', '입력', '비밀번호', '핀번호']],
+  choice:   ['선택 항목', 'body', ['체크박스', '라디오', '토글', '약관']],
+  list:     ['리스트', 'body', ['리스트', '리스트형', '목록']],
+  cards:    ['카드 목록', 'body', ['카드', '카드형']],
+  grid:     ['그리드', 'body', ['그리드형']],
+  feed:     ['피드', 'body', ['피드형', '피드']],
+  chat:     ['대화 말풍선', 'body', ['채팅', '메시지']],
+  accordion:['아코디언', 'body', ['아코디언']],
+  empty:    ['빈 상태', 'body', ['빈상태']],
+  illust:   ['일러스트·안내', 'body', ['일러스트', '스플래시', '튜토리얼', '인트로', '성공']],
+  cta:      ['하단 고정 버튼', 'bottom', ['CTA', '버튼']],
+  tabbar:   ['하단 탭바', 'bottom', ['탭바']],
+  fab:      ['플로팅 버튼', 'float', ['플로팅버튼']],
+  sheet:    ['바텀시트', 'over', ['바텀시트']],
+  modal:    ['팝업', 'over', ['팝업', '모달', '다이얼로그']]
+}
+const WF_ORDER = Object.keys(WF_KINDS)
+const WF_MAIN = ['list', 'cards', 'grid', 'feed']
+// 화면 종류마다 보통 들어가는 구성
+const WF_PRIOR = {
+  '홈화면': ['header', 'banner', 'cards', 'tabbar'], '온보딩': ['illust', 'cta'], '스플래시': ['illust'],
+  '로그인': ['header', 'title', 'form', 'cta'], '회원가입': ['header', 'title', 'form', 'cta'], '본인인증': ['header', 'title', 'form', 'cta'],
+  '검색': ['header', 'search', 'list'], '검색결과': ['header', 'search', 'chips', 'grid'], '필터': ['header', 'chips', 'choice', 'cta'],
+  '상세': ['header', 'hero', 'info', 'cta'], '장바구니': ['header', 'list', 'cta'], '결제': ['header', 'summary', 'choice', 'cta'],
+  '주문': ['header', 'list', 'cta'], '완료': ['illust', 'cta'], '송금': ['header', 'title', 'form', 'cta'], '자산': ['header', 'summary', 'list'],
+  '알림': ['header', 'list'], '설정': ['header', 'list'], '마이페이지': ['header', 'summary', 'list', 'tabbar'], '투자': ['header', 'chart', 'list'],
+  '쿠폰': ['header', 'tabs', 'cards'], '리뷰': ['header', 'summary', 'list'], '배송': ['header', 'summary', 'list'], '지도': ['map', 'sheet'],
+  '호출': ['map', 'sheet'], '예약': ['header', 'calendar', 'cta'], '통계': ['header', 'chart', 'list'], '캘린더': ['header', 'calendar', 'list'],
+  '채팅': ['header', 'chat'], '피드': ['header', 'feed', 'tabbar'], '약관': ['header', 'title', 'choice', 'cta']
+}
+const wfName = k => (WF_KINDS[k] || [k])[0]
+// 그리는 순서: 맨 앞의 상단 요소 → 본문(중간에 나온 탭·칩은 본문 안에) → 하단 → 플로팅 → 덮는 요소
+function wfSeq(blocks) {
+  const z = k => WF_KINDS[k][1]
+  const top = [], body = [], bottom = [], fl = [], over = []
+  let started = false
+  blocks.filter(b => WF_KINDS[b.k]).forEach(b => {
+    const zz = z(b.k)
+    if (zz === 'top' && !started) top.push(b)
+    else if (zz === 'top' || zz === 'body') { started = true; body.push(b) }
+    else (zz === 'bottom' ? bottom : zz === 'float' ? fl : over).push(b)
+  })
+  bottom.sort((a, b) => (a.k === 'tabbar') - (b.k === 'tabbar'))
+  return { top, body, bottom, all: [...top, ...body, ...bottom, ...fl, ...over] }
+}
+
+// ── 무료 초안: 태그 빈도 + 기본 구성 ──
+function wfFree(s, refs) {
+  const N = refs.length
+  // 조건이 여러 개면(송금+완료) 가장 구체적인 마지막 조건의 기본 구성을 씀
+  const pq = [...s.q].reverse().find(c => WF_PRIOR[c])
+  const prior = new Set(pq ? WF_PRIOR[pq] : [])
+  const stat = {}
+  WF_ORDER.forEach(k => {
+    const tags = WF_KINDS[k][2]
+    const hit = []
+    refs.forEach((r, i) => { const t = tagsDb[r.src] || []; if (tags.some(x => t.includes(x))) hit.push(i) })
+    const freq = N ? hit.length / N : 0
+    stat[k] = { k, hit, freq, prior: prior.has(k), score: freq * 0.8 + (prior.has(k) ? 0.45 : 0) }
+  })
+  const B = k => ({ k, label: '', refs: stat[k].hit, freq: stat[k].freq, base: !stat[k].hit.length })
+  const sortK = list => WF_ORDER.filter(k => list.includes(k))
+  const fixBottom = list => (list.includes('cta') && list.includes('tabbar')) ? list.filter(k => k !== (stat.cta.score >= stat.tabbar.score ? 'tabbar' : 'cta')) : list
+  // A: 가장 흔한 구조
+  const mainsBy = WF_MAIN.map(k => stat[k]).sort((a, b) => b.score - a.score)
+  let A = WF_ORDER.filter(k => !WF_MAIN.includes(k) && stat[k].score >= 0.4)
+  const heavy = ['map', 'chat', 'illust', 'form', 'calendar', 'hero', 'chart', 'empty']
+  const m1 = mainsBy[0].score >= 0.4 || (!A.some(k => heavy.includes(k)) && mainsBy[0].score > 0) ? mainsBy[0].k : (!A.some(k => heavy.includes(k)) ? 'list' : null)
+  if (m1) A.push(m1)
+  A = sortK(fixBottom(A))
+  const same = (x, y) => x.join() === y.join()
+  const out = [{ name: '가장 흔한 구조', desc: A.filter(k => !['header', 'tabbar', 'cta'].includes(k)).map(wfName).slice(0, 3).join(' · ') || '기본 구성', ks: A }]
+  // 다른 안 후보: 레퍼런스 일부가 쓰는 요소(근거 있는 것) 먼저
+  const cands = []
+  WF_ORDER.filter(k => !A.includes(k) && stat[k].hit.length).sort((a, b) => stat[b].freq - stat[a].freq).forEach(k => {
+    if ((k === 'tabbar' && A.includes('cta')) || (k === 'cta' && A.includes('tabbar'))) return
+    if (['header', 'title'].includes(k)) return
+    if (k === 'feed' && stat.feed.freq < 0.34) return   // '피드' 태그가 하나 붙었다고 피드 화면은 아님
+    const swap = WF_MAIN.includes(k) && m1
+    cands.push({ name: `${wfName(k)} ${swap ? '중심' : '추가'}`, desc: `레퍼런스 ${stat[k].hit.length}장이 쓰는 방식`, ks: sortK(swap ? A.map(x => x === m1 ? k : x) : [...A, k]) })
+  })
+  // 간결한 안
+  const must = ['header', 'cta', 'tabbar', 'form', 'illust', 'map', 'chat', 'calendar', 'hero', m1]
+  const mini = A.filter(k => must.includes(k) || stat[k].prior || stat[k].score >= 0.6)
+  if (mini.length >= 2 && !same(mini, A)) cands.splice(1, 0, { name: '간결한 구조', desc: '꼭 필요한 요소만 남긴 안', ks: mini })
+  // 근거가 모자라면 흔히 쓰는 변형으로 채움
+  const alt = { list: 'cards', cards: 'grid', grid: 'list', feed: 'cards' }
+  if (m1) cands.push({ name: `${wfName(alt[m1])} 중심`, desc: `본문을 ${wfName(alt[m1])}(으)로 바꾼 안`, ks: sortK(A.map(x => x === m1 ? alt[m1] : x)) })
+  if (A.includes('title')) cands.push({ name: '제목 없이 간결하게', desc: '큰 제목을 빼고 바로 본론으로', ks: A.filter(k => k !== 'title') })
+  else if (A.includes('form') || A.includes('illust')) cands.push({ name: '큰 제목 추가', desc: '무엇을 하는 화면인지 먼저 안내', ks: sortK([...A, 'title']) })
+  if (!A.includes('list') && !m1) cands.push({ name: '목록 함께 보기', desc: '최근 항목을 아래에 함께', ks: sortK([...A, 'list']) })
+  if (!A.includes('banner') && !A.some(k => ['form', 'illust', 'map', 'chat'].includes(k))) cands.push({ name: '배너 추가', desc: '상단에 배너·캐러셀', ks: sortK([...A, 'banner']) })
+  if (!A.includes('sheet') && A.includes('cta')) cands.push({ name: '바텀시트로 선택', desc: '선택을 시트로 띄우는 안', ks: sortK([...A, 'sheet']) })
+  for (const c of cands) {
+    if (out.length >= 3) break
+    if (out.some(o => same(o.ks, c.ks))) continue
+    out.push(c)
+  }
+  return out.map(o => ({ name: o.name, desc: o.desc, blocks: o.ks.map(k => Object.assign(B(k), !A.includes(k) && !stat[k].hit.length ? { add: true } : {}, wfDefEls(k, s))) }))
+}
+// 무료 초안의 기본 문구 (눌러서 고칠 수 있게 실제 글자로)
+function wfDefEls(k, s) {
+  const q = s.q || [], has = c => q.includes(c)
+  const name = String(s.label || '').split('/')[0].trim()
+  const ctaText = has('결제') ? '결제하기' : has('완료') ? '확인' : has('로그인') ? '로그인' : has('회원가입') ? '가입하기' : has('본인인증') ? '인증하기'
+    : has('장바구니') ? '주문하기' : has('상세') ? '구매하기' : has('송금') ? '보내기' : has('예약') ? '예약하기' : has('온보딩') || has('스플래시') ? '시작하기' : has('필터') ? '적용하기' : '다음'
+  const n = (d, m) => Array.from({ length: d }, (_, i) => m(i))
+  const E = {
+    header: has('홈화면') ? null : [{ t: 'text', v: name }],
+    title: [{ t: 'text', v: `${name} 화면 제목`, s: 'l', b: 1 }, { t: 'text', v: '보조 설명 문구가 들어가요', s: 's' }],
+    summary: [{ t: 'card', els: [{ t: 'text', v: '요약 정보', s: 's' }, { t: 'amount', v: '00,000원' }, { t: 'kv', k: '세부 항목', v: '0,000원' }] }],
+    info: [{ t: 'text', v: '카테고리', s: 's' }, { t: 'text', v: '이름이 들어가요', s: 'l', b: 1 }, { t: 'amount', v: '00,000원' }, { t: 'text', v: '설명 문구가 들어가요', s: 's' }],
+    form: n(3, i => ({ t: 'input', l: `입력 항목 ${i + 1}`, ph: '입력해주세요' })),
+    choice: n(4, i => ({ t: 'check', v: `선택 항목 ${i + 1}`, on: i === 0 ? 1 : undefined })),
+    list: n(6, () => ({ t: 'li', v: '항목 제목', sub: '보조 설명' })),
+    cta: [{ t: 'btn', v: ctaText }]
+  }
+  return E[k] ? { els: JSON.parse(JSON.stringify(E[k])) } : {}
+}
+
+// ── SVG로 그리기 (화면·미리보기·PNG·Figma 공용) ──
+function wfSvg(blocks, opt) {
+  opt = opt || {}
+  const W = WF_W, H = WF_H, P = 16
+  const F = "Pretendard, 'Malgun Gothic', sans-serif"
+  const C = { box: '#E8EAEE', line: '#C9CDD4', dark: '#B4B9C1', btn: '#6B7280', txt: '#8A9099', soft: '#F3F4F6' }
+  let g = []
+  const r = (x, y, w, h, rx, fill, extra) => g.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx || 0}" fill="${fill || C.box}"${extra || ''}/>`)
+  const ln = (x, y, w, h, fill) => r(x, y, w, h || 9, (h || 9) / 2, fill || C.line)
+  const ci = (cx, cy, rr, fill, extra) => g.push(`<circle cx="${cx}" cy="${cy}" r="${rr}" fill="${fill || '#D5D8DE'}"${extra || ''}/>`)
+  const tx = (x, y, s, size, fill, anchor, weight, key) => g.push(`<text${key ? ` data-e="${key}"` : ''} x="${x}" y="${y}" font-family="${F}" font-size="${size || 12}" font-weight="${weight || 600}" fill="${fill || C.txt}" text-anchor="${anchor || 'start'}">${pkEsc(s)}</text>`)
+  const st = (x, y, w, h, rx) => r(x, y, w, h, rx, 'none', ` stroke="${C.line}" stroke-width="1.5"`)
+  const ks = blocks.map(b => b.k)
+  const isHome = (opt.q || []).includes('홈화면')
+  const pos = new Map()   // 블록 위치 (강조·이름표용)
+  const D = {
+    header: y => { if (isHome) { r(P, y + 16, 64, 20, 6, C.dark); ci(W - P - 10, y + 26, 10); ci(W - P - 40, y + 26, 10) } else { tx(P, y + 34, '‹', 26, '#9AA0A8', 'start', 400); ln(W / 2 - 34, y + 21, 68, 11, C.dark); ci(W - P - 10, y + 26, 9) } return 52 },
+    title: y => { ln(P, y + 14, 220, 16, C.dark); ln(P, y + 40, 150, 16, C.dark); ln(P, y + 68, 200, 9); return 92 },
+    search: y => { r(P, y + 6, W - P * 2, 40, 12, C.soft); ci(P + 20, y + 26, 7, 'none', ` stroke="${C.dark}" stroke-width="2"`); ln(P + 38, y + 22, 120); return 54 },
+    tabs: y => { [0, 1, 2, 3].forEach(i => ln(P + 6 + i * 84, y + 16, 52, 10, i ? C.line : C.dark)); r(P, y + 40, 76, 3, 1.5, C.btn); r(0, y + 43, W, 1, 0, '#E5E7EB'); return 48 },
+    chips: y => { [0, 1, 2, 3].forEach(i => st(P + i * 80, y + 8, 72, 28, 14)); [0, 1, 2, 3].forEach(i => ln(P + 18 + i * 80, y + 18, 36, 8)); return 46 },
+    summary: y => { r(P, y + 6, W - P * 2, 104, 14, C.soft); ln(P + 16, y + 24, 90); ln(P + 16, y + 46, 170, 20, C.dark); ln(P + 16, y + 82, 120); r(W - P - 86, y + 72, 70, 26, 8, C.line); return 118 },
+    hero: y => { r(0, y, W, 260, 0); ci(W / 2, y + 130, 22, '#D5D8DE'); return 268 },
+    info: y => { ln(P, y + 10, 90); ln(P, y + 30, 230, 16, C.dark); ln(P, y + 58, 120, 16, C.dark); [0, 1, 2].forEach(i => ln(P, y + 88 + i * 16, i === 2 ? 180 : W - P * 2, 8)); return 134 },
+    banner: y => { r(P, y + 6, W - P * 2, 136, 14); [0, 1, 2].forEach(i => ci(W / 2 - 12 + i * 12, y + 154, 3, i ? '#D5D8DE' : C.btn)); return 166 },
+    chart: y => { r(P, y + 6, W - P * 2, 172, 14, C.soft); ln(P + 16, y + 22, 100); const hs = [50, 80, 62, 104, 76, 118, 92]; hs.forEach((h, i) => r(P + 24 + i * 44, y + 162 - h, 22, h, 5, i === 5 ? C.btn : C.line)); return 186 },
+    calendar: y => { ln(P, y + 12, 110, 12, C.dark); for (let i = 0; i < 7; i++) ln(P + 10 + i * 47, y + 40, 20, 7); for (let w = 0; w < 5; w++) for (let i = 0; i < 7; i++) ci(P + 20 + i * 47, y + 72 + w * 40, 13, w === 2 && i === 3 ? C.btn : C.soft); return 268 },
+    form: (y, b) => { const n = Math.min(Math.max(b.rows || 3, 1), 5); for (let i = 0; i < n; i++) { ln(P, y + 10 + i * 78, 70, 8); r(P, y + 26 + i * 78, W - P * 2, 46, 10, 'none', ` stroke="${C.line}" stroke-width="1.5"`); ln(P + 14, y + 45 + i * 78, 110, 8, '#DEE1E6') } return 12 + n * 78 },
+    choice: (y, b) => { const n = Math.min(Math.max(b.rows || 4, 1), 6); for (let i = 0; i < n; i++) { r(P, y + 14 + i * 50, 22, 22, 6, i ? 'none' : C.btn, i ? ` stroke="${C.line}" stroke-width="1.5"` : ''); ln(P + 36, y + 21 + i * 50, i % 2 ? 150 : 200); r(0, y + 50 + i * 50, W, 1, 0, '#F0F1F3') } return 8 + n * 50 },
+    list: (y, b) => { const n = Math.min(Math.max(b.rows || 6, 1), 9); for (let i = 0; i < n; i++) { ci(P + 22, y + 34 + i * 68, 22); ln(P + 56, y + 22 + i * 68, 150, 10, C.dark); ln(P + 56, y + 40 + i * 68, 210, 8); r(P + 56, y + 66 + i * 68, W - P * 2 - 56, 1, 0, '#F0F1F3') } return n * 68 + 4 },
+    cards: (y, b) => { const n = Math.min(Math.max(b.rows || 4, 1), 6); for (let i = 0; i < n; i++) { r(P, y + 6 + i * 112, W - P * 2, 100, 14, C.soft); r(P + 12, y + 18 + i * 112, 76, 76, 10); ln(P + 102, y + 28 + i * 112, 140, 10, C.dark); ln(P + 102, y + 48 + i * 112, 180, 8); ln(P + 102, y + 76 + i * 112, 70, 10) } return 8 + n * 112 },
+    grid: (y, b) => { const cw = (W - P * 2 - 12) / 2, n = Math.min(Math.max(b.rows || 3, 1), 4); for (let row = 0; row < n; row++) for (let c = 0; c < 2; c++) { const x = P + c * (cw + 12), yy = y + 6 + row * (cw + 62); r(x, yy, cw, cw, 12); ln(x, yy + cw + 12, cw - 30, 9, C.dark); ln(x, yy + cw + 30, 60, 9) } return 8 + n * (cw + 62) },
+    feed: (y, b) => { const n = Math.min(Math.max(b.rows || 2, 1), 3); for (let i = 0; i < n; i++) { const yy = y + i * 330; ci(P + 18, yy + 26, 18); ln(P + 46, yy + 20, 90, 10, C.dark); ln(P + 46, yy + 34, 60, 7); r(0, yy + 54, W, 220, 0); ln(P, yy + 288, 260, 9); ln(P, yy + 306, 180, 9) } return n * 330 },
+    accordion: y => { for (let i = 0; i < 4; i++) { const yy = y + i * 56 + (i ? 56 : 0); ln(P, yy + 22, 170, 10, C.dark); tx(W - P, yy + 30, i ? '⌄' : '⌃', 16, '#9AA0A8', 'end', 400); r(0, yy + 54, W, 1, 0, '#F0F1F3'); if (!i) { ln(P, yy + 70, W - P * 2, 8); ln(P, yy + 86, 200, 8) } } return 4 * 56 + 56 },
+    empty: y => { ci(W / 2, y + 80, 44, C.soft); ln(W / 2 - 80, y + 144, 160, 12, C.dark); ln(W / 2 - 110, y + 166, 220, 8); r(W / 2 - 60, y + 190, 120, 38, 10, 'none', ` stroke="${C.line}" stroke-width="1.5"`); return 250 },
+    illust: (y, b, room) => { const h = Math.max(260, Math.min(room || 300, 420)); const cy = y + h * 0.42; r(W / 2 - 90, cy - 90, 180, 180, 40, C.soft); if ((opt.q || []).includes('완료')) g.push(`<path d="M ${W / 2 - 30} ${cy} l 22 22 l 42 -46" fill="none" stroke="${C.btn}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`); else ci(W / 2, cy, 34, '#D5D8DE'); ln(W / 2 - 100, cy + 118, 200, 16, C.dark); ln(W / 2 - 120, cy + 146, 240, 9); ln(W / 2 - 80, cy + 162, 160, 9); return h },
+    map: (y, b, room) => { const h = Math.max(240, room || 300); r(0, y, W, h, 0, '#EEF0F3'); g.push(`<path d="M 0 ${y + h * 0.35} L ${W} ${y + h * 0.55} M ${W * 0.3} ${y} L ${W * 0.45} ${y + h} M ${W * 0.75} ${y} L ${W * 0.62} ${y + h}" stroke="#fff" stroke-width="10" fill="none"/>`); ci(W / 2, y + h * 0.45, 12, C.btn); ci(W / 2, y + h * 0.45, 4, '#fff'); return h },
+    chat: (y, b, room) => { const h = Math.max(260, room || 320); const bs = [[0, 170], [1, 140], [0, 210], [1, 120], [0, 150]]; let yy = y + 12; bs.forEach(([me, w]) => { if (yy + 52 > y + h - 60) return; if (!me) ci(P + 16, yy + 18, 16); r(me ? W - P - w : P + 40, yy, w, 40, 16, me ? C.line : C.soft); yy += 54 }); r(0, y + h - 56, W, 1, 0, '#E5E7EB'); r(P, y + h - 46, W - P * 2 - 48, 36, 18, C.soft); ci(W - P - 18, y + h - 28, 18, C.btn); return h }
+  }
+  // ── AI가 준 세부 요소(els)를 그리는 범용 렌더러 ──
+  const FS = { xl: 28, l: 20, m: 15, s: 12.5 }
+  const TC = { strong: '#374151', mid: '#6B7280', weak: '#9CA3AF' }
+  const tw = (s, size) => [...String(s)].reduce((a, c) => a + (/[가-힣ㄱ-ㅎ]/.test(c) ? size * 0.98 : /[0-9A-Z]/.test(c) ? size * 0.62 : size * 0.5), 0)
+  const fit = (s, size, max) => { s = String(s == null ? '' : s); if (tw(s, size) <= max) return s; while (s.length > 1 && tw(s + '…', size) > max) s = s.slice(0, -1); return s + '…' }
+  const txt = (x, y, s, size, color, anchor, weight, max, key) => tx(x, y, fit(s, size, max || W), size, color, anchor, weight, key)
+  const els = (list, x, y, w, depth, path) => {
+    let yy = y
+    ;(list || []).forEach((e, i) => { if (e && typeof e === 'object') yy += el(e, x, yy, w, depth || 0, path == null ? null : path + '/' + i) })
+    return yy - y
+  }
+  // 편집 모드: 요소마다 <g data-p>로 묶고 클릭 영역·선택 테두리를 붙임
+  const el = (e, x, y, w, depth, path) => {
+    if (path == null) return el0(e, x, y, w, depth, path)
+    const st0 = g.length, h = el0(e, x, y, w, depth, path), inner = g.splice(st0)
+    const on = opt.selP === path, hh = Math.max(h - 2, 8)
+    g.push(`<g data-p="${path}"><rect class="hit" x="${x - 5}" y="${y}" width="${w + 10}" height="${hh}" rx="6" fill="#7B4FFF" fill-opacity="${on ? 0.06 : 0}"/>${inner.join('')}${on ? `<rect x="${x - 5}" y="${y}" width="${w + 10}" height="${hh}" rx="6" fill="none" stroke="#7B4FFF" stroke-width="2" pointer-events="none"/>` : ''}</g>`)
+    return h
+  }
+  const el0 = (e, x, y, w, depth, path) => {
+    const K = f => path == null ? null : path + '|' + f
+    const t = e.t, v = e.v
+    const size = FS[e.s] || 15
+    const ax = e.a === 'c' ? x + w / 2 : e.a === 'r' ? x + w : x, an = e.a === 'c' ? 'middle' : e.a === 'r' ? 'end' : 'start'
+    if (t === 'text') {
+      if (!v) { const lw = w * (e.s === 's' ? 0.5 : 0.7); ln(e.a === 'c' ? x + (w - lw) / 2 : x, y + 6, lw, Math.max(8, size * 0.6), size >= 20 ? C.dark : C.line); return size * 0.6 + 16 }
+      txt(ax, y + size + 2, v, size, e.b || size >= 20 ? TC.strong : size <= 13 ? TC.weak : TC.mid, an, e.b || size >= 20 ? 800 : 600, w, K('v')); return size * 1.4 + 8
+    }
+    if (t === 'amount') { txt(ax, y + 32, v || '0원', 30, TC.strong, an, 800, w, K('v')); return 48 }
+    if (t === 'kv') {
+      const big = e.s === 'xl' || e.s === 'l', vs = e.s === 'xl' ? 24 : e.s === 'l' ? 18 : 14, ks = big ? 15 : 13.5
+      const h = Math.max(vs, ks) + 14
+      txt(x, y + h / 2 + ks * 0.36, e.k || '항목', ks, big ? TC.strong : TC.mid, 'start', big ? 700 : 600, w * 0.5, K('k'))
+      txt(x + w, y + h / 2 + vs * 0.36, v || '—', vs, TC.strong, 'end', big ? 800 : 700, w * 0.5, K('v'))
+      return h + 2
+    }
+    if (t === 'btn') {
+      const h = 50, st2 = e.st || 'p'
+      if (st2 === 'p') r(x, y + 4, w, h, 12, C.btn); else if (st2 === 's') r(x, y + 4, w, h, 12, C.soft); else st(x, y + 4, w, h, 12)
+      txt(x + w / 2, y + 4 + h / 2 + 5, v || '확인', 14.5, st2 === 'p' ? '#fff' : TC.mid, 'middle', 700, w - 16, K('v')); return h + 10
+    }
+    if (t === 'input') {
+      let h = 0
+      if (e.l) { txt(x, y + 12, e.l, 12, TC.mid, 'start', 600, w, K('l')); h = 20 }
+      st(x, y + h, w, 48, 10)
+      if (e.ph) txt(x + 14, y + h + 29, e.ph, 13.5, '#C0C4CC', 'start', 500, w - 28, K('ph')); else ln(x + 14, y + h + 20, w * 0.4, 8, '#E2E4E8')
+      return h + 58
+    }
+    if (t === 'check' || t === 'radio' || t === 'toggle') {
+      const on = !!e.on, cy = y + 22
+      if (t === 'check') r(x, cy - 11, 22, 22, 6, on ? C.btn : 'none', on ? '' : ` stroke="${C.line}" stroke-width="1.5"`)
+      if (t === 'check' && on) g.push(`<path d="M ${x + 6} ${cy} l 4 4 l 7 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`)
+      else if (t === 'radio') { ci(x + 11, cy, 11, 'none', ` stroke="${on ? C.btn : C.line}" stroke-width="${on ? 6 : 1.5}"`) }
+      else { r(x + w - 44, cy - 13, 44, 26, 13, on ? C.btn : C.line); ci(on ? x + w - 13 : x + w - 31, cy, 10, '#fff') }
+      txt(t === 'toggle' ? x : x + 34, cy + 5, v || '선택 항목', 14, TC.mid, 'start', 600, w - 60, K('v'))
+      if (e.r) txt(x + w - (t === 'toggle' ? 54 : 0), cy + 5, e.r, 13, TC.weak, 'end', 600, 110, K('r'))
+      return 44
+    }
+    if (t === 'select') {
+      let h = 0
+      if (e.l) { txt(x, y + 12, e.l, 12, TC.mid, 'start', 600, w, K('l')); h = 20 }
+      st(x, y + h, w, 48, 10)
+      const first = Array.isArray(v) ? v[0] : v
+      txt(x + 14, y + h + 29, first || '선택해주세요', 14, first ? TC.strong : '#C0C4CC', 'start', 600, w - 50, K(Array.isArray(v) ? 'v.0' : 'v'))
+      g.push(`<path d="M ${x + w - 26} ${y + h + 21} l 6 6 l 6 -6" fill="none" stroke="#9AA0A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`)
+      return h + 58
+    }
+    if (t === 'radios' || t === 'checks') {
+      const items = Array.isArray(v) && v.length ? v.slice(0, 8) : ['선택 1', '선택 2', '선택 3']
+      items.forEach((s2, i) => {
+        const cy = y + 22 + i * 46
+        if (t === 'radios') ci(x + 11, cy, 11, 'none', ` stroke="${i === 0 ? C.btn : C.line}" stroke-width="${i === 0 ? 6 : 1.5}"`)
+        else { r(x, cy - 11, 22, 22, 6, i === 0 ? C.btn : 'none', i === 0 ? '' : ` stroke="${C.line}" stroke-width="1.5"`); if (i === 0) g.push(`<path d="M ${x + 6} ${cy} l 4 4 l 7 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`) }
+        txt(x + 34, cy + 5, s2 || '선택 항목', 14, TC.mid, 'start', 600, w - 40, K('v.' + i))
+        if (i < items.length - 1) r(x + 34, cy + 22, w - 34, 1, 0, '#F0F1F3')
+      })
+      return items.length * 46 + 4
+    }
+    if (t === 'opts') {
+      const items = Array.isArray(v) ? v.slice(0, 9) : Array.from({ length: Math.min(+e.n || 3, 9) }, () => '')
+      const cols = items.length === 2 || items.length === 4 ? 2 : Math.min(3, items.length || 1), gw = (w - (cols - 1) * 8) / cols, rows = Math.ceil(items.length / cols)
+      items.forEach((s, i) => {
+        const xx = x + (i % cols) * (gw + 8), yy = y + 4 + Math.floor(i / cols) * 70
+        r(xx, yy, gw, 62, 12, i === 0 ? '#EEF0F3' : 'none', ` stroke="${i === 0 ? C.btn : C.line}" stroke-width="${i === 0 ? 2 : 1.5}"`)
+        ci(xx + gw / 2, yy + 22, 9, i === 0 ? C.dark : '#E2E4E8')
+        if (s) txt(xx + gw / 2, yy + 50, s, 12, TC.mid, 'middle', 600, gw - 10, K('v.' + i)); else ln(xx + gw / 2 - 22, yy + 42, 44, 7)
+      })
+      return rows * 70 + 6
+    }
+    if (t === 'chips' || t === 'seg') {
+      const items = Array.isArray(v) && v.length ? v.slice(0, 5) : ['', '', '', '']
+      if (t === 'seg') {
+        r(x, y + 4, w, 40, 10, C.soft); const sw = (w - 8) / items.length
+        items.forEach((s, i) => { if (i === 0) r(x + 4 + i * sw, y + 8, sw, 32, 8, '#fff', ' stroke="#E5E7EB" stroke-width="1"'); if (s) txt(x + 4 + i * sw + sw / 2, y + 29, s, 12.5, i ? TC.weak : TC.strong, 'middle', 700, sw - 8, K('v.' + i)); else ln(x + 4 + i * sw + sw / 2 - 18, y + 20, 36, 7) })
+        return 52
+      }
+      let cx = x
+      items.forEach((s, i) => { const cw = s ? Math.min(tw(s, 12.5) + 26, 140) : 64; if (cx + cw > x + w) return; r(cx, y + 6, cw, 30, 15, i === 0 ? C.btn : 'none', i === 0 ? '' : ` stroke="${C.line}" stroke-width="1.5"`); if (s) txt(cx + cw / 2, y + 25, s, 12.5, i === 0 ? '#fff' : TC.mid, 'middle', 600, cw - 12, K('v.' + i)); else ln(cx + 16, y + 17, cw - 32, 8, i === 0 ? '#9CA3AF' : C.line); cx += cw + 8 })
+      return 44
+    }
+    if (t === 'img') { const h = Math.min(Math.max(+e.h || 160, 40), 360); r(x, y + 4, w, h, 12); ci(x + w / 2, y + 4 + h / 2, Math.min(18, h / 4), '#D5D8DE'); return h + 12 }
+    if (t === 'icon') { const cx = e.a === 'l' ? x + 26 : e.a === 'r' ? x + w - 26 : x + w / 2; ci(cx, y + 30, 26, C.soft); ci(cx, y + 30, 11, C.dark); return 64 }
+    if (t === 'li') {
+      ci(x + 20, y + 30, 20); txt(x + 52, y + 26, v || '', 14, TC.strong, 'start', 700, w - 150, K('v')); if (!v) ln(x + 52, y + 18, 130, 10, C.dark)
+      if (e.sub) txt(x + 52, y + 45, e.sub, 12, TC.weak, 'start', 500, w - 150, K('sub')); else ln(x + 52, y + 38, 170, 7)
+      if (e.r) txt(x + w, y + 34, e.r, 13.5, TC.strong, 'end', 700, 100, K('r'))
+      r(x + 52, y + 59, w - 52, 1, 0, '#F0F1F3'); return 62
+    }
+    if (t === 'div') { r(x, y + 8, w, depth ? 1 : 1, 0, '#E5E7EB'); return 17 }
+    if (t === 'gap') return 14
+    if (t === 'keypad') { const k = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫']; k.forEach((n, i) => { if (n) tx(x + (i % 3) * w / 3 + w / 6, y + 34 + Math.floor(i / 3) * 52, n, 20, TC.mid, 'middle', 600) }); return 4 * 52 + 8 }
+    if ((t === 'card' || t === 'row') && depth < 2) {
+      const list = Array.isArray(e.els) ? e.els.slice(0, 12) : []
+      if (t === 'row') {
+        const n = Math.max(list.length, 1), cw = (w - (n - 1) * 10) / n
+        let h = 0; const g0 = g, parts = []
+        list.forEach((c, i) => { g = []; const hh = el(c, x + i * (cw + 10), y, cw, depth + 1, path == null ? null : path + '/' + i); parts.push(...g); h = Math.max(h, hh) })
+        g = g0; g.push(...parts); return h
+      }
+      const g0 = g; g = []; const ih = els(list, x + 14, y + 18, w - 28, depth + 1, path); const inner = g; g = g0
+      r(x, y + 4, w, ih + 26, 14, e.st === 'o' ? 'none' : C.soft, e.st === 'o' ? ` stroke="${C.line}" stroke-width="1.5"` : ''); g.push(...inner)
+      return ih + 38
+    }
+    ln(x, y + 6, w * 0.6); return 22
+  }
+  const measure = fn => { const g0 = g; g = []; const h = fn(); g = g0; return h }
+  const S0 = (vb, inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}"><rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="#fff"/>${inner}</svg>`
+  if (opt.elOnly) { g = []; const vw = 236, h = els(opt.elOnly, 14, 8, vw - 28, 0, null); return S0([0, 0, vw, Math.max(h + 16, 44)], g.join('')) }   // 미리보기는 좁게 그려서 크게 보이게
+  if (opt.blockOnly) { g = []; const b = blocks[0]; const h = b.els && b.els.length ? els(b.els, P, 8, W - P * 2, 0, null) + 12 : D[b.k](8, b, 300) + 12; return S0([0, 0, W, Math.min(Math.max(h, 60), 360)], g.join('')) }
+  const bi = b => opt.edit ? String(blocks.indexOf(b)) : null   // 편집 경로: 블록 번호/요소 번호|필드
+  // 층: 위(고정) · 본문(스크롤) · 아래(고정) · 덮개
+  const L = { top: [], body: [], bottom: [], over: [] }
+  g = L.top
+  ln(18, 12, 34, 8); ln(W - 64, 12, 46, 8)   // 상태바
+  let y = 30
+  const { top, body, bottom, all: seq } = wfSeq(blocks)
+  const wrapB = (b, yy, fn) => {
+    if (!opt.edit) return fn()
+    const st0 = g.length, h = fn(), inner = g.splice(st0), i = blocks.indexOf(b), on = opt.selB === i
+    g.push(`<g data-b="${i}"><rect class="hitb" x="0" y="${yy}" width="${W}" height="${Math.max(h, 8)}" fill="#7B4FFF" fill-opacity="${on ? 0.05 : 0}"/>${inner.join('')}${on ? `<rect x="2" y="${yy + 1}" width="${W - 4}" height="${Math.max(h - 2, 6)}" rx="8" fill="none" stroke="#7B4FFF" stroke-width="2.5" stroke-dasharray="7 5" pointer-events="none"/>` : ''}</g>`)
+    return h
+  }
+  const draw = (b, yy, room) => wrapB(b, yy, () => draw0(b, yy, room))
+  const draw0 = (b, yy, room) => {
+    if (b.els && b.els.length && !['header', 'tabbar', 'cta', 'sheet', 'modal', 'fab', 'map', 'chat'].includes(b.k)) return els(b.els, P, yy + 4, W - P * 2, 0, bi(b)) + 8
+    if (b.k === 'header' && b.els && b.els.length) {
+      const ti = b.els.findIndex(e => e.t === 'text' && e.v)
+      tx(P, yy + 34, '‹', 26, '#9AA0A8', 'start', 400)
+      if (ti >= 0) txt(W / 2, yy + 32, b.els[ti].v, 16, TC.strong, 'middle', 800, W - 120, bi(b) == null ? null : bi(b) + '/' + ti + '|v'); else ln(W / 2 - 34, yy + 21, 68, 11, C.dark)
+      ci(W - P - 10, yy + 26, 9); return 52
+    }
+    return D[b.k](yy, b, room)
+  }
+  top.forEach(b => { const h = draw(b, y); pos.set(b, ['top', 0, y, W, h]); y += h })
+  const ctaEls = b => (b.els || []).map((e, i) => [e, i]).filter(([e]) => e && e.t !== 'btn')
+  const ctaBtns = b => (b.els || []).map((e, i) => [e, i]).filter(([e]) => e && e.t === 'btn').slice(0, 2)
+  const bH = b => b.k === 'tabbar' ? 66 : 84 + (ctaEls(b).length ? measure(() => ctaEls(b).reduce((a, [e]) => a + el(e, P, 0, W - P * 2, 0, null), 0)) : 0)
+  let bottomH = 0
+  bottom.forEach(b => bottomH += bH(b))
+  const bodyTop = y + 4, bodyEnd = H - bottomH
+  // 본문 (길면 이 영역 안에서 스크롤)
+  g = L.body
+  const fills = ['map', 'chat', 'illust']
+  let by = bodyTop
+  body.forEach((b, i) => {
+    const fixedAfter = body.slice(i + 1).filter(x => !fills.includes(x.k)).length * 120
+    const room = Math.max(0, bodyEnd - by - (fills.includes(b.k) ? fixedAfter : 0))
+    const fullBleed = !b.els && ['map', 'hero', 'feed'].includes(b.k)
+    const yy = fullBleed && by === bodyTop && b.k !== 'feed' ? by - 4 : by
+    const h = draw(b, yy, room)
+    pos.set(b, ['body', 0, yy, W, h]); by = yy + h + 10
+  })
+  const bodyLen = Math.max(by - bodyTop, bodyEnd - bodyTop)
+  // 아래 고정
+  g = L.bottom
+  let yb = bodyEnd
+  bottom.forEach(b => wrapB(b, yb, () => { const y0 = yb; bot(b); return yb - y0 }))
+  function bot(b) {
+    if (b.k === 'cta') {
+      const hh = bH(b); r(0, yb, W, hh, 0, '#fff')
+      let yy = yb + 6
+      ctaEls(b).forEach(([e, i]) => { yy += el(e, P, yy, W - P * 2, 0, bi(b) == null ? null : bi(b) + '/' + i) })
+      const bs = ctaBtns(b)
+      if (bs.length === 2) { const bw = (W - P * 2 - 10) / 2; bs.forEach(([e, i], j) => el(Object.assign({}, e, { st: e.st || (j ? 'p' : 's') }), P + j * (bw + 10), yy + 4, bw, 1, bi(b) == null ? null : bi(b) + '/' + i)) }
+      else if (bs.length === 1) el(Object.assign({}, bs[0][0], { st: bs[0][0].st || 'p' }), P, yy + 4, W - P * 2, 1, bi(b) == null ? null : bi(b) + '/' + bs[0][1])
+      else { r(P, yy + 8, W - P * 2, 52, 12, C.btn); txt(W / 2, yy + 39, b.text || '다음', 14.5, '#fff', 'middle', 700, W - P * 2 - 20) }
+      pos.set(b, ['bottom', 0, yb, W, hh]); yb += hh
+    }
+    else { r(0, yb, W, 66, 0, '#fff'); r(0, yb, W, 1, 0, '#E5E7EB'); for (let i = 0; i < 5; i++) { const cx = W / 10 + i * W / 5; ci(cx, yb + 24, 10, i ? '#D5D8DE' : C.btn); ln(cx - 12, yb + 42, 24, 6, i ? C.line : C.btn) } pos.set(b, ['bottom', 0, yb, W, 66]); yb += 66 }
+  }
+  // 덮는 요소 (화면 기준 고정)
+  g = L.over
+  const ov = k => blocks.find(b => b.k === k)
+  if (ks.includes('fab')) { ci(W - P - 28, bodyEnd - 40, 28, C.btn); tx(W - P - 28, bodyEnd - 31, '+', 26, '#fff', 'middle', 400); pos.set(ov('fab'), ['over', W - P - 56, bodyEnd - 68, 56, 56]) }
+  if (ks.includes('sheet')) {
+    const b = ov('sheet'); r(0, 0, W, H, 0, '#111827', ' fill-opacity="0.38"')
+    const st0 = g.length
+    if (b.els && b.els.length) { const ih = measure(() => els(b.els, P, 0, W - P * 2, 0, null)); const sh = Math.min(ih + 44, H * 0.8), sy = H - sh; r(0, sy, W, sh + 22, 22, '#fff'); r(W / 2 - 20, sy + 10, 40, 5, 2.5, C.line); els(b.els, P, sy + 28, W - P * 2, 0, bi(b)); pos.set(b, ['over', 0, sy, W, sh]) }
+    else { const sy = H - 300; r(0, sy, W, 300, 22, '#fff'); r(W / 2 - 20, sy + 10, 40, 5, 2.5, C.line); ln(P, sy + 34, 150, 14, C.dark); for (let i = 0; i < 3; i++) { ci(P + 18, sy + 86 + i * 54, 18); ln(P + 48, sy + 80 + i * 54, 170, 10) } r(P, H - 70, W - P * 2, 52, 12, C.btn); pos.set(b, ['over', 0, sy, W, 300]) }
+    if (opt.edit) { const inner = g.splice(st0), pp = pos.get(b), on = opt.selB === blocks.indexOf(b); g.push(`<g data-b="${blocks.indexOf(b)}">${inner.join('')}${on ? `<rect x="2" y="${pp[2] + 1}" width="${W - 4}" height="${H - pp[2] - 3}" rx="18" fill="none" stroke="#7B4FFF" stroke-width="2.5" stroke-dasharray="7 5" pointer-events="none"/>` : ''}</g>`) }
+  }
+  if (ks.includes('modal')) {
+    const b = ov('modal'); r(0, 0, W, H, 0, '#111827', ' fill-opacity="0.38"'); const mw = 300, mx = (W - mw) / 2
+    const st0 = g.length
+    if (b.els && b.els.length) { const ih = measure(() => els(b.els, mx + 20, 0, mw - 40, 0, null)); const mh = ih + 40, my = Math.max(40, (H - mh) / 2); r(mx, my, mw, mh, 18, '#fff'); els(b.els, mx + 20, my + 20, mw - 40, 0, bi(b)); pos.set(b, ['over', mx, my, mw, mh]) }
+    else { const mh = 190, my = (H - mh) / 2; r(mx, my, mw, mh, 18, '#fff'); ln(mx + 24, my + 30, 150, 14, C.dark); ln(mx + 24, my + 60, mw - 48, 8); ln(mx + 24, my + 76, 180, 8); r(mx + 16, my + mh - 64, (mw - 40) / 2, 46, 10, C.soft); r(mx + 24 + (mw - 40) / 2, my + mh - 64, (mw - 40) / 2, 46, 10, C.btn); pos.set(b, ['over', mx, my, mw, mh]) }
+    if (opt.edit) { const inner = g.splice(st0), pp = pos.get(b), on = opt.selB === blocks.indexOf(b); g.push(`<g data-b="${blocks.indexOf(b)}">${inner.join('')}${on ? `<rect x="${pp[1] - 2}" y="${pp[2] - 2}" width="${pp[3] + 4}" height="${pp[4] + 4}" rx="20" fill="none" stroke="#7B4FFF" stroke-width="2.5" stroke-dasharray="7 5" pointer-events="none"/>` : ''}</g>`) }
+  }
+  // 이름표 · 강조 (블록이 있는 층에)
+  const info = []
+  seq.forEach((b, i) => {
+    const p = pos.get(b); if (!p) return
+    const [layer, px, py, pw, ph] = p
+    info[i] = { layer, y: py, h: ph }
+    g = L[layer]
+    const lim = layer === 'body' ? bodyTop + bodyLen : H
+    const yy = Math.max(py, 2), hh = Math.min(ph, lim - yy - 2)
+    if (opt.hl === i) g.push(`<rect x="${px + 3}" y="${yy + 1}" width="${pw - 6}" height="${Math.max(hh - 2, 10)}" rx="8" fill="#7B4FFF" fill-opacity="0.08" stroke="#7B4FFF" stroke-width="2.5"/>`)
+    if (opt.labels) {
+      const t = `${i + 1} ${wfName(b.k)}`, tw2 = [...t].reduce((a, c) => a + (/[가-힣]/.test(c) ? 11.5 : 6.5), 0) + 14
+      const ly = Math.min(yy + 12, lim - 14)
+      g.push(`<g><rect x="${px}" y="${ly - 10}" width="${tw2}" height="20" rx="5" fill="#7B4FFF"/><text x="${px + 7}" y="${ly + 4}" font-family="${F}" font-size="11" font-weight="800" fill="#fff">${pkEsc(t)}</text></g>`)
+    }
+  })
+  const S = (vb, inner, bg) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}">${bg ? `<rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="#fff"/>` : ''}${inner}</svg>`
+  if (opt.layers) return {
+    W, H, bodyTop, bodyEnd, bodyLen, info,
+    top: S([0, 0, W, bodyTop], L.top.join(''), true),
+    body: S([0, bodyTop, W, bodyLen], L.body.join(''), true),
+    bottom: bottomH ? S([0, bodyEnd, W, bottomH], L.bottom.join(''), true) : '',
+    over: L.over.length ? S([0, 0, W, H], L.over.join(''), false) : ''
+  }
+  // 한 장(375×812 고정): 본문은 화면 안쪽만 보이도록 마스크 — Figma에서는 마스크 안에 전체 내용이 남아 있음
+  const cid = 'wfc' + (opt.id || '')
+  return S([0, 0, W, H], `${L.top.join('')}<clipPath id="${cid}"><rect x="0" y="${bodyTop}" width="${W}" height="${bodyEnd - bodyTop}"/></clipPath><g clip-path="url(#${cid})">${L.body.join('')}</g>${L.bottom.join('')}${L.over.join('')}`, true)
+}
+
+// ── 진입: 레퍼런스 고르기 ──
+let _wf = null   // { s, refs, desc, mode, variants, sel, labels }
+function wfOpen(s) {
+  if (s.wf && s.wf.variants) { _wf = { s, ...s.wf, labels: false }; wfShow(); return }
+  wfAsk(s)
+}
+function wfAsk(s, prev) {
+  document.querySelectorAll('.wf-ov').forEach(x => x.remove())
+  const key = localStorage.getItem(APIKEY_STORE) || ''
+  const on = new Set(prev ? prev.refs.map(r => r.src) : s.items.map(i => i.src))
+  const ov = document.createElement('div'); ov.className = 'wf-ov'
+  ov.innerHTML = `<div class="wf-modal"><div class="wf-mt">${pkEsc(s.label)} · 와이어프레임 초안</div>
+    <div class="wf-ms">고른 레퍼런스에 공통으로 있는 구성요소로 회색 박스 와이어프레임 3가지 안을 만들어요</div>
+    <div class="wf-lb">참고할 레퍼런스 <span>(${s.items.length}장 · 빼고 싶은 건 눌러서 해제)</span></div>
+    <div class="wf-refs">${s.items.map((i, k) => `<div class="wf-ref ${on.has(i.src) ? '' : 'off'}" data-k="${k}"><img src="${pkEsc(i.thumbnail || i.src)}" alt="" onerror="this.style.visibility='hidden'"><i></i><span>${pkEsc(i.app)}</span></div>`).join('')}</div>
+    <div class="wf-lb">화면 설명 <span>(선택 · AI로 만들 때 참고해요)</span></div>
+    <textarea class="wf-ta" rows="2" maxlength="200" placeholder="예) 받는 사람과 잔액이 보이고, 숫자 키패드로 금액을 입력하는 화면">${pkEsc(prev ? prev.desc || '' : '')}</textarea>
+    <div class="wf-ways"><button type="button" class="wf-way pri" data-w="free"><b>바로 만들기</b><small>화면 태그로 공통 구조를 계산해요<br>무료 · 바로 나와요</small></button>
+      <button type="button" class="wf-way ai" data-w="ai"><b>AI로 더 정확하게</b><small>AI가 이미지를 직접 보고 배치를 읽어요<br>${key ? 'API 키 사용' : '누르면 API 키 등록'} · 1회 약 70원</small></button></div>
+    <div class="wf-mfoot"><button type="button" class="pk-btn" data-w="x">닫기</button></div></div>`
+  document.body.appendChild(ov)
+  const close = () => ov.remove()
+  ov.onmousedown = ev => { if (ev.target === ov) close() }
+  ov.querySelectorAll('.wf-ref').forEach(el => el.onclick = () => {
+    const src = s.items[+el.dataset.k].src
+    on.has(src) ? on.delete(src) : on.add(src); el.classList.toggle('off', !on.has(src))
+  })
+  ov.querySelector('[data-w="x"]').onclick = close
+  ov.querySelectorAll('[data-w="free"],[data-w="ai"]').forEach(b => b.onclick = async () => {
+    const refs = s.items.filter(i => on.has(i.src)).map(i => ({ src: i.src, app: i.app }))
+    if (!refs.length) { showToast('레퍼런스를 1장 이상 골라주세요'); return }
+    const desc = ov.querySelector('.wf-ta').value.trim()
+    // 키가 없으면 홈과 같은 키 등록 창을 띄우고, 등록하면 바로 이어서 만들기
+    if (b.dataset.w === 'ai' && !(localStorage.getItem(APIKEY_STORE) || '').startsWith('sk-ant-')) {
+      window._apiKeyAfter = () => { close(); wfMakeAi(s, refs, desc) }
+      promptApiKey()
+      return
+    }
+    close()
+    if (b.dataset.w === 'free') wfMakeFree(s, refs, desc)
+    else wfMakeAi(s, refs, desc)
+  })
+}
+async function wfMakeFree(s, refs, desc) {
+  try { await ensureTagsLoaded() } catch {}
+  _wf = { s, refs, desc, mode: 'free', variants: wfFree(s, refs), sel: 0, labels: false }
+  wfKeep(); wfShow()
+}
+function wfKeep() {
+  const { s, refs, desc, mode, variants, sel } = _wf
+  s.wf = { refs, desc, mode, variants, sel, at: Date.now() }
+  pkSaveCur()
+}
+
+// ── AI로 더 정확하게 ──
+async function wfMakeAi(s, refs, desc) {
+  const apiKey = localStorage.getItem(APIKEY_STORE) || ''
+  if (!apiKey) { showToast('AI 디자인분석에서 API 키를 먼저 등록해주세요'); return }
+  if (!window.api || !window.api.fetchImageData) { showToast('부찌를 다시 시작한 뒤 쓸 수 있어요'); return }
+  const v = pkView()
+  v.innerHTML = '<div class="wf-busy"><i></i>AI가 레퍼런스 구조를 읽고 있어요… (30초 정도 걸려요)</div>'
+  v.scrollTop = 0
+  try {
+    // 레퍼런스를 한 장씩 따로 보냄 (글자·크기 위계를 읽을 수 있게 장당 최대 560×1200)
+    const images = []
+    for (const r of refs) {
+      let im = null
+      try { const d = await window.api.fetchImageData(r.src); if (d) im = await new Promise(res => { const x = new Image(); x.onload = () => res(x); x.onerror = () => res(null); x.src = d }) } catch {}
+      if (!im) { images.push(null); continue }
+      const sc = Math.min(1, 560 / im.width, 1200 / im.height)
+      const cv = document.createElement('canvas'); cv.width = Math.round(im.width * sc); cv.height = Math.round(im.height * sc)
+      const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height)
+      images.push({ data: cv.toDataURL('image/jpeg', 0.82).split(',')[1], mediaType: 'image/jpeg' })
+    }
+    const okIdx = images.map((x, i) => x ? i : -1).filter(i => i >= 0)
+    if (!okIdx.length) throw new Error('레퍼런스 이미지를 불러오지 못했어요')
+    const n = okIdx.length
+    const useRefs = okIdx.map(i => refs[i])
+    const kinds = WF_ORDER.map(k => `${k}(${wfName(k)})`).join(', ')
+    const memo = (s.memo || '').trim()
+    const prompt = `첨부한 이미지 ${n}장은 같은 종류의 모바일 앱 화면 레퍼런스예요 (첨부 순서대로 1~${n}번).
+화면 종류: ${s.label}
+프로젝트: ${(_pkCur && _pkCur.name) || ''}${memo ? `\n메모: ${memo}` : ''}${desc ? `\n화면 설명: ${desc}` : ''}
+
+레퍼런스들을 하나씩 자세히 보고, 공통으로 쓰이는 화면 구조로 와이어프레임 3가지 안을 만들어주세요.
+- 1안: 가장 많은 레퍼런스가 쓰는 구조. 2·3안: 일부 레퍼런스가 쓰는 다른 방식
+- 특정 앱을 그대로 베끼지 말고 공통 구조로. 브랜드 이름·실제 개인정보는 쓰지 말 것
+- 시각적 위계를 살릴 것: 레퍼런스에서 크게 강조된 것(예: 최종 결제 금액)은 크게, 보조 정보는 작게
+- 텍스트는 이 프로젝트에 맞는 짧은 예시 문구로 (예: "최종 결제금액", "12,000원", "결제하기")
+- 위에서 아래 실제 배치 순서대로. 상태바 제외
+
+블록(k)은 아래 중에서 고르고, 같은 종류를 여러 번 써도 돼요:
+${kinds}
+
+각 블록의 els(세부 요소, 위에서 아래 순서)는 아래 형식으로:
+{"t":"text","v":"문구","s":"xl|l|m|s","b":1,"a":"l|c|r"}  글자 (s=크기, b=굵게, a=정렬)
+{"t":"amount","v":"12,000원","a":"l|c|r"}  가장 강조되는 큰 숫자
+{"t":"kv","k":"항목명","v":"값","s":"m|l|xl"}  왼쪽 항목명·오른쪽 값 한 줄 (s=xl이면 크게 강조)
+{"t":"btn","v":"문구","st":"p|s|o"}  버튼 (p=주버튼, s=회색, o=테두리)
+{"t":"input","l":"라벨","ph":"입력 예시"}
+{"t":"check|radio|toggle","v":"문구","on":1,"r":"오른쪽 보조문구"}
+{"t":"opts","v":["카드","계좌이체","간편결제"]}  타일형 선택지 (첫 번째가 선택됨)
+{"t":"chips|seg","v":["전체","진행중"]}  칩 / 세그먼트 탭
+{"t":"li","v":"제목","sub":"설명","r":"오른쪽 값"}  아이콘+두 줄 목록 한 줄
+{"t":"img","h":160}  이미지 자리 / {"t":"icon","a":"c"} 아이콘 / {"t":"div"} 구분선 / {"t":"gap"} 여백 / {"t":"keypad"} 숫자 키패드
+{"t":"card","st":"o","els":[...]}  묶음 박스 (st=o면 테두리만) / {"t":"row","els":[...]} 가로로 나란히
+header는 els에 제목 text 하나, cta는 btn 1~2개(위에 안내 text 가능), tabbar는 els 없이.
+
+label은 블록에 실제로 뭐가 있는지 12자 이내, refs는 이 블록과 같은 역할의 요소가 보이는 레퍼런스 번호를 빠짐없이 모두.
+블록 4~9개, 블록당 els 1~10개.
+
+JSON만 응답 (다른 텍스트 없이):
+{"variants":[{"name":"8자 이내","desc":"20자 이내","blocks":[{"k":"header","label":"뒤로가기+제목","refs":[1,2],"els":[{"t":"text","v":"결제"}]}]}]}`
+    const res = await window.api.claudeApi({ apiKey, images: images.filter(Boolean), prompt, model: 'claude-sonnet-4-5', maxTokens: 6000 })
+    const text = (res.content && res.content[0] && res.content[0].text || '').replace(/```json|```/g, '').trim()
+    const j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1))
+    const ELT = ['text', 'amount', 'kv', 'btn', 'input', 'select', 'check', 'radio', 'toggle', 'opts', 'radios', 'checks', 'chips', 'seg', 'li', 'img', 'icon', 'div', 'gap', 'keypad', 'card', 'row']
+    const str = (x, m) => x == null ? undefined : String(x).slice(0, m)
+    const clean = (list, depth) => (Array.isArray(list) ? list : []).filter(e => e && ELT.includes(e.t)).slice(0, 12).map(e => {
+      const o = { t: e.t }
+      if (Array.isArray(e.v)) o.v = e.v.slice(0, 9).map(x => str(x, 14)); else if (e.v != null) o.v = str(e.v, 28)
+      ;['s', 'a', 'st'].forEach(k => { if (e[k]) o[k] = str(e[k], 3) })
+      if (e.b) o.b = 1; if (e.on) o.on = 1; if (e.h) o.h = +e.h || undefined; if (e.n) o.n = +e.n || undefined
+      ;['k', 'l', 'ph', 'r', 'sub'].forEach(k => { if (e[k] != null) o[k] = str(e[k], 24) })
+      if ((e.t === 'card' || e.t === 'row') && depth < 2) o.els = clean(e.els, depth + 1)
+      return o
+    })
+    const variants = (j.variants || []).slice(0, 3).map(vr => {
+      const single = ['header', 'title', 'search', 'tabs', 'cta', 'tabbar', 'fab', 'sheet', 'modal']
+      const seen = new Set()
+      const blocks = (vr.blocks || []).filter(b => WF_KINDS[b.k] && !(single.includes(b.k) && seen.has(b.k)) && seen.add(b.k)).slice(0, 12).map(b => {
+        const hit = [...new Set((b.refs || []).map(x => +x - 1).filter(x => x >= 0 && x < n))]
+        const els = clean(b.els, 0)
+        return { k: b.k, label: String(b.label || '').slice(0, 20), refs: hit, freq: hit.length / n, rows: +b.rows || undefined, els: els.length ? els : undefined, base: !hit.length }
+      })
+      return { name: String(vr.name || '').slice(0, 12) || '안', desc: String(vr.desc || '').slice(0, 30), blocks }
+    }).filter(vr => vr.blocks.length)
+    if (!variants.length) throw new Error('AI 응답을 읽지 못했어요')
+    _wf = { s, refs: useRefs, desc, mode: 'ai', variants, sel: 0, labels: false }   // 실제 문구가 들어가서 이름표는 기본으로 끔
+    wfKeep(); wfShow()
+  } catch (e) {
+    const m = String(e && e.message || e)
+    showToast(/401|403/.test(m) ? 'API 키가 잘못됐거나 잔액이 없어요' : /429|529|overloaded/i.test(m) ? 'AI가 바빠요. 잠시 후 다시 해주세요' : 'AI 초안을 만들지 못했어요 · 무료 초안으로 보여드려요')
+    wfMakeFree(s, refs, desc)
+  }
+}
+
+// ── 결과 화면 (편집: 글자 고치기 · 끌어서 순서 바꾸기 · 모양 바꾸기 · 추가·삭제·복제) ──
+const WF_ET = { text: '글자', amount: '큰 숫자', kv: '항목-값', btn: '버튼', input: '입력칸', select: '드롭다운', check: '체크박스', radio: '라디오', toggle: '토글',
+  opts: '타일 선택', radios: '라디오 목록', checks: '체크 목록', chips: '칩', seg: '세그먼트 탭', li: '목록 한 줄', img: '이미지', icon: '아이콘', div: '구분선', gap: '여백', keypad: '키패드', card: '묶음 박스', row: '가로 묶음' }
+const WF_MULTI = ['opts', 'radios', 'checks', 'chips', 'seg', 'select']
+// 같은 역할의 다른 모양으로 바꾸기
+function wfConv(e) {
+  const t = e.t, out = []
+  const arr = Array.isArray(e.v) ? e.v : e.v ? [e.v] : []
+  if (WF_MULTI.includes(t)) WF_MULTI.filter(x => x !== t).forEach(x => out.push([x, () => ({ t: x, v: arr.length ? arr : ['선택 1', '선택 2', '선택 3'], ...(x === 'select' && e.l ? { l: e.l } : {}) })]))
+  if (['check', 'radio', 'toggle'].includes(t)) ['check', 'radio', 'toggle'].filter(x => x !== t).forEach(x => out.push([x, () => ({ ...e, t: x })]))
+  if (t === 'amount') out.push(['kv', () => ({ t: 'kv', k: '합계', v: e.v, s: 'xl' })], ['text', () => ({ t: 'text', v: e.v, s: 'xl', b: 1, a: e.a })])
+  if (t === 'kv') out.push(['amount', () => ({ t: 'amount', v: e.v })], ['li', () => ({ t: 'li', v: e.k, r: e.v })])
+  if (t === 'li') out.push(['kv', () => ({ t: 'kv', k: e.v, v: e.r || '' })])
+  if (t === 'text' && e.v) out.push(['amount', () => ({ t: 'amount', v: e.v, a: e.a })])
+  if (t === 'input') out.push(['select', () => ({ t: 'select', l: e.l, v: [e.ph || '선택해주세요'] })])
+  if (t === 'select') out.push(['input', () => ({ t: 'input', l: e.l, ph: arr[0] || '' })])
+  if (t === 'img') out.push(['icon', () => ({ t: 'icon', a: 'c' })])
+  if (t === 'icon') out.push(['img', () => ({ t: 'img', h: 160 })])
+  return out
+}
+const WF_NEW = {
+  text: () => ({ t: 'text', v: '새 문구', s: 'm' }), amount: () => ({ t: 'amount', v: '00,000원' }), kv: () => ({ t: 'kv', k: '항목', v: '값' }),
+  btn: () => ({ t: 'btn', v: '버튼', st: 'p' }), input: () => ({ t: 'input', l: '입력 항목', ph: '입력해주세요' }), select: () => ({ t: 'select', l: '선택 항목', v: ['선택해주세요'] }),
+  check: () => ({ t: 'check', v: '선택 항목' }), radios: () => ({ t: 'radios', v: ['선택 1', '선택 2', '선택 3'] }), opts: () => ({ t: 'opts', v: ['선택 1', '선택 2', '선택 3'] }),
+  chips: () => ({ t: 'chips', v: ['전체', '항목 1', '항목 2'] }), li: () => ({ t: 'li', v: '항목 제목', sub: '보조 설명' }), img: () => ({ t: 'img', h: 160 }),
+  div: () => ({ t: 'div' }), gap: () => ({ t: 'gap' }), card: () => ({ t: 'card', els: [{ t: 'text', v: '묶음 제목', s: 'm', b: 1 }, { t: 'text', v: '설명 문구', s: 's' }] })
+}
+const WF_NEWB = ['title', 'search', 'tabs', 'chips', 'summary', 'info', 'banner', 'form', 'choice', 'list', 'cards', 'grid', 'chart', 'calendar', 'empty']
+function wfShow(keep) {
+  const w = _wf, s = w.s, p = _pkCur, v = pkView()
+  const vr = w.variants[w.sel] || w.variants[0]
+  const seq = wfSeq(vr.blocks).all
+  const n = w.refs.length
+  const key = localStorage.getItem(APIKEY_STORE) || ''
+  const oldBody = v.querySelector('.wf-l.body'), keepPage = keep ? v.scrollTop : 0, keepBody = keep && oldBody ? oldBody.scrollTop : 0
+  if (!keep) { w.selP = null; w.selB = null }
+  w.hist = w.hist || []
+  v.innerHTML = `<div class="pk-h"><div style="min-width:0"><div class="pk-t" style="display:flex;align-items:center;gap:8px">${pkEsc(s.label)} · 와이어프레임 초안<span class="wf-badge ${w.mode === 'ai' ? '' : 'free'}">${w.mode === 'ai' ? 'AI' : '태그 기반'}</span></div>
+      <div class="pk-s">${pkEsc(p.name)} · 레퍼런스 ${n}장의 공통 구조로 만들었어요</div></div>
+      <div class="wf-acts"><button class="pk-btn" type="button" data-w="back">팩으로 돌아가기</button><button class="pk-btn" type="button" data-w="again">다시 만들기</button>
+        <button class="pk-btn" type="button" data-w="png">PNG 저장</button><button class="pk-btn" type="button" data-w="img">이미지 복사</button><button class="pk-btn pri" type="button" data-w="figma" title="Figma에서 Ctrl+V 하면 편집할 수 있는 레이어로 들어가요">Figma로 복사</button></div></div>
+    <div class="wf-res" id="wf-res"><div><div class="wf-phone" id="wf-ph"></div><label class="wf-tg"><input type="checkbox" id="wf-lab" ${w.labels ? 'checked' : ''}>구성 이름 표시</label><div class="wf-hint">375 × 812 · 길면 화면 안에서 스크롤돼요<br>누르면 선택 · 글자는 바로 수정 · 끌어서 순서 변경<br>Delete 삭제 · Ctrl+Z 되돌리기</div></div>
+      <div class="wf-card"><div class="wf-ct">이 구조의 근거</div><div class="wf-cs">${w.mode === 'ai' ? 'AI가 레퍼런스에서 읽은 구성이에요.' : '레퍼런스 화면의 태그와 이 화면 종류의 기본 구성으로 계산했어요.'} 항목에 마우스를 올리면 해당 레퍼런스가 표시돼요.</div>
+        <div id="wf-list">${seq.map((b, i) => `<div class="wf-li" data-b="${i}"><span class="n">${i + 1}</span><div><b>${pkEsc(wfName(b.k))}</b>${b.label ? `<small>${pkEsc(b.label)}</small>` : b.add ? '<small>다른 안으로 추가한 요소</small>' : ''}</div>${b.user ? '<em class="base">직접 추가</em>' : b.base ? `<em class="base">${b.add ? '추가 제안' : '기본 구성'}</em>` : `<em>${n}장 중 ${b.refs.length}장</em>`}</div>`).join('')}</div>
+        <div class="wf-mini" id="wf-mini">${w.refs.map((r, i) => `<img src="${pkEsc(r.src)}" data-i="${i}" title="${pkEsc(r.app)}" alt="" onerror="this.style.visibility='hidden'">`).join('')}</div>
+        <div class="wf-cs" style="margin:12px 0 0">특정 앱을 그대로 따라 그리지 않고, 여러 앱에 공통으로 있는 구조만 회색 박스로 그려요.${w.mode === 'ai' ? '' : key ? ' 배치까지 더 정확하게 보려면 \'다시 만들기 → AI로 더 정확하게\'를 써보세요.' : ''}</div></div>
+      <div class="wf-var"><div class="wf-vt">다른 안</div>${w.variants.map((x, i) => `<button type="button" class="wf-v ${i === w.sel ? 'on' : ''}" data-v="${i}"><div class="vp">${wfSvg(x.blocks, { q: s.q, id: 'v' + i })}</div><span>${'ABC'[i]}안 · ${pkEsc(x.name)}</span><small>${pkEsc(x.desc)}</small></button>`).join('')}</div></div>`
+  v.scrollTop = keepPage
+  const ph = v.querySelector('#wf-ph'), res = v.querySelector('#wf-res')
+  const pct = x => (x / WF_H * 100) + '%'
+  let lastL = null
+  const draw = (hl, firstKeep) => {
+    const old = ph.querySelector('.wf-l.body'), kb = old ? old.scrollTop : (firstKeep || 0)
+    const L = lastL = wfSvg(vr.blocks, { q: s.q, labels: w.labels, hl, id: 'm', layers: true, edit: true, selP: w.selP, selB: w.selB })
+    ph.innerHTML = `<div class="wf-scr"><div class="wf-l top" style="height:${pct(L.bodyTop)}">${L.top}</div>
+      <div class="wf-l body" style="top:${pct(L.bodyTop)};bottom:${pct(WF_H - L.bodyEnd)}">${L.body}</div>
+      ${L.bottom ? `<div class="wf-l bot" style="height:${pct(WF_H - L.bodyEnd)}">${L.bottom}</div>` : ''}${L.over ? `<div class="wf-l over">${L.over}</div>` : ''}</div>`
+    const bd = ph.querySelector('.wf-l.body'); bd.scrollTop = kb
+    const inf = hl != null && L.info[hl]
+    if (inf && inf.layer === 'body') { const sc = bd.clientWidth / WF_W; bd.scrollTop = Math.max(0, (inf.y - L.bodyTop) * sc - 24) }
+    tool()
+  }
+  // ── 편집 도구 ──
+  const node = path => {
+    const idx = path.split('/').map(Number), b = vr.blocks[idx[0]]
+    let list = b && b.els, o = null
+    for (let k = 1; k < idx.length; k++) { o = list && list[idx[k]]; if (k < idx.length - 1) list = o && o.els }
+    return o ? { list, i: idx[idx.length - 1], o, b } : null
+  }
+  const commit = () => { wfKeep(); wfShow(true) }
+  const snap = () => { w.hist.push(JSON.stringify(vr.blocks)); if (w.hist.length > 50) w.hist.shift() }
+  const undo = () => { const h = w.hist.pop(); if (!h) { showToast('되돌릴 작업이 없어요'); return } vr.blocks.splice(0, vr.blocks.length, ...JSON.parse(h)); w.selP = null; w.selB = null; commit() }
+  const markUser = b => { if (b && !b.user) b.edited = 1 }
+  const act = {
+    up: () => move(-1), down: () => move(1),
+    dup: () => {
+      snap()
+      if (w.selP) { const x = node(w.selP); x.list.splice(x.i + 1, 0, JSON.parse(JSON.stringify(x.o))); w.selP = w.selP.replace(/\d+$/, x.i + 1) }
+      else { const b = vr.blocks[w.selB]; vr.blocks.splice(w.selB + 1, 0, Object.assign(JSON.parse(JSON.stringify(b)), { user: 1 })); w.selB++ }
+      commit()
+    },
+    del: () => {
+      snap()
+      if (w.selP) { const x = node(w.selP); x.list.splice(x.i, 1); if (x.b.els && !x.b.els.length) delete x.b.els; w.selP = null }
+      else { vr.blocks.splice(w.selB, 1); w.selB = null }
+      commit()
+    },
+    undo, blk: () => { const x = node(w.selP); w.selB = vr.blocks.indexOf(x.b); w.selP = null; draw() },
+    x: () => { w.selP = null; w.selB = null; draw() }
+  }
+  const bodyIdx = () => wfSeq(vr.blocks).body.map(b => vr.blocks.indexOf(b))
+  function move(d) {
+    if (w.selP) {
+      const x = node(w.selP), j = x.i + d; if (j < 0 || j >= x.list.length) return
+      snap(); const [it] = x.list.splice(x.i, 1); x.list.splice(j, 0, it); w.selP = w.selP.replace(/\d+$/, j); commit()
+    } else {
+      const bi = bodyIdx(), k = bi.indexOf(w.selB), j = bi[k + d]; if (k < 0 || j == null) return
+      snap(); const a = vr.blocks[w.selB]; vr.blocks[w.selB] = vr.blocks[j]; vr.blocks[j] = a; w.selB = j; commit()
+    }
+  }
+  const reorder = (list, from, to) => { snap(); const [it] = list.splice(from, 1); list.splice(to > from ? to - 1 : to, 0, it); return to > from ? to - 1 : to }
+  function tool() {
+    res.querySelectorAll('.wf-tool').forEach(x => x.remove())
+    const card = res.querySelector(':scope > .wf-card')
+    const gsel = w.selP != null ? ph.querySelector(`[data-p="${w.selP}"]`) : w.selB != null ? ph.querySelector(`[data-b="${w.selB}"]`) : null
+    if (!gsel) { w.selP = null; w.selB = null; card.style.display = ''; return }
+    card.style.display = 'none'   // 선택 중에는 근거 카드 자리에 편집 패널
+    const tb = document.createElement('div'); tb.className = 'wf-tool'
+    const I = (d, label, a, dis, cls) => `<button type="button" class="ib ${cls || ''}" data-t="${a}"${dis ? ' disabled' : ''} title="${label}"><svg viewBox="0 0 24 24">${d}</svg><span>${label}</span></button>`
+    const IC = {
+      up: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>', down: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+      dup: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+      del: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+      undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+      al: '<line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/>',
+      ac: '<line x1="21" x2="3" y1="6" y2="6"/><line x1="17" x2="7" y1="12" y2="12"/><line x1="19" x2="5" y1="18" y2="18"/>',
+      ar: '<line x1="21" x2="3" y1="6" y2="6"/><line x1="21" x2="9" y1="12" y2="12"/><line x1="21" x2="7" y1="18" y2="18"/>',
+      plus: '<path d="M5 12h14"/><path d="M12 5v14"/>', minus: '<path d="M5 12h14"/>'
+    }
+    const seg = (items, cur) => `<div class="wf-seg">${items.map(([a, l, on, icon]) => `<button type="button" data-t="${a}" class="${on ? 'on' : ''}" title="${l}">${icon ? `<svg viewBox="0 0 24 24">${icon}</svg>` : l}</button>`).join('')}</div>`
+    const row = (label, body) => `<div class="wf-tr"><span>${label}</span>${body}</div>`
+    const pv = (e, label, a, on) => `<button type="button" class="wf-pv ${on ? 'on' : ''}" data-t="${a}"><div class="pv">${wfSvg([], { elOnly: [e] })}</div><span>${label}${on ? ' · 지금' : ''}</span></button>`
+    let h = ''
+    const addGroups = [['글자', ['text', 'amount', 'kv']], ['입력·선택', ['input', 'select', 'check', 'radios', 'opts', 'chips']], ['버튼·목록', ['btn', 'li', 'img', 'card']], ['간격', ['div', 'gap']]]
+    const addPanel = pre => `<div class="wf-add">${addGroups.map(([gname, ks]) => `<div class="wf-tool-l">${gname}</div><div class="wf-pvg">${ks.map(k => pv(WF_NEW[k](), WF_ET[k], pre + k)).join('')}</div>`).join('')}</div>`
+    if (w.selP != null) {
+      const x = node(w.selP), e = x.o
+      h += `<div class="wf-tool-h"><b>${WF_ET[e.t] || e.t}</b><small>${pkEsc(wfName(x.b.k))} 안</small><button type="button" data-t="x" title="선택 해제 (Esc)">✕</button></div>
+        <div class="wf-ibs">${I(IC.up, '위로', 'up', x.i === 0)}${I(IC.down, '아래로', 'down', x.i === x.list.length - 1)}${I(IC.dup, '복제', 'dup')}${I(IC.del, '삭제', 'del', false, 'danger')}${I(IC.undo, '되돌리기', 'undo', !w.hist.length)}</div>`
+      if (w.addOpen) h += `<div class="wf-tool-s"><div class="wf-tool-t">아래에 추가할 요소<button type="button" data-t="addx">닫기</button></div>${addPanel('add:')}</div>`
+      else {
+        const cv = wfConv(e)
+        if (e.t === 'btn') h += `<div class="wf-tool-s"><div class="wf-tool-t">모양 바꾸기</div><div class="wf-pvg">${[['p', '주버튼'], ['s', '회색 버튼'], ['o', '테두리 버튼']].map(([k, l]) => pv({ ...e, st: k }, l, 'st:' + k, (e.st || 'p') === k)).join('')}</div></div>`
+        else if (cv.length) h += `<div class="wf-tool-s"><div class="wf-tool-t">모양 바꾸기</div><div class="wf-pvg">${pv(e, WF_ET[e.t], 'noop', true)}${cv.map(([t, fn], i) => pv(fn(), WF_ET[t], 'cv:' + i)).join('')}</div></div>`
+        let opts = ''
+        if (e.t === 'text') opts += row('크기', seg([['xl', '아주 크게'], ['l', '크게'], ['m', '보통'], ['s', '작게']].map(([k, l]) => ['s:' + k, l, (e.s || 'm') === k])))
+        if (e.t === 'kv') opts += row('크기', seg([['xl', '크게'], ['l', '조금 크게'], ['m', '보통']].map(([k, l]) => ['s:' + k, l, (e.s || 'm') === k])))
+        if (e.t === 'text' || e.t === 'amount') opts += row('정렬', seg([['l', '왼쪽', IC.al], ['c', '가운데', IC.ac], ['r', '오른쪽', IC.ar]].map(([k, l, ic]) => ['a:' + k, l, (e.a || 'l') === k, ic])))
+        if (['check', 'radio', 'toggle'].includes(e.t)) opts += row('상태', seg([['on:1', '켜짐', !!e.on], ['on:0', '꺼짐', !e.on]]))
+        if (WF_MULTI.includes(e.t)) { const nn = Array.isArray(e.v) ? e.v.length : 0; opts += row('선택지', `<div class="wf-step"><button type="button" data-t="n:-"${nn > 1 ? '' : ' disabled'}><svg viewBox="0 0 24 24">${IC.minus}</svg></button><b>${nn}개</b><button type="button" data-t="n:+"${nn < 9 ? '' : ' disabled'}><svg viewBox="0 0 24 24">${IC.plus}</svg></button></div>`) }
+        if (e.t === 'img') opts += row('높이', seg([[100, '낮게'], [160, '보통'], [240, '높게']].map(([k, l]) => ['h:' + k, l, (+e.h || 160) === k])))
+        if (e.t === 'card') opts += row('박스', seg([['cst:', '회색 배경', e.st !== 'o'], ['cst:o', '테두리만', e.st === 'o']]))
+        if (opts) h += `<div class="wf-tool-s">${opts}</div>`
+        h += `<div class="wf-tool-s"><button type="button" class="wf-addb" data-t="addo"><svg viewBox="0 0 24 24">${IC.plus}</svg>아래에 요소 추가</button></div>`
+      }
+      h += `<div class="wf-tool-f"><button type="button" data-t="blk">블록 전체 선택 ›</button></div>`
+    } else {
+      const b = vr.blocks[w.selB], bi = bodyIdx(), k = bi.indexOf(w.selB), inBody = k >= 0
+      h += `<div class="wf-tool-h"><b>${pkEsc(wfName(b.k))}</b><small>블록</small><button type="button" data-t="x" title="선택 해제 (Esc)">✕</button></div>
+        <div class="wf-ibs">${I(IC.up, '위로', 'up', !inBody || k === 0)}${I(IC.down, '아래로', 'down', !inBody || k === bi.length - 1)}${I(IC.dup, '복제', 'dup', !inBody)}${I(IC.del, '삭제', 'del', false, 'danger')}${I(IC.undo, '되돌리기', 'undo', !w.hist.length)}</div>`
+      if (!inBody) h += `<div class="wf-tool-n">상단·하단에 고정된 블록이라 순서는 바꿀 수 없어요</div>`
+      const canEls = inBody || ['cta', 'sheet', 'modal'].includes(b.k)
+      if (w.addOpen === 'el' && canEls) h += `<div class="wf-tool-s"><div class="wf-tool-t">이 블록 안에 추가할 요소<button type="button" data-t="addx">닫기</button></div>${addPanel('badd:')}</div>`
+      else if (w.addOpen === 'blk' && inBody) h += `<div class="wf-tool-s"><div class="wf-tool-t">아래에 추가할 블록<button type="button" data-t="addx">닫기</button></div><div class="wf-pvg c3">${WF_NEWB.map(k2 => `<button type="button" class="wf-pv" data-t="nb:${k2}"><div class="pv">${wfSvg([Object.assign({ k: k2 }, wfDefEls(k2, s))], { q: s.q, blockOnly: true })}</div><span>${pkEsc(wfName(k2))}</span></button>`).join('')}</div></div>`
+      else h += `<div class="wf-tool-s wf-addbs">${canEls ? `<button type="button" class="wf-addb" data-t="addoel"><svg viewBox="0 0 24 24">${IC.plus}</svg>안에 요소 추가</button>` : ''}${inBody ? `<button type="button" class="wf-addb" data-t="addoblk"><svg viewBox="0 0 24 24">${IC.plus}</svg>아래에 블록 추가</button>` : ''}</div>`
+    }
+    tb.innerHTML = h + '<div class="wf-tool-k">Delete 삭제 · Ctrl+Z 되돌리기 · Esc 선택 해제</div>'
+    card.after(tb)
+    tb.onmousedown = ev => ev.stopPropagation()
+    tb.onclick = ev => {
+      const bt = ev.target.closest('[data-t]'); if (!bt || bt.disabled) return
+      const a = bt.dataset.t
+      if (a === 'noop') return
+      if (a === 'addo') { w.addOpen = true; return tool() }
+      if (a === 'addoel') { w.addOpen = 'el'; return tool() }
+      if (a === 'addoblk') { w.addOpen = 'blk'; return tool() }
+      if (a === 'addx') { w.addOpen = false; return tool() }
+      w.addOpen = false
+      if (act[a]) return act[a]()
+      const [k, val] = a.split(':')
+      if (w.selP != null) {
+        const x = node(w.selP), e = x.o
+        snap()
+        if (k === 'cv') { x.list[x.i] = wfConv(e)[+val][1]() }
+        else if (k === 'st') e.st = val
+        else if (k === 's') e.s = val
+        else if (k === 'a') e.a = val
+        else if (k === 'on') { if (+val) e.on = 1; else delete e.on }
+        else if (k === 'h') e.h = +val
+        else if (k === 'cst') { if (val) e.st = val; else delete e.st }
+        else if (k === 'n') { e.v = Array.isArray(e.v) ? e.v.slice() : []; if (val === '+') e.v.push('선택 ' + (e.v.length + 1)); else e.v.pop() }
+        else if (k === 'add') { x.list.splice(x.i + 1, 0, WF_NEW[val]()); w.selP = w.selP.replace(/\d+$/, x.i + 1) }
+        markUser(x.b); commit()
+      } else {
+        const b = vr.blocks[w.selB]
+        snap()
+        if (k === 'badd') { b.els = b.els || []; b.els.push(WF_NEW[val]()); w.selP = w.selB + '/' + (b.els.length - 1); w.selB = null }
+        else if (k === 'nb') { const nb = Object.assign({ k: val, label: '', refs: [], freq: 0, base: true, user: 1 }, wfDefEls(val, s)); vr.blocks.splice(w.selB + 1, 0, nb); w.selB = w.selB + 1 }
+        commit()
+      }
+    }
+  }
+  draw(null, keepBody)
+  // 클릭: 선택 / 글자면 바로 수정
+  let dragged = false
+  ph.onclick = ev => {
+    if (dragged) { dragged = false; return }
+    if (ph.querySelector('.wf-edit')) return
+    const t = ev.target.closest('[data-e]'), ge = ev.target.closest('[data-p]'), gb = ev.target.closest('[data-b]')
+    if (ge) { w.selP = ge.dataset.p; w.selB = null } else if (gb) { w.selB = +gb.dataset.b; w.selP = null } else { w.selP = null; w.selB = null }
+    w.addOpen = false
+    draw()
+    if (t) { const t2 = ph.querySelector(`[data-e="${t.dataset.e}"]`); if (t2) editText(t2) }
+  }
+  function editText(t) {
+    const [path, field] = t.dataset.e.split('|'), idx = path.split('/').map(Number)
+    let o = vr.blocks[idx[0]]; for (let k = 1; k < idx.length && o; k++) o = (o.els || [])[idx[k]]
+    if (!o) return
+    const arr = field.startsWith('v.') ? +field.slice(2) : null
+    const cur = arr != null ? (o.v || [])[arr] : o[field]
+    const scr = ph.querySelector('.wf-scr'), R = scr.getBoundingClientRect(), tr = t.getBoundingClientRect()
+    const an = t.getAttribute('text-anchor'), sc = R.width / WF_W
+    const fs = Math.max(11, (+t.getAttribute('font-size') || 14) * sc)
+    const wdt = Math.min(R.width - 8, Math.max(tr.width + 70, 130))
+    let left = an === 'middle' ? tr.left + tr.width / 2 - wdt / 2 : an === 'end' ? tr.right - wdt : tr.left - 6
+    left = Math.min(Math.max(4, left - R.left), R.width - wdt - 4)
+    const inp = document.createElement('input'); inp.className = 'wf-edit'; inp.value = cur == null ? '' : cur; inp.maxLength = 40
+    inp.style.cssText = `left:${left}px;top:${tr.top - R.top + tr.height / 2 - fs * 0.85}px;width:${wdt}px;height:${fs * 1.7}px;font-size:${fs}px;text-align:${an === 'middle' ? 'center' : an === 'end' ? 'right' : 'left'}`
+    scr.appendChild(inp); inp.focus(); inp.select()
+    let done = false
+    const finish = save => {
+      if (done) return; done = true
+      const val = inp.value.trim()
+      inp.remove()
+      if (save && val !== String(cur == null ? '' : cur)) {
+        snap()
+        if (arr != null) { o.v = (o.v || []).slice(); o.v[arr] = val } else o[field] = val
+        commit()
+      }
+    }
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') finish(true); else if (e.key === 'Escape') finish(false) }
+    inp.onblur = () => finish(true)
+  }
+  // 끌어서 순서 바꾸기 (같은 묶음 안의 요소끼리 / 본문 블록끼리)
+  ph.onmousedown = ev => {
+    if (ev.button !== 0 || ph.querySelector('.wf-edit')) return
+    const ge = ev.target.closest('[data-p]'), gb = ev.target.closest('[data-b]')
+    let sibs, from, list, kind
+    if (ge) {
+      const path = ge.dataset.p, parent = path.replace(/\/\d+$/, ''), x = node(path); if (!x) return
+      const re = new RegExp('^' + parent.replace(/\//g, '\\/') + '\\/\\d+$')
+      sibs = [...ph.querySelectorAll('[data-p]')].filter(g => re.test(g.dataset.p)).sort((a, b) => +a.dataset.p.split('/').pop() - +b.dataset.p.split('/').pop())
+      from = x.i; list = x.list; kind = 'el'
+      if (sibs.length < 2) return
+    } else if (gb) {
+      const bi = bodyIdx(); from = bi.indexOf(+gb.dataset.b); if (from < 0 || bi.length < 2) return
+      sibs = bi.map(i => ph.querySelector(`.wf-l.body [data-b="${i}"]`)).filter(Boolean); kind = 'blk'
+    } else return
+    const sy = ev.clientY, scr = ph.querySelector('.wf-scr'), bd = ph.querySelector('.wf-l.body')
+    let on = false, to = from, line = null, ghost = ge || gb
+    const rects = () => sibs.map(g => (g.querySelector(':scope > .hit, :scope > .hitb') || g).getBoundingClientRect())
+    const mm = e => {
+      if (!on && Math.abs(e.clientY - sy) < 6) return
+      if (!on) { on = true; line = document.createElement('div'); line.className = 'wf-drop'; scr.appendChild(line); ghost.style.opacity = '.45'; document.body.style.cursor = 'grabbing' }
+      const BR = bd.getBoundingClientRect()
+      if (e.clientY > BR.bottom - 30) bd.scrollTop += 10; else if (e.clientY < BR.top + 30) bd.scrollTop -= 10
+      const rs = rects(), SR = scr.getBoundingClientRect()
+      to = rs.filter(r => r.top + r.height / 2 < e.clientY).length
+      const yLine = to < rs.length ? rs[to].top - 3 : rs[rs.length - 1].bottom + 1
+      const xr = rs[Math.min(to, rs.length - 1)]
+      line.style.top = (yLine - SR.top) + 'px'; line.style.left = (xr.left - SR.left) + 'px'; line.style.width = xr.width + 'px'
+    }
+    const mu = () => {
+      document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); document.body.style.cursor = ''
+      if (!on) return
+      dragged = true; setTimeout(() => { dragged = false }, 50)
+      if (line) line.remove(); ghost.style.opacity = ''
+      if (to === from || to === from + 1) { draw(); return }
+      if (kind === 'el') { const j = reorder(list, from, to); w.selP = ge.dataset.p.replace(/\d+$/, j); w.selB = null }
+      else {
+        const bi = bodyIdx(), moving = vr.blocks[bi[from]]
+        snap()
+        const order = bi.map(i => vr.blocks[i]); order.splice(from, 1); order.splice(to > from ? to - 1 : to, 0, moving)
+        bi.forEach((slot, k) => { vr.blocks[slot] = order[k] })   // 본문 칸 자리에 새 순서대로
+        w.selB = vr.blocks.indexOf(moving); w.selP = null
+      }
+      commit()
+    }
+    document.addEventListener('mousemove', mm); document.addEventListener('mouseup', mu)
+  }
+  // 바깥 누르면 선택 해제 · 단축키
+  res.onmousedown = ev => { if (!ev.target.closest('#wf-ph, .wf-tool') && (w.selP != null || w.selB != null)) { w.selP = null; w.selB = null; draw() } }
+  if (window._wfKey) document.removeEventListener('keydown', window._wfKey)
+  window._wfKey = ev => {
+    if (!document.body.contains(ph) || ev.target.closest('input, textarea')) return
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo() }
+    else if ((ev.key === 'Delete' || ev.key === 'Backspace') && (w.selP != null || w.selB != null)) { ev.preventDefault(); act.del() }
+    else if (ev.key === 'Escape' && (w.selP != null || w.selB != null)) act.x()
+  }
+  document.addEventListener('keydown', window._wfKey)
+  const mini = v.querySelector('#wf-mini')
+  v.querySelectorAll('.wf-li').forEach(li => {
+    li.onmouseenter = () => {
+      const i = +li.dataset.b, b = seq[i]; li.classList.add('on'); draw(i)
+      mini.classList.add('hl'); mini.querySelectorAll('img').forEach(im => im.classList.toggle('on', b.refs.includes(+im.dataset.i)))
+    }
+    li.onmouseleave = () => { li.classList.remove('on'); draw(); mini.classList.remove('hl') }
+    li.onclick = () => { w.selB = vr.blocks.indexOf(seq[+li.dataset.b]); w.selP = null; draw(+li.dataset.b) }
+  })
+  mini.querySelectorAll('img').forEach(im => im.onclick = () => { const k = +im.dataset.i; const items = w.refs.map(r => pkItem(r.src, { app: r.app })); try { openPop(items[k], items, k) } catch {} })
+  v.querySelector('#wf-lab').onchange = ev => { w.labels = ev.target.checked; draw() }
+  v.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { w.sel = +b.dataset.v; w.hist = []; wfKeep(); wfShow() })
+  v.querySelector('[data-w="back"]').onclick = () => { pkEdit(); setTimeout(() => { const el = pkView().querySelector('#' + s.id); if (el) el.scrollIntoView({ block: 'start' }) }, 30) }
+  v.querySelector('[data-w="again"]').onclick = () => wfAsk(s, w)
+  v.querySelector('[data-w="png"]').onclick = () => wfExport('save')
+  v.querySelector('[data-w="img"]').onclick = () => wfExport('copy')
+  v.querySelector('[data-w="figma"]').onclick = () => wfExport('figma')
+}
+async function wfExport(kind) {
+  const w = _wf; if (!w) return
+  const vr = w.variants[w.sel] || w.variants[0]
+  const svg = wfSvg(vr.blocks, { q: w.s.q, labels: w.labels, id: 'x' })
+  if (kind === 'figma') {
+    let ok = false
+    try { await navigator.clipboard.writeText(svg); ok = true } catch {}
+    if (!ok) { const t = document.createElement('textarea'); t.value = svg; document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy') } catch {} t.remove() }
+    showToast(ok ? 'Figma에서 Ctrl+V 하면 편집할 수 있는 레이어로 들어가요' : '복사하지 못했어요')
+    return
+  }
+  if (!window.api || !window.api.copyPng) { showToast('부찌를 다시 시작한 뒤 쓸 수 있어요'); return }
+  const sc = 3
+  const im = await new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) })
+  if (!im) { showToast('이미지를 만들지 못했어요'); return }
+  const hh = +(svg.match(/height="(\d+(?:\.\d+)?)"/) || [0, WF_H])[1]
+  const cv = document.createElement('canvas'); cv.width = WF_W * sc; cv.height = Math.round(hh * sc)
+  cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height)
+  const url = cv.toDataURL('image/png')
+  const safe = `${_pkCur ? _pkCur.name : ''} ${w.s.label} 와이어프레임 ${'ABC'[w.sel]}안`.replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 60)
+  if (kind === 'copy') { const ok = await window.api.copyPng(url); showToast(ok ? '이미지를 복사했어요 · Ctrl+V로 붙여넣으세요' : '복사하지 못했어요') }
+  else { const ok = await window.api.savePng({ dataUrl: url, defaultName: safe + '.png' }); if (ok) showToast('와이어프레임을 저장했어요') }
 }
 </script>
 </body>

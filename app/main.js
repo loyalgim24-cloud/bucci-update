@@ -2561,11 +2561,16 @@ ipcMain.handle('get-slug-names', () => {
   try { upa = upaAppMeta() } catch {}
   return { ...slug2name, __upa: upa }
 })
-ipcMain.handle('claude-api', async (_, { apiKey, base64Image, prompt, mediaType, model, maxTokens }) => {
+ipcMain.handle('claude-api', async (_, { apiKey, base64Image, images, prompt, mediaType, model, maxTokens }) => {
   try {
     const https = require('https')
     let content
-    if (base64Image) {
+    const sniff = (b64, fb) => { const buf = Buffer.from(String(b64).slice(0, 16), 'base64'); return buf[0]===0x89 && buf[1]===0x50 ? 'image/png' : buf[0]===0xFF && buf[1]===0xD8 ? 'image/jpeg' : buf[0]===0x47 && buf[1]===0x49 ? 'image/gif' : buf[0]===0x52 && buf[1]===0x49 ? 'image/webp' : (fb || 'image/png') }
+    if (Array.isArray(images) && images.length) {
+      // 여러 장 (와이어프레임 초안: 레퍼런스를 한 장씩)
+      content = images.slice(0, 12).filter(x => x && x.data).map(x => ({ type: 'image', source: { type: 'base64', media_type: sniff(x.data, x.mediaType), data: x.data } }))
+      content.push({ type: 'text', text: prompt })
+    } else if (base64Image) {
       // base64 magic bytes로 실제 이미지 타입 감지
       const buf = Buffer.from(base64Image.slice(0, 16), 'base64')
       let detectedType = mediaType || 'image/png'
