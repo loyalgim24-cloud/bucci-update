@@ -1142,6 +1142,55 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 .pk-busy{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:80px 0;color:var(--g05);font-size:13px}
 .pk-busy i{width:28px;height:28px;border-radius:50%;border:3px solid var(--g09);border-top-color:var(--p600);animation:pkSpin .8s linear infinite}
 @keyframes pkSpin{to{transform:rotate(360deg)}}
+/* ── 태그 고도화 ── */
+.ait-ov{position:fixed;inset:0;background:rgba(10,16,35,.42);display:flex;align-items:center;justify-content:center;z-index:890}
+.ait{width:min(980px,calc(100vw - 60px));max-height:calc(100vh - 60px);background:var(--surface);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+.ait-h{display:flex;align-items:flex-start;gap:12px;padding:18px 22px 14px;border-bottom:1px solid var(--g09)}
+.ait-h > div{flex:1;min-width:0}
+.ait-h b{display:block;font-size:17px;font-weight:800;color:var(--g01)}
+.ait-h small{display:block;font-size:12px;color:var(--g05);margin-top:3px}
+.ait-x{border:none;background:none;font-size:16px;color:var(--g05);cursor:pointer;width:32px;height:32px;border-radius:8px;font-family:inherit}
+.ait-x:hover{background:var(--g10);color:var(--g01)}
+.ait-b{padding:18px 22px;overflow-y:auto}
+.ait-busy{display:flex;align-items:center;gap:10px;color:var(--g05);font-size:13px;padding:20px 0}
+.ait-busy i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--g09);border-top-color:#7B4FFF;animation:wfspin .8s linear infinite}
+.ait-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ait-stats > div{border:1px solid var(--g09);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden}
+.ait-stats b{display:block;font-size:12px;color:var(--g05)}
+.ait-stats span{display:block;font-size:15px;font-weight:800;color:var(--g01);margin-top:3px}
+.ait-stats i{position:absolute;left:0;bottom:0;height:3px;width:var(--p);background:#7B4FFF}
+.ait-row{margin-top:16px}
+.ait-row b{font-size:14px;color:var(--g01)}
+.ait-row small{display:block;font-size:12px;color:var(--g05);margin-top:3px}
+.ait-note{font-size:12.5px;color:var(--g05);margin-top:12px}
+.ait-note.warn{color:#D93025}
+.ait-steps{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.ait-step{display:flex;align-items:center;gap:12px;border:1px solid var(--g09);border-radius:12px;padding:12px 14px}
+.ait-step > span{width:24px;height:24px;border-radius:50%;background:#7B4FFF;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ait-step > div{flex:1;min-width:0}
+.ait-step b{font-size:13.5px;color:var(--g01)}
+.ait-step small{display:block;font-size:11.5px;color:var(--g05);margin-top:2px;line-height:1.5}
+.ait-prog{margin-top:16px;border:1px solid var(--g09);border-radius:12px;padding:12px 14px}
+.ait-prog[hidden]{display:none}
+.ait-pt{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--g01)}
+.ait-pt span{flex:1;color:var(--g05);font-size:12px}
+.ait-bar{height:6px;border-radius:3px;background:var(--g10);margin-top:10px;overflow:hidden}
+.ait-bar i{display:block;height:100%;width:0;background:#7B4FFF;transition:width .3s}
+.ait-batches{margin-top:8px;font-size:11.5px;color:var(--g05);line-height:1.7}
+.ait-row2{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:11.5px;color:var(--g05)}
+.ait-foot{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:11.5px;color:var(--g05)}
+.ait-foot span{flex:1}
+.ait-st{font-size:14px;font-weight:800;color:var(--g01);margin:20px 0 10px}
+.ait-st small{font-weight:400;color:var(--g05);font-size:12px}
+.ait-raw{margin:0 0 10px;font-size:12px;color:var(--g05)}.ait-raw summary{cursor:pointer}.ait-raw pre{white-space:pre-wrap;background:var(--g10);border-radius:8px;padding:10px;max-height:240px;overflow:auto;font-size:11px;color:var(--g01)}
+.ait-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.ait-c{display:flex;gap:10px;border:1px solid var(--g09);border-radius:12px;padding:10px}
+.ait-c img{width:78px;height:168px;object-fit:cover;object-position:top;border-radius:8px;background:var(--g10);flex-shrink:0}
+.ait-c > div{min-width:0}
+.ait-c b{display:block;font-size:12px;color:var(--g01);margin-bottom:4px}
+.ait-c p{margin:3px 0;display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.ait-c em{font-style:normal;font-size:10px;font-weight:700;color:var(--g05);width:46px;flex-shrink:0}
+.ait-c p span{font-size:10.5px;padding:2px 6px;border-radius:999px;background:rgba(123,79,255,.08);color:#7B4FFF;font-weight:600}
 /* ── 와이어프레임 초안 ── */
 .pk-wfc{width:112px;height:200px;flex-shrink:0;border:1.5px dashed rgba(123,79,255,.5);border-radius:10px;background:rgba(123,79,255,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;cursor:pointer;padding:8px 6px;box-sizing:border-box;color:#7B4FFF}
 .pk-wfc:hover{border-style:solid;background:rgba(123,79,255,.09)}
@@ -1310,7 +1359,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
 
   <div class="tabs">
     <button class="tab"    id="t-gallery" onclick="toGallery()">모아보기</button>
-    <button class="tab"    id="t-ix" onclick="toInteraction()">인터랙션<em class="tab-new">NEW</em></button>
+    <button class="tab"    id="t-ix" onclick="toInteraction()">인터랙션</button>
     <button class="tab"    id="t-pack" onclick="toPack()">레퍼런스 팩<em class="tab-new">NEW</em></button>
   </div>
   <span id="st"></span>
@@ -1356,6 +1405,7 @@ html.dark .ix-stage[data-tone=dark],html.dark .ix-big[data-tone=dark]{background
       <div class="sb-item" onclick="openChangelog()"><span class="sb-item-label">업데이트 내역</span></div>
       <div class="sb-item" id="ver-check-btn" onclick="checkUpdateNow()"><span class="sb-item-label">업데이트 확인</span></div>
       <div class="sb-item" id="fb-open-btn" onclick="openFeedback()"><span class="sb-item-label">의견 보내기</span></div>
+      <div class="sb-item" id="ait-open-btn" style="display:none" onclick="openAiTagPanel()"><span class="sb-item-label">태그 고도화 (관리자)</span></div>
     </div>
     <div class="ai-side"><button id="paste-search-btn" class="ai-side-btn" onclick="openPasteSearch()"><svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4" fill="none"/><path d="M22 5h-4" fill="none"/><path d="M4 17v2" fill="none"/><path d="M5 18H3" fill="none"/></svg>AI 디자인 분석</button></div>
     <div id="sb-scroll"></div>
@@ -1610,42 +1660,92 @@ const SIDEBAR = [
     ['교육/육아','cat/education'],
     ['반려동물','cat/pet'],
   ]},
+  // 화면 패턴: 사용 흐름 순서. path 가 있는 건 WWIT 패턴 페이지, 세 번째 값은 검색어(태그 고도화 태그로 찾음)
   { sec:'화면 패턴', isCat:false, items:[
     ['스플래시/온보딩','pattern/splash'],
     ['로그인/회원가입','pattern/signin'],
+    ['본인인증','','본인인증'],
+    ['이용약관','pattern/t&c'],
+    ['권한 요청','','권한요청'],
     ['홈화면','pattern/home'],
+    ['카테고리','','카테고리'],
     ['검색/필터','pattern/search'],
-    ['알림','pattern/notification'],
+    ['상세','','상세'],
+    ['장바구니','pattern/cart'],
     ['주문/결제','pattern/order'],
+    ['성공/완료','pattern/success'],
     ['마이페이지','pattern/mypage'],
     ['설정','pattern/setting'],
+    ['알림','pattern/notification'],
     ['리뷰','pattern/review'],
+    ['이벤트/프로모션','','이벤트'],
+    ['고객센터','','고객센터'],
+    ['빈 상태','component/empty'],
+    ['에러','','에러'],
     ['로딩','pattern/loading'],
-    ['성공/완료','pattern/success'],
-    ['장바구니','pattern/cart'],
-    ['리스트','pattern/list'],
-    ['비밀번호','pattern/password'],
-    ['이용약관','pattern/t&c'],
+  ]},
+  // 기능 화면: 서비스마다 있는 핵심 기능 화면
+  { sec:'기능 화면', isNew:true, isCat:false, items:[
+    ['송금/이체','','송금'],
+    ['자산 관리','','자산'],
+    ['지도/위치','','지도'],
+    ['예약','','예약'],
+    ['채팅/메시지','','채팅'],
+    ['피드','','피드'],
+    ['글쓰기','','글쓰기'],
+    ['미디어 플레이어','','플레이어'],
+    ['통계/리포트','','통계'],
+    ['랭킹','','랭킹'],
   ]},
   { sec:'컴포넌트', isCat:false, items:[
     ['탭/네비게이션','component/tab'],
     ['바텀시트','component/bottomsheet'],
     ['팝업/모달','component/popup'],
-    ['입력/폼','component/input'],
-    ['차트/통계','component/chart'],
-    ['달력/날짜','component/calendar'],
-    ['토글/스위치','component/toggle'],
-    ['체크박스','component/checkbox'],
-    ['라디오 버튼','component/radio'],
-    ['태그/칩','component/chip'],
     ['토스트/스낵바','component/toast'],
-    ['캐러셀/배너','component/carousel'],
-    ['아코디언','component/accordion'],
-    ['빈 상태','component/empty'],
+    ['입력/폼','component/input'],
     ['드롭다운','component/dropdown'],
     ['검색바','component/searchbar'],
+    ['키패드','','#키패드'],
+    ['체크박스','component/checkbox'],
+    ['라디오 버튼','component/radio'],
+    ['토글/스위치','component/toggle'],
+    ['태그/칩','component/chip'],
+    ['세그먼트 탭','','#세그먼트'],
+    ['슬라이더','','#슬라이더'],
+    ['스텝퍼/진행 단계','','#스텝퍼'],
+    ['캐러셀/배너','component/carousel'],
+    ['아코디언','component/accordion'],
+    ['차트/그래프','','#그래프'],
+    ['달력/날짜','component/calendar'],
+    ['별점','','#별점'],
+    ['플로팅 버튼','','#플로팅버튼'],
   ]},
-  // 색상: 화면 픽셀을 분석해 붙여둔 태그로 찾음 ("#태그" 검색과 같은 방식). 다크·라이트 같은 분위기도 여기에 함께 둠
+  { sec:'레이아웃', isNew:true, isCat:false, items:[
+    ['리스트형','','#리스트형'],
+    ['카드형','','#카드형'],
+    ['그리드형','','#그리드형'],
+    ['피드형','','#피드형'],
+    ['대시보드형','','#대시보드형'],
+    ['숫자 강조','','#숫자강조'],
+    ['이미지 중심','','#이미지중심'],
+    ['텍스트 중심','','#텍스트중심'],
+  ]},
+  { sec:'스타일·분위기', isNew:true, isCat:false, items:[
+    ['미니멀','','#미니멀'],
+    ['컬러풀','','#컬러풀'],
+    ['일러스트','','#일러스트'],
+    ['캐릭터','','#캐릭터'],
+    ['3D 그래픽','','#3D그래픽'],
+    ['사진 중심','','#실사사진'],
+    ['그라데이션','','#그라데이션'],
+    ['귀여운','','#귀여운'],
+    ['고급스러운','','#고급스러운'],
+    ['신뢰감 있는','','#신뢰감있는'],
+    ['감성적인','','#감성적인'],
+    ['활기찬','','#활기찬'],
+    ['따뜻한','','#따뜻한'],
+  ]},
+  // 색상: 화면 픽셀을 분석해 붙여둔 태그로 찾음 ("#태그" 검색과 같은 방식)
   { sec:'색상', isCat:false, items:[
     ['블루','','#블루톤','#2F6BFF'],
     ['그린','','#그린톤','#1DB954'],
@@ -1654,10 +1754,25 @@ const SIDEBAR = [
     ['퍼플','','#퍼플톤','#8B5CF6'],
     ['오렌지','','#오렌지톤','#F97316'],
     ['모노','','#모노톤','linear-gradient(135deg,#111 0 50%,#d4d4d8 50% 100%)'],
-    ['컬러풀','','#컬러풀','conic-gradient(#EF4444,#F5B700,#1DB954,#2F6BFF,#8B5CF6,#EF4444)'],
     ['다크','','#다크모드','#1F2937'],
     ['라이트','','#라이트모드','#FFFFFF'],
-    ['미니멀','','#미니멀','linear-gradient(135deg,#fff 0 50%,#e5e7eb 50% 100%)'],
+  ]},
+  { sec:'사용자층', isNew:true, isCat:false, items:[
+    ['키즈','','#키즈'],
+    ['10대','','#10대'],
+    ['20대','','#20대'],
+    ['30대','','#30대'],
+    ['여성 타깃','','#여성타깃'],
+    ['시니어·큰 글씨','','#큰글씨'],
+  ]},
+  { sec:'컨셉', isNew:true, isCat:false, items:[
+    ['게이미피케이션','','#게이미피케이션'],
+    ['리워드/혜택','','#리워드'],
+    ['개인화 추천','','#개인화추천'],
+    ['AI 대화형','','#AI대화형'],
+    ['구독','','#구독'],
+    ['커뮤니티','','#커뮤니티'],
+    ['위치 기반','','#위치기반'],
   ]},
 ]
 
@@ -1710,7 +1825,7 @@ const thumbCache = {}
 
 // ── 초기화 ────────────────────────────────────────────────────────
 // 자동완성 후보
-const AC_LIST = ["29cm", "AI", "CTA", "ChatGPT", "GNB", "KB스타뱅킹", "LG ThinQ", "V LIVE", "가격", "가계부", "가사", "건강", "검색", "검색바", "게시판", "결제", "경로", "광고", "교육", "교통", "구독", "구매", "그래프", "글", "금융", "기상", "날짜선택", "내역", "내정보", "네비게이션", "네이버", "네이버페이", "넷플릭스", "노션", "노티", "다이얼로그", "달력/날짜", "당근", "대출", "대화", "댓글", "도움말", "독서", "드롭다운", "디스코드", "라디오", "라디오 버튼", "로그인", "로그인/회원가입", "로딩", "뤼튼", "리뷰", "리스트", "마이페이지", "마켓컬리", "맵", "메뉴", "메시지", "멤버십", "명상", "모달", "목록", "무신사", "바텀시트", "배달", "배달의민족", "뱅크샐러드", "보험", "부동산", "북마크", "비밀번호", "빈 상태", "빈화면", "삼쩜삼", "상담", "상품", "설정", "성공", "성공/완료", "세금", "소셜로그인", "송금", "쇼핑", "스낵바", "스켈레톤", "스타벅스", "스플래시", "스플래시/온보딩", "신한플레이", "아코디언", "아파트", "알라미", "알림", "야놀자", "에러", "에어비앤비", "엔터테인먼트", "오늘의집", "온보딩", "올리브영", "완료", "운동", "웹툰", "위시리스트", "유튜브", "음식", "음악", "인공지능", "인스타그램", "인증", "인테리어", "일정", "입력", "입력/폼", "자동차", "자산관리", "장바구니", "정렬", "정보", "주문", "주문/결제", "주식", "즐겨찾기", "지그재그", "지도", "직방", "찜", "차트", "차트/통계", "채팅", "청소", "체크박스", "충전", "치지직", "카카오T", "카카오톡", "카카오페이", "캘린더", "커뮤니티", "코인", "콘텐츠", "쿠팡", "쿠폰", "크림", "캐러셀/배너", "탭", "탭/네비게이션", "탭바", "텍스트필드", "텔레그램", "토글/스위치", "토스", "토스트/스낵바", "통계", "투자", "툴팁", "튜토리얼", "틱톡", "팝업", "팝업/모달", "패션", "평점", "포인트", "폼", "프로필", "플랜핏", "필라이즈", "필터", "학습", "할인", "헤이딜러", "헬스", "혜택", "홈", "홈화면", "환급", "회원가입", "후기"]
+const AC_LIST = ["29cm", "AI", "CTA", "ChatGPT", "GNB", "KB스타뱅킹", "LG ThinQ", "V LIVE", "가격", "가계부", "가사", "건강", "검색", "검색바", "게시판", "결제", "경로", "광고", "교육", "교통", "구독", "구매", "그래프", "글", "금융", "기상", "날짜선택", "내역", "내정보", "네비게이션", "네이버", "네이버페이", "넷플릭스", "노션", "노티", "다이얼로그", "달력/날짜", "당근", "대출", "대화", "댓글", "도움말", "독서", "드롭다운", "디스코드", "라디오", "라디오 버튼", "로그인", "로그인/회원가입", "로딩", "뤼튼", "리뷰", "리스트", "마이페이지", "마켓컬리", "맵", "메뉴", "메시지", "멤버십", "명상", "모달", "목록", "무신사", "바텀시트", "배달", "배달의민족", "뱅크샐러드", "보험", "부동산", "북마크", "비밀번호", "빈 상태", "빈화면", "삼쩜삼", "상담", "상품", "설정", "성공", "성공/완료", "세금", "소셜로그인", "송금", "쇼핑", "스낵바", "스켈레톤", "스타벅스", "스플래시", "스플래시/온보딩", "신한플레이", "아코디언", "아파트", "알라미", "알림", "야놀자", "에러", "에어비앤비", "엔터테인먼트", "오늘의집", "온보딩", "올리브영", "완료", "운동", "웹툰", "위시리스트", "유튜브", "음식", "음악", "인공지능", "인스타그램", "인증", "인테리어", "일정", "입력", "입력/폼", "자동차", "자산관리", "장바구니", "정렬", "정보", "주문", "주문/결제", "주식", "즐겨찾기", "지그재그", "지도", "직방", "찜", "차트", "차트/통계", "채팅", "청소", "체크박스", "충전", "치지직", "카카오T", "카카오톡", "카카오페이", "캘린더", "커뮤니티", "코인", "콘텐츠", "쿠팡", "쿠폰", "크림", "캐러셀/배너", "탭", "탭/네비게이션", "탭바", "텍스트필드", "텔레그램", "토글/스위치", "토스", "토스트/스낵바", "통계", "투자", "툴팁", "튜토리얼", "틱톡", "팝업", "팝업/모달", "패션", "평점", "포인트", "폼", "프로필", "플랜핏", "필라이즈", "필터", "학습", "할인", "헤이딜러", "헬스", "혜택", "홈", "홈화면", "환급", "회원가입", "후기", "상세", "카테고리", "권한 요청", "이벤트/프로모션", "고객센터", "송금/이체", "자산 관리", "지도/위치", "예약", "채팅/메시지", "피드", "글쓰기", "미디어 플레이어", "통계/리포트", "랭킹", "키패드", "세그먼트 탭", "슬라이더", "스텝퍼/진행 단계", "차트/그래프", "별점", "플로팅 버튼", "리스트형", "카드형", "그리드형", "피드형", "대시보드형", "숫자 강조", "이미지 중심", "텍스트 중심", "미니멀", "컬러풀", "일러스트", "캐릭터", "3D 그래픽", "사진 중심", "그라데이션", "귀여운", "고급스러운", "신뢰감 있는", "감성적인", "활기찬", "따뜻한", "키즈", "10대", "20대", "30대", "여성 타깃", "시니어·큰 글씨", "게이미피케이션", "리워드/혜택", "개인화 추천", "AI 대화형", "위치 기반"]
 
 // 조합검색 태그
 const COMBO_TAG_LIST = ["홈", "탭바", "GNB", "바텀시트", "팝업", "모달", "다이얼로그", "검색바", "필터", "캘린더", "날짜선택", "텍스트필드", "입력", "폼", "체크박스", "라디오", "드롭다운", "스낵바", "토스트", "툴팁", "스켈레톤", "프로그레스", "로딩", "빈화면", "에러", "리스트", "카드", "피드", "댓글", "리뷰", "평점", "장바구니", "결제", "송금", "차트", "그래프", "통계", "지도", "맵", "채팅", "메시지", "알림", "노티", "프로필", "아바타", "즐겨찾기", "북마크", "찜", "위시리스트", "CTA", "소셜로그인", "인증", "로그인", "회원가입", "온보딩", "스플래시"]
@@ -2247,7 +2362,7 @@ function buildSidebar() {
 
 function buildSidebarSections(sections) {
   const el = document.getElementById('sb-scroll')
-  sections.forEach(({ sec, isCat, items }) => {
+  sections.forEach(({ sec, isCat, items, isNew }) => {
     const secEl = document.createElement('div'); secEl.className = 'sb-sec'
     const maxH = items.length * 38 + 'px'
     const arrow = document.createElement('span'); arrow.className = 'sb-sec-arrow'; arrow.textContent = '-'
@@ -2272,7 +2387,7 @@ function buildSidebarSections(sections) {
       if (dot) { const sw = document.createElement('span'); sw.className = 'sb-dot'; sw.style.background = dot; d.appendChild(sw) }
       const lbl = document.createElement('span'); lbl.className = 'sb-item-label'; lbl.textContent = label
       d.appendChild(lbl)
-      if (kw) SB_TAG_MENU[kw] = { label, sec }
+      if (kw) { SB_TAG_MENU[kw] = { label, sec }; SB_LABEL_KW[label] = kw }
 
       if (isCat) d.onclick = () => { setSbActive(d); showCatView(label, path) }
       else d.onclick = () => { setSbActive(d); doLoad(kw || label) }
@@ -3087,6 +3202,7 @@ async function buildSidebarPcCategories() {
 
 async function doLoad(kw) {
   _portalCurrentApp = null
+  if (typeof SB_LABEL_KW !== 'undefined' && SB_LABEL_KW[kw] && SB_LABEL_KW[kw] !== kw) kw = SB_LABEL_KW[kw]
   pushNav({ type:'result', kw })
   // 왼쪽 색상 메뉴에서 온 검색은 태그(#블루톤) 대신 메뉴 이름(블루)으로 보여줌
   const shown = SB_TAG_MENU[kw] ? SB_TAG_MENU[kw].label : kw
@@ -3099,12 +3215,12 @@ async function doLoad(kw) {
     const res = mode === 'pc' ? { data: {} } : await window.api.search(kw)
     const menu = SB_TAG_MENU[kw]
     if (menu && mode !== 'pc') {
-      const picked = sbTagMenuPick(res.data || {})
-      renderResults(picked.data, menu.label)
-      const what = `'${menu.label}' 화면`
-      showSearchMeta({ text: picked.shown < picked.total
-        ? `${what} ${picked.total.toLocaleString()}장 중 앱마다 몇 장씩 골라 ${picked.shown.toLocaleString()}장을 보여드려요.`
-        : `${what}이에요.` })
+      // 왼쪽 메뉴에서 고른 화면은 개수 제한 없이 전부 보여줌 (나눠서 그림)
+      const all = res.data || {}
+      const apps = Object.keys(all).filter(k => Array.isArray(all[k]) && all[k].length)
+      const total = apps.reduce((a, k) => a + all[k].length, 0)
+      renderResults(all, menu.label, { chunked: true })
+      showSearchMeta({ text: `'${menu.label}' 화면 ${total.toLocaleString()}장${apps.length > 1 ? ` · ${apps.length}개 앱` : ''}이에요.` })
       return
     }
     let merged = mergePortalData(res.data||{}, kw)
@@ -3115,6 +3231,8 @@ async function doLoad(kw) {
 }
 // 왼쪽 메뉴의 분위기·색상 항목 ("#태그" → {label, sec}). 메뉴를 만들 때 채워짐.
 const SB_TAG_MENU = {}
+// 메뉴 이름 → 검색어 (자동완성·최근 검색에서 '신뢰감 있는'처럼 메뉴 이름으로 찾아도 같은 결과)
+const SB_LABEL_KW = {}
 // 태그 하나에 화면이 수천 장 붙어 있어 한꺼번에 그리면 느려지므로, 화면이 많은 앱부터 앱마다 몇 장씩만 고름
 function sbTagMenuPick(data) {
   const PER_APP = 8, MAX = 480
@@ -3259,7 +3377,7 @@ function renderResults(data, kw, opts={}) {
 
 
 
-  entries.forEach(([appName, items]) => {
+  const renderOne = ([appName, items]) => {
     const isUpa = items[0]?.source==='upa'
     const isCloudPc = items[0]?.source==='cloud-pc'
     const sec = document.createElement('div'); sec.className='app-sec'
@@ -3345,9 +3463,26 @@ function renderResults(data, kw, opts={}) {
         testImg.src = img.dataset.src
       })
     }
-  })
+  }
+  // 화면이 아주 많을 때(왼쪽 메뉴 등)는 앱 몇 개씩 나눠 그려서 멈춘 것처럼 보이지 않게 함. 다 그린 뒤 좁혀보기 바를 붙임
+  if (opts.chunked && entries.length > 20) {
+    const myRender = (renderResults._id = (renderResults._id || 0) + 1)
+    let i = 0
+    const step = () => {
+      if (myRender !== renderResults._id || !inner.isConnected) return
+      const end = Math.min(i + 12, entries.length)
+      for (; i < end; i++) renderOne(entries[i])
+      if (i < entries.length) setTimeout(step, 16)
+      else { setupResultFilter(inner); if (opts.onDone) opts.onDone() }
+    }
+    step()
+    return
+  }
+  renderResults._id = (renderResults._id || 0) + 1
+  entries.forEach(renderOne)
   // 색상·모드로 좁혀보기 바 (태그가 준비된 뒤에 붙임)
   setupResultFilter(inner)
+  if (opts.onDone) opts.onDone()
 }
 
 // ── 카드 생성 ──────────────────────────────────────────────────────
@@ -4638,7 +4773,8 @@ async function eggShow(q) {
 const SQ_RECENT_KEY = 'bucci_recent_queries'
 const SQ_EXAMPLES = {
   ai: ['토스 같은 송금 화면', '바텀시트가 있는 결제 화면', '다크모드 로그인', '파란색 홈화면', '지도가 있는 택시 화면', '처음 앱 켰을 때 나오는 화면'],
-  keyword: ['토스', '카카오뱅크', '토스 결제', '지도 검색', '#송금', 'ㅋㅋㅇ']
+  keyword: ['토스', '카카오뱅크', '토스 결제', '지도 검색', '#송금', 'ㅋㅋㅇ'],
+  vibe: ['20대가 좋아할 귀여운 쇼핑 홈화면', '신뢰감 있는 송금 화면', '일러스트가 있는 온보딩', '시니어용 큰 글씨 화면', '게임처럼 미션이 있는 화면', '고급스러운 다크모드 상세', '감성적인 피드 화면']
 }
 function sqRecentList() {
   try { const l = JSON.parse(localStorage.getItem(SQ_RECENT_KEY) || '[]'); return Array.isArray(l) ? l.filter(e => e && e.q) : [] } catch { return [] }
@@ -4690,7 +4826,8 @@ function sqPanelShow() {
   head2.appendChild(Object.assign(document.createElement('span'), { textContent: '이렇게 찾아보세요' }))
   panel.appendChild(head2)
   const recentSet = new Set(recent.map(e => e.q))
-  ;(SQ_EXAMPLES[_searchMode] || SQ_EXAMPLES.ai).filter(q => !recentSet.has(q)).slice(0, 4).forEach(q => {
+  const exList = _searchMode !== 'keyword' && window._aiTagCount > 1000 ? [SQ_EXAMPLES.vibe[Math.floor(Math.random() * SQ_EXAMPLES.vibe.length)], SQ_EXAMPLES.vibe[(Math.floor(Math.random() * 3) + 3) % SQ_EXAMPLES.vibe.length], ...SQ_EXAMPLES.ai] : (SQ_EXAMPLES[_searchMode] || SQ_EXAMPLES.ai)
+  ;[...new Set(exList)].filter(q => !recentSet.has(q)).slice(0, 4).forEach(q => {
     const row = document.createElement('div'); row.className = 'sq-item'; row.setAttribute('role', 'button')
     row.innerHTML = '<img class="ic" src="assets/icons/025.svg" alt="">'
     row.appendChild(Object.assign(document.createElement('span'), { className: 'sq-text', textContent: q }))
@@ -5310,6 +5447,7 @@ async function ensureTagsLoaded() {
   try { const t = await window.api.loadTags(); if (t && Object.keys(t).length) tagsDb = t } catch {}
   try { const d = await window.api.loadDzTags(); if (d) tagsDb = Object.assign({}, tagsDb, d) } catch {}   // 디자이너스 화면
   try { const s = await window.api.getSlugNames(); if (s) slugNames = s } catch {}
+  try { const mark = new Set(['전연령', '10대', '20대', '30대', '40대', '50대이상', '키즈', '여성타깃', '남성타깃', '직장인', '학생', '부모']); window._aiTagCount = Object.values(tagsDb).filter(t => Array.isArray(t) && t.some(x => mark.has(x))).length } catch {}
   _tagsLoaded = true
 }
 setTimeout(ensureTagsLoaded, 500)
@@ -5497,18 +5635,26 @@ const SQ_DEFS = [
   ['회원탈퇴','type',4,['회원탈퇴'],['탈퇴','계정삭제','계정지우']],
   ['호출','type',3,['호출'],['택시부르','택시잡','부르는','배차']],
   ['비밀번호','type',3,['비밀번호'],['비번','암호','핀번호','패스워드']],
-  ['채팅','type',4,['채팅','채팅방','메시지','대화','상담'],['채팅창','메신저','대화창','대화방','문의창','상담창','고객센터','1대1문의','문의하기','문의','카톡','dm']],
+  ['채팅','type',4,['채팅','채팅방','메시지','대화','상담'],['채팅창','메신저','대화창','대화방','문의창','상담창','카톡','dm']],
   ['지도','type',4,['지도','맵','지도형','위치'],['map','위치찾기','주변찾기','길찾기']],
-  ['통계','type',4,['통계','차트','그래프'],['대시보드','리포트','분석화면','수치']],
+  ['통계','type',4,['통계','차트','그래프'],['리포트','분석화면','수치']],
   ['예약','type',4,['예약','예약 확인'],['예매','예약하기','부킹','booking','좌석선택','좌석']],
   ['배송','type',3,['배송','주문내역','이용내역','배송방법 선택'],['택배','배송조회','배송현황','배송지']],
   ['캘린더','type',4,['캘린더','달력','일정','날짜선택'],['일정화면','calendar','날짜선택','스케줄','일과']],
-  ['쿠폰','type',3,['쿠폰','할인','혜택','멤버십'],['할인쿠폰','프로모션','이벤트']],
+  ['쿠폰','type',3,['쿠폰','할인','혜택','멤버십'],['할인쿠폰']],
   ['포인트','type',3,['포인트','적립','리워드'],['마일리지','캐시','스탬프']],
   ['송금','type',4,['송금','이체'],['이체','돈보내','돈을보내','돈부치','송금하','보내기']],
   ['자산','type',3,['자산','자산관리','잔액'],['계좌','내자산','통장']],
   ['투자','type',3,['투자','주식'],['증권','코인','펀드']],
   ['피드','type',3,['피드형','피드'],['타임라인','sns피드','인스타형']],
+  ['카테고리','type',3,['카테고리'],['분류','전체메뉴','카테고리화면','메뉴판']],
+  ['이벤트','type',3,['이벤트','프로모션','기획전'],['행사','프로모션화면','이벤트페이지']],
+  ['글쓰기','type',3,['글쓰기','게시글작성'],['작성화면','글작성','포스팅','업로드','게시물작성','글올리기']],
+  ['플레이어','type',3,['플레이어','재생'],['음악재생','영상재생','재생화면','플레이화면','뮤직플레이어']],
+  ['랭킹','type',3,['랭킹','순위'],['인기순위','베스트','차트순위','top10']],
+  ['권한요청','type',3,['권한요청','권한'],['권한허용','위치권한','알림권한','접근권한','권한동의']],
+  ['고객센터','type',3,['고객센터','문의'],['1대1문의','문의하기','고객문의','faq','자주묻는질문']],
+  ['공지','type',3,['공지','공지사항'],['안내사항','공지화면']],
 
   ['탭바','comp',3,['탭바'],['하단탭','하단메뉴','하단바','하단네비','바텀네비','네비게이션바','아래탭']],
   ['GNB','comp',3,['gnb'],['상단바','헤더','상단메뉴','header']],
@@ -5551,14 +5697,60 @@ const SQ_DEFS = [
   ['오렌지톤','color',2,['오렌지톤'],['주황','오렌지','코랄']],
   ['모노톤','color',2,['모노톤'],['흑백','무채색','회색','그레이']],
 
-  ['미니멀','tone',1,['미니멀','미니멀정보'],['심플','깔끔','단순','여백']],
-  ['컬러풀','tone',1,['컬러풀'],['화려','알록달록','다채']],
-  ['정보많은','tone',1,['고밀도정보'],['정보가많은','정보많은','복잡한','빽빽한']],
-  ['어르신친화','tone',1,['어르신친화적'],['어르신','노인','시니어','부모님','큰글씨','글자큰','글씨큰','글자가큰','글씨가큰']],
-  ['신뢰감','tone',1,['신뢰감있는','전문적인'],['신뢰','믿음직','전문적','진지한']],
-  ['친근한','tone',1,['친근한','캐주얼한'],['친근','귀여운','캐주얼','아기자기','발랄']],
-  ['고급스러운','tone',1,['고급스러운','세련된'],['고급','럭셔리','프리미엄','세련','모던']],
-  ['키즈','tone',1,['키즈용'],['어린이','키즈','유아','아이들']],
+  // ── 스타일·분위기·타깃·컨셉·레이아웃 (태그 고도화로 붙는 AI 태그 + 원본 태그) ──
+  ['미니멀','style',2,['미니멀','미니멀정보','여백많은'],['심플','단순','여백','미니멀한']],
+  ['플랫','style',2,['플랫'],['플랫디자인','flat']],
+  ['일러스트','style',2,['일러스트'],['일러스트레이션','그림','삽화','illustration']],
+  ['3D','style',2,['3d그래픽'],['3d','입체','쓰리디','입체적인']],
+  ['캐릭터','style',2,['캐릭터'],['마스코트','캐릭터가있는']],
+  ['사진중심','style',2,['실사사진','이미지중심'],['사진','사진위주','이미지위주','큰사진']],
+  ['타이포','style',2,['타이포그래피'],['타이포','큰타이포','글자위주','폰트강조']],
+  ['그라데이션','style',2,['그라데이션'],['그라디언트','gradient','그래디언트']],
+  ['글래스모피즘','style',2,['글래스모피즘'],['유리','반투명','블러','glassmorphism']],
+  ['라운드','style',2,['라운드형'],['둥근','둥글둥글','라운드']],
+  ['이모지','style',2,['이모지'],['이모티콘','emoji']],
+  ['레트로','style',2,['레트로'],['복고','빈티지','뉴트로','y2k']],
+  ['네온','style',2,['네온'],['형광','사이버','사이버펑크']],
+  ['큰글씨','style',2,['큰글씨','어르신친화적'],['글자큰','글씨큰','글자가큰','글씨가큰','큰글자']],
+  ['컬러풀','style',2,['컬러풀','화려한'],['화려','알록달록','다채','원색']],
+  ['깔끔한','mood',2,['깔끔한'],['깔끔','정돈된','클린']],
+  ['따뜻한','mood',2,['따뜻한'],['따뜻','포근','온화']],
+  ['차분한','mood',2,['차분한'],['차분','잔잔','조용한','정적인']],
+  ['밝은분위기','mood',2,['밝은'],['산뜻','화사','상큼','경쾌']],
+  ['활기찬','mood',2,['활기찬','역동적인'],['활기','에너지','다이나믹','역동','생동감']],
+  ['귀여운','mood',2,['귀여운'],['귀여','큐트','깜찍','아기자기','cute']],
+  ['친근한','mood',2,['친근한','캐주얼한'],['친근','캐주얼','발랄']],
+  ['고급스러운','mood',2,['고급스러운','세련된','프리미엄'],['고급','럭셔리','세련','모던','명품','하이엔드']],
+  ['신뢰감','mood',2,['신뢰감있는','전문적인'],['신뢰','믿음직','전문적','진지한','안정감']],
+  ['감성적인','mood',2,['감성적인'],['감성','감성적','무드있는','분위기있는']],
+  ['유쾌한','mood',2,['유쾌한'],['재미있는','재밌는','유머','펀','fun']],
+  ['미래적인','mood',2,['미래적인'],['미래','하이테크','첨단','sf느낌']],
+  ['자연친화','mood',2,['자연친화적'],['자연','친환경','에코','내추럴','오가닉']],
+  ['편안한','mood',2,['편안한'],['편안','안정적인','힐링']],
+  ['키즈','age',2,['키즈','키즈용'],['어린이','유아','아이들','아이용','초등']],
+  ['10대','age',2,['10대','학생'],['청소년','틴','10대용','중고생','zgen','z세대','잼민']],
+  ['20대','age',2,['20대'],['mz','엠지','mz세대','젊은','젊은층','대학생','사회초년생','2030','20대용']],
+  ['30대','age',2,['30대','직장인'],['3040','30대용','직장인용','회사원']],
+  ['40대','age',2,['40대','부모'],['4050','40대용','학부모','엄마','아빠','육아']],
+  ['시니어','age',2,['50대이상','어르신친화적'],['50대','60대','중장년','시니어','어르신','노인','부모님','실버']],
+  ['여성타깃','age',1,['여성타깃'],['여성','여자','여성용','여성향','걸리시']],
+  ['남성타깃','age',1,['남성타깃'],['남성','남자','남성용','남성향']],
+  ['게이미피케이션','concept',2,['게이미피케이션','챌린지'],['게임요소','게임같은','게임처럼','미션','레벨업','퀘스트','출석체크']],
+  ['리워드','concept',2,['리워드'],['보상','혜택주는','적립형','캐시백']],
+  ['개인화추천','concept',2,['개인화추천','큐레이션'],['맞춤형','개인화','큐레이션','추천피드','맞춤추천']],
+  ['커뮤니티','concept',2,['커뮤니티','소셜공유'],['소통','커뮤니티형']],
+  ['AI대화형','concept',2,['ai대화형'],['챗봇','ai채팅','대화형ai','ai비서','어시스턴트']],
+  ['구독','concept',2,['구독'],['구독형','멤버십가입','정기결제','subscription']],
+  ['간편함','concept',2,['원탭간편'],['간편','원탭','간소화']],
+  ['정보많은','concept',1,['정보밀도높음','고밀도정보'],['정보가많은','정보많은','복잡한','빽빽한','정보량많은']],
+  ['단계형','concept',2,['단계형진행','스텝퍼'],['단계별','스텝','순서대로','step']],
+  ['비교','concept',2,['비교하기'],['비교','비교화면','가격비교']],
+  ['위치기반','concept',2,['위치기반'],['내주변','근처','주변','동네']],
+  ['실시간','concept',2,['실시간'],['라이브','live','실시간현황']],
+  ['대시보드','layout',2,['대시보드형'],['대시보드','현황판']],
+  ['숫자강조','layout',2,['숫자강조'],['큰숫자','금액강조','숫자크게','수치강조']],
+  ['이미지위주','layout',2,['이미지중심','풀스크린'],['풀스크린','꽉찬이미지','이미지가큰']],
+  ['텍스트위주','layout',2,['텍스트중심'],['글위주','텍스트많은','텍스트위주']],
 ]
 const SQ_CONCEPTS = {}
 SQ_DEFS.forEach(([label, kind, w, terms, says]) => {
@@ -5582,7 +5774,7 @@ const SQ_AMBIGUOUS_APPS = new Set(['하루','답다','베터','무디','시리�
 const SQ_SIMILAR_RE = /(같은|같이|처럼|비슷한|비슷하게|스타일|풍|느낌|류의|닮은)/
 const SQ_STOP = ['겼을','했는데','인데','할때','정리','어떻게','생겼어','생겼는지','생긴','었을','했을','들도','있게','쉽게','쉬운','쓰기','쓸','볼','보는','때','수','화면','앱','어플','애플리케이션','보여줘','보여주세요','찾아줘','찾아주세요','알려줘','있는','쓰는','나오는','하는','되는',
   '할때','할 때','쓸때','ui','ux','디자인','레퍼런스','참고','예시','사례','느낌','스타일','같은','같이','처럼','비슷한','좋은','이쁜','예쁜',
-  '요즘','최신','좀','것','거','한','인','용','들','모바일','색상','컬러','색','톤','분위기','위주','중심','있는화면','으로','로','의','에서','을','를','이','가','은','는','도','와','과','에']
+  '요즘','최신','좀','것','거','한','인','용','들','모바일','색상','컬러','색','톤','분위기','위주','중심','있는화면','으로','로','의','에서','을','를','이','가','은','는','도','와','과','에','좋아할','좋아하는','위한','타깃','타겟','대상','감성의','있는']
 
 function sqConcept(label) { return SQ_CONCEPTS[label] || null }
 
@@ -5687,6 +5879,8 @@ const SQ_POPULAR = new Set(['토스','카카오뱅크','카카오페이','네이
   '오늘의집','마켓컬리','29CM','지그재그','에이블리','스타벅스','넷플릭스','유튜브','인스타그램','카카오톡','네이버','야놀자','여기어때',
   '올리브영','쿠팡이츠','요기요','티맵','뱅크샐러드','멜론','번개장터','치지직','크림','밀리의서재','왓챠','티빙','SSG.COM','11번가'])
 
+// 대화형 검색 결과는 맞는 화면을 전부 보여줌 (순서는 정확도 순 그대로)
+const SQ_ALL = { maxApps: Infinity, maxPerApp: Infinity }
 // 조건 묶음으로 검색. 전부 맞는 화면이 없으면 가중치 낮은 조건부터 빼고 가장 좋은 조합을 고름.
 function sqSearch(concepts, opts) {
   opts = opts || {}
@@ -6006,7 +6200,7 @@ async function sqRun(parsed) {
       }
     } else {
       const withInd = ind && !concepts.includes(ind) ? [...concepts, ind] : concepts
-      const r = sqSearch(withInd)
+      const r = sqSearch(withInd, SQ_ALL)
       // 지목한 앱을 맨 앞으로
       if (r.data[app]) data[app] = r.data[app]
       Object.entries(r.data).forEach(([k, v]) => { if (!data[k]) data[k] = v })
@@ -6019,15 +6213,15 @@ async function sqRun(parsed) {
     }
   } else {
     const all = [...parsed.apps.map(a => ({ label: a, kind: 'app', w: 5, terms: [] })), ...concepts]
-    const r = sqSearch(all)
+    const r = sqSearch(all, SQ_ALL)
     data = r.data
     if (r.dropped.length && r.total) notes.push({ kind: 'warn', dropped: r.dropped, text: `'${r.dropped.join(', ')}' 조건까지 맞는 화면은 아직 없어서, '${r.used.join(' + ')}' 기준으로 보여드려요.` })
   }
   // 결과가 없을 때: 아직 데이터에 없는 종류(색상·분위기)의 조건 때문인지 알려줌
   let emptyHint = ''
   if (!Object.keys(data).length) {
-    const notReady = concepts.filter(c => c.kind === 'color' || c.kind === 'tone' || c.kind === 'mode').map(c => c.label)
-    if (notReady.length) emptyHint = `'${notReady.join(', ')}' 같은 색상·분위기 조건은 태그 보강 작업이 끝나면 검색할 수 있어요`
+    const notReady = concepts.filter(c => ['color', 'tone', 'mode', 'style', 'mood', 'age', 'concept', 'layout'].includes(c.kind)).map(c => c.label)
+    if (notReady.length) emptyHint = window._aiTagCount ? `'${notReady.join(', ')}' 조건까지 모두 맞는 화면은 아직 없어요. 조건을 하나 빼고 찾아보세요` : `'${notReady.join(', ')}' 같은 스타일·분위기 조건은 태그 고도화 작업이 끝나면 더 잘 찾을 수 있어요`
   }
   const droppedAll = notes.filter(n => n.kind === 'warn').length
     ? concepts.map(c => c.label).filter(l => notes.some(n => n.kind === 'warn' && n.dropped && n.dropped.includes(l))) : []
@@ -6099,15 +6293,17 @@ async function showSmartResults(parsed, query) {
   // 조건에 맞는 화면이 적으면, 찾은 화면과 "생김새가 비슷한" 화면을 덧붙임 (저장된 임베딩으로 계산, API 호출 없음)
   const added = await sqSimilarSupplement(r.data)
   if (added) r.notes.push({ kind: 'info', text: `조건에 맞는 화면이 적어서, 찾은 화면과 비슷하게 생긴 화면 ${added}개를 아래에 덧붙였어요.` })
-  renderResults(r.data, query)
-  // 위: 이해한 조건 + 안내를 한 줄로 / 아래(결과 끝): 다른 검색 제안
-  const row = resultTopRow(inner)
-  row.innerHTML = understoodHtml(r.understood, parsed.similar) + r.notes.map(n => noteHtml(n.text, n.kind)).join('')
-  if (_nlSuggestions.length) {
+  // 아래(결과 끝): 다른 검색 제안 — 결과를 나눠 그리므로 다 그린 뒤에 붙임
+  const addSuggest = () => {
+    if (!_nlSuggestions.length || !inner.isConnected) return
     const sug = document.createElement('div')
     sug.innerHTML = suggestHtml(_nlSuggestions, false)
     if (sug.firstElementChild) { sug.firstElementChild.classList.add('bottom'); inner.appendChild(sug.firstElementChild) }
   }
+  renderResults(r.data, query, { chunked: true, onDone: addSuggest })
+  // 위: 이해한 조건 + 안내를 한 줄로
+  const row = resultTopRow(inner)
+  row.innerHTML = understoodHtml(r.understood, parsed.similar) + r.notes.map(n => noteHtml(n.text, n.kind)).join('')
   return true
 }
 
@@ -8619,18 +8815,24 @@ function pkItem(src, extra) {
   return Object.assign({ type: 'image', src, thumbnail: src, source: src.includes('wwit.design') ? 'wwit' : 'upa', app: sqAppOf(src) }, extra || {})
 }
 // 한 섹션의 후보: 참고 앱 → 분위기 맞는 화면 → 서로 다른 앱을 번갈아가며
-function pkCollect(q, ind, refs, mode, color, used) {
+// 팩 이름에서 읽은 분위기·타깃·스타일 조건 (예: '20대 귀여운 쇼핑앱' → 20대·귀여운) — 필터가 아니라 순서를 앞당기는 데만 씀
+const PK_VIBE_KINDS = ['style', 'mood', 'age', 'concept', 'layout']
+function pkVibeOf(name) { try { return sqParse(name || '').labels.filter(l => { const c = sqConcept(l); return c && PK_VIBE_KINDS.includes(c.kind) }) } catch { return [] } }
+function pkCollect(q, ind, refs, mode, color, used, vibe) {
   const typeCs = q.map(sqConcept).filter(Boolean)
+  const vibeCs = (vibe || []).map(sqConcept).filter(Boolean)
+  const vibeSc = url => { if (!vibeCs.length) return 0; const set = sqTagsOf(url); return vibeCs.reduce((a, c) => a + (sqHitScore(set, url, c) > 0 ? 1 : 0), 0) }
   if (!typeCs.length) return []
   const indC = ind ? sqConcept(ind) : null
   const r = sqSearch(indC ? [indC, ...typeCs] : typeCs, { maxApps: 40, maxPerApp: 5 })
-  const moodOk = url => { const t = tagsDb[url] || []; return (!mode || t.includes(mode)) && (!color || t.includes(color)) }
+  const moodOk0 = url => { const t = tagsDb[url] || []; return (!mode || t.includes(mode)) && (!color || t.includes(color)) }
+  const moodOk = url => (moodOk0(url) ? 10 : 0) + vibeSc(url)
   const lists = Object.entries(r.data).map(([app, items]) => {
     const urls = items.map(i => i.src).filter(u => !used.has(u))
-    if (mode || color) urls.sort((a, b) => moodOk(b) - moodOk(a))
+    if (mode || color || vibeCs.length) urls.sort((a, b) => moodOk(b) - moodOk(a))
     return [app, urls]
   }).filter(([, u]) => u.length)
-  if (mode || color) lists.sort((a, b) => moodOk(b[1][0]) - moodOk(a[1][0]))
+  if (mode || color || vibeCs.length) lists.sort((a, b) => moodOk(b[1][0]) - moodOk(a[1][0]))
   const out = [], seen = new Set()
   const push = (u, app) => { if (!seen.has(u) && !used.has(u)) { seen.add(u); out.push(pkItem(u, { app })) } }
   // 참고 앱은 맨 앞에 한 장씩
@@ -8651,11 +8853,11 @@ function pkCollect(q, ind, refs, mode, color, used) {
   return out
 }
 // 조건이 여러 개(예: 송금+완료)라 결과가 모자라면 마지막 조건(완료)만으로 채움. 그래도 모자라면 앱 유형 없이 채움
-function pkCollectFill(q, ind, refs, mode, color, used) {
-  let out = pkCollect(q, ind, refs, mode, color, used)
+function pkCollectFill(q, ind, refs, mode, color, used, vibe) {
+  let out = pkCollect(q, ind, refs, mode, color, used, vibe)
   const add = more => { const have = new Set(out.map(i => i.src)); more.forEach(i => { if (!have.has(i.src)) { have.add(i.src); out.push(i) } }) }
-  if (out.length < PK_PER && q.length > 1) add(pkCollect(q.slice(-1), ind, [], mode, color, used))
-  if (out.length < PK_PER && ind) add(pkCollect(q.length > 1 ? q.slice(-1) : q, '', [], mode, color, used))
+  if (out.length < PK_PER && q.length > 1) add(pkCollect(q.slice(-1), ind, [], mode, color, used, vibe))
+  if (out.length < PK_PER && ind) add(pkCollect(q.length > 1 ? q.slice(-1) : q, '', [], mode, color, used, vibe))
   return out
 }
 async function pkMake() {
@@ -8667,12 +8869,13 @@ async function pkMake() {
   try { await ensureTagsLoaded(); await sqLoadUpaMeta() } catch {}
   await new Promise(r => setTimeout(r, 30))
   const used = new Set()
+  const vibe = pkVibeOf(f.name)
   const sections = checks.map(c => {
-    const all = pkCollectFill(c.q, f.ind, f.refs, f.mode, f.color, used)
+    const all = pkCollectFill(c.q, f.ind, f.refs, f.mode, f.color, used, vibe)
     const items = all.slice(0, PK_PER); items.forEach(i => used.add(i.src))
     return { id: 's' + Math.random().toString(36).slice(2, 8), label: c.label, q: c.q, items, pool: all.slice(PK_PER).map(i => ({ src: i.src, app: i.app })), pinned: [], memo: '' }
   })
-  _pkCur = { id: 'p' + Date.now().toString(36), name: (f.name || '').trim() || (pkIndName(f.ind) + ' 레퍼런스 팩'), ind: f.ind, refs: f.refs, mode: f.mode, color: f.color, sections, created: Date.now(), updated: Date.now() }
+  _pkCur = { id: 'p' + Date.now().toString(36), name: (f.name || '').trim() || (pkIndName(f.ind) + ' 레퍼런스 팩'), ind: f.ind, refs: f.refs, mode: f.mode, color: f.color, vibe, sections, created: Date.now(), updated: Date.now() }
   pkSaveCur(true)
   pkEdit()
   const empty = sections.filter(s => !s.items.length).map(s => s.label)
@@ -8698,7 +8901,7 @@ function pkEdit() {
   v.querySelector('#pk-addsec').onclick = ev => pkTypePicker(ev.currentTarget, p.sections.map(s => s.q.join('+')), async (q, label) => {
     try { await ensureTagsLoaded(); await sqLoadUpaMeta() } catch {}
     const used = new Set(p.sections.flatMap(s => s.items.map(i => i.src)))
-    const all = pkCollectFill([q], p.ind, p.refs || [], p.mode, p.color, used)
+    const all = pkCollectFill([q], p.ind, p.refs || [], p.mode, p.color, used, p.vibe || pkVibeOf(p.name))
     p.sections.push({ id: 's' + Math.random().toString(36).slice(2, 8), label, q: [q], items: all.slice(0, PK_PER), pool: all.slice(PK_PER).map(i => ({ src: i.src, app: i.app })), pinned: [], memo: '' })
     pkSaveCur(); pkEdit()
     setTimeout(() => { const secs = pkView().querySelectorAll('.pk-sec'); secs[secs.length - 1].scrollIntoView({ behavior: 'smooth' }) }, 50)
@@ -9768,6 +9971,246 @@ async function wfExport(kind) {
   if (kind === 'copy') { const ok = await window.api.copyPng(url); showToast(ok ? '이미지를 복사했어요 · Ctrl+V로 붙여넣으세요' : '복사하지 못했어요') }
   else { const ok = await window.api.savePng({ dataUrl: url, defaultName: safe + '.png' }); if (ok) showToast('와이어프레임을 저장했어요') }
 }
+</script>
+<script>
+// ── 태그 고도화 (관리자) ────────────────────────────────────────────
+// 모든 레퍼런스 화면을 AI(Haiku)로 한 번 분류해 화면 종류·컴포넌트·레이아웃·스타일·분위기·타깃·컨셉 태그를 붙임.
+// 원본 태그는 그대로 두고 더하기만 함. 비용을 아끼려고 화면 10장을 한 요청에, 배치(50% 할인)로 보냄.
+const AIT_MODEL = 'claude-haiku-4-5'
+const AIT_PER_REQ = 10          // 요청 하나에 넣는 화면 수
+const AIT_CHUNK = 1000          // 배치 하나에 넣는 화면 수
+const AIT_VOCAB_GROUPS = [
+  ['화면종류', '1~2개, 필수', ['스플래시', '온보딩', '로그인', '회원가입', '본인인증', '약관', '권한요청', '홈화면', '카테고리', '검색', '검색결과', '필터', '상세', '장바구니', '결제', '주문', '완료', '배송', '마이페이지', '설정', '알림', '리뷰', '쿠폰', '포인트', '이벤트', '송금', '자산', '투자', '통계', '예약', '캘린더', '지도', '호출', '채팅', '피드', '글쓰기', '플레이어', '랭킹', '빈상태', '로딩', '에러', '회원탈퇴', '비밀번호', '고객센터', '공지']],
+  ['컴포넌트', '보이는 것만, 최대 8개', ['GNB', '탭바', '탭', '검색바', '바텀시트', '팝업', '토스트', '버튼', '플로팅버튼', '입력폼', '드롭다운', '체크박스', '라디오', '토글', '칩', '캐러셀', '배너', '아코디언', '그래프', '프로그레스바', '스텝퍼', '슬라이더', '키패드', '아바타', '뱃지', '타임라인', '동영상', '별점', '세그먼트']],
+  ['레이아웃', '1~2개', ['리스트형', '카드형', '그리드형', '피드형', '대시보드형', '폼형', '풀스크린', '텍스트중심', '이미지중심', '숫자강조', '지도중심', '채팅형', '중앙정렬안내']],
+  ['스타일', '1~3개', ['미니멀', '플랫', '일러스트', '3D그래픽', '캐릭터', '실사사진', '타이포그래피', '그라데이션', '글래스모피즘', '라운드형', '아이콘중심', '이모지', '레트로', '네온', '큰글씨', '여백많은', '컬러풀']],
+  ['분위기', '1~3개', ['깔끔한', '따뜻한', '차분한', '밝은', '활기찬', '귀여운', '친근한', '고급스러운', '세련된', '신뢰감있는', '전문적인', '감성적인', '유쾌한', '미래적인', '자연친화적', '화려한', '편안한', '역동적인']],
+  ['타깃', '1~2개, 디자인·문구·내용으로 주 사용자층 추정, 모르면 전연령', ['키즈', '10대', '20대', '30대', '40대', '50대이상', '전연령', '여성타깃', '남성타깃', '직장인', '학생', '부모']],
+  ['컨셉', '0~3개', ['게이미피케이션', '리워드', '개인화추천', '커뮤니티', 'AI대화형', '구독', '큐레이션', '챌린지', '원탭간편', '정보밀도높음', '정보밀도낮음', '단계형진행', '비교하기', '소셜공유', '위치기반', '실시간', '프리미엄']]
+]
+const AIT_VOCAB = AIT_VOCAB_GROUPS.flatMap(g => g[2])
+function aitPrompt() {
+  let n = 0
+  const lists = AIT_VOCAB_GROUPS.map(([name, rule, tags]) => `[${name}] (${rule})\n` + tags.map(t => `${n++} ${t}`).join(', ')).join('\n')
+  return `너는 모바일 앱 UI 화면 분류기야. 위의 화면 이미지들 각각에 아래 태그 목록에서 맞는 번호를 골라.
+- 화면에 실제로 보이는 것과 확실한 것만. 앱 이름이나 브랜드는 태그로 만들지 말 것
+- 분위기·타깃·컨셉은 색, 그래픽, 문구 말투, 내용으로 판단
+
+${lists}
+
+출력: 이미지마다 한 줄씩, 이미지 번호와 콜론 뒤에 태그 번호를 공백으로 구분해서. 다른 말은 쓰지 말 것.
+예시)
+1: 7 45 76 92 110 128
+2: 0 44 79 95 120`
+}
+function aitParse(text, count) {
+  const out = {}
+  const byName = new Map(AIT_VOCAB.map((t, i) => [t.toLowerCase(), i]))
+  const idsOf = rest => {
+    const ids = new Set()
+    // 숫자로 답한 경우
+    ;(rest.match(/\d+/g) || []).map(Number).forEach(x => { if (x >= 0 && x < AIT_VOCAB.length) ids.add(x) })
+    // 태그 이름으로 답한 경우
+    if (!ids.size) rest.split(/[,\s/·|]+/).forEach(w => { const k = byName.get(w.replace(/[^가-힣a-z0-9]/gi, '').toLowerCase()); if (k != null) ids.add(k) })
+    return [...ids]
+  }
+  const lines = String(text || '').split('\n').map(l => l.replace(/[*`#>]/g, '').trim()).filter(Boolean)
+  lines.forEach(line => {
+    // "1: ...", "[1] ...", "이미지 1: ...", "1번: ...", "Image 1 - ..."
+    const m = line.match(/^(?:-\s*)?(?:이미지|화면|image|img)?\s*\[?\s*(\d{1,2})\s*\]?\s*(?:번)?\s*(?:이미지|화면)?\s*[:：\-–.)\]]\s*(.+)$/i)
+    if (!m) return
+    const i = +m[1]; if (i < 1 || i > count || out[i - 1]) return
+    const ids = idsOf(m[2]); if (ids.length) out[i - 1] = ids
+  })
+  // 번호 없이 이미지 수만큼 줄만 온 경우: 순서대로
+  if (!Object.keys(out).length) {
+    const rows = lines.filter(l => /\d/.test(l)).slice(-count)
+    if (rows.length === count) rows.forEach((l, i) => { const ids = idsOf(l); if (ids.length) out[i] = ids })
+  }
+  return out
+}
+// 화면 이미지를 작게 (가로 300·세로 700 안에 맞춤, JPEG)
+async function aitShrink(url) {
+  try {
+    const d = await window.api.fetchImageData(url); if (!d) return null
+    const im = await new Promise(res => { const x = new Image(); x.onload = () => res(x); x.onerror = () => res(null); x.src = d })
+    if (!im || !im.width) return null
+    const sc = Math.min(1, 300 / im.width, 700 / im.height)
+    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(im.width * sc)); cv.height = Math.max(1, Math.round(im.height * sc))
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height)
+    return cv.toDataURL('image/jpeg', 0.72).split(',')[1]
+  } catch { return null }
+}
+function aitContent(imgs) {
+  const c = []
+  imgs.forEach((b64, i) => { c.push({ type: 'text', text: `[${i + 1}]` }); c.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } }) })
+  c.push({ type: 'text', text: aitPrompt() })
+  return c
+}
+// 비용 추정 (Haiku 4.5, 배치 50% 할인, 원/달러 1,450 가정)
+function aitCost(n, batch) {
+  const inTok = n * (260 + 1700 / AIT_PER_REQ), outTok = n * 32
+  const usd = (inTok / 1e6 * 1 + outTok / 1e6 * 5) * (batch ? 0.5 : 1)
+  return Math.round(usd * 1450 / 100) * 100
+}
+const _ait = { running: false, stop: false, poll: null, log: [] }
+const aitWon = v => v < 100 ? '100원 미만' : `약 ${v.toLocaleString()}원`
+const aitKey = () => localStorage.getItem(APIKEY_STORE) || ''
+function aitGroupOf(tag) { const g = AIT_VOCAB_GROUPS.find(x => x[2].includes(tag)); return g ? g[0] : '' }
+
+async function openAiTagPanel() {
+  try { localStorage.setItem('bucci_admin', '1') } catch {}
+  document.querySelectorAll('.ait-ov').forEach(x => x.remove())
+  const ov = document.createElement('div'); ov.className = 'ait-ov'
+  ov.innerHTML = `<div class="ait"><div class="ait-h"><div><b>태그 고도화</b><small>관리자 · 모든 레퍼런스 화면을 AI로 분류해 검색·레퍼런스 팩·와이어프레임 초안에 잡히게 해요</small></div><button type="button" class="ait-x" title="닫기">✕</button></div>
+    <div class="ait-b" id="ait-body"><div class="ait-busy"><i></i>현황을 확인하고 있어요…</div></div></div>`
+  document.body.appendChild(ov)
+  ov.querySelector('.ait-x').onclick = () => ov.remove()
+  ov.onmousedown = ev => { if (ev.target === ov) ov.remove() }
+  aitRender()
+}
+async function aitRender() {
+  const body = document.getElementById('ait-body'); if (!body) return
+  let st, uni
+  try { [st, uni] = await Promise.all([window.api.aiTagStatus(), window.api.aiTagUniverse()]) } catch { body.innerHTML = '<div class="ait-note">부찌를 다시 시작한 뒤 쓸 수 있어요</div>'; return }
+  const done = new Set(st.done), pend = new Set(st.pending)
+  const todo = uni.filter(([u]) => !done.has(u) && !pend.has(u))
+  const src = u => u.includes('wwit.design') ? 'WWIT' : u.includes('designus') ? '디자이너스' : 'UPA'
+  const cnt = {}; uni.forEach(([u]) => { const k = src(u); cnt[k] = cnt[k] || [0, 0]; cnt[k][0]++; if (done.has(u)) cnt[k][1]++ })
+  const live = st.batches.filter(b => b.status !== 'done' && b.status !== 'canceled')
+  const key = aitKey()
+  body.innerHTML = `<div class="ait-stats">${Object.entries(cnt).map(([k, [a, d]]) => `<div><b>${k}</b><span>${d.toLocaleString()} / ${a.toLocaleString()}장</span><i style="--p:${a ? Math.round(d / a * 100) : 0}%"></i></div>`).join('')}</div>
+    <div class="ait-row"><div><b>남은 화면 ${todo.length.toLocaleString()}장</b><small>${pend.size ? `AI가 분류 중 ${pend.size.toLocaleString()}장 · ` : ''}전체 실행 예상 비용 ${aitWon(aitCost(todo.length, true))} (배치 할인 적용, 추정)</small></div></div>
+    ${key ? '' : '<div class="ait-note warn">AI 디자인분석에서 API 키를 먼저 등록해주세요</div>'}
+    <div class="ait-steps">
+      <div class="ait-step"><span>1</span><div><b>샘플로 품질 확인</b><small>무작위 40장을 바로 분류해서 태그를 보여줘요 · ${aitWon(aitCost(40, false))} · 1분 정도</small></div><button type="button" class="pk-btn" id="ait-sample" ${key && todo.length ? '' : 'disabled'}>샘플 40장</button></div>
+      <div class="ait-step"><span>2</span><div><b>전체 실행</b><small>이미지를 준비해 ${AIT_CHUNK.toLocaleString()}장씩 배치로 보내요. 준비하는 동안은 부찌를 켜 두세요. 보낸 뒤 결과는 보통 1시간 안에 와요 (껐다 켜도 이어서 받아요)</small></div><button type="button" class="pk-btn pri" id="ait-run" ${key && todo.length && !_ait.running ? '' : 'disabled'}>${_ait.running ? '진행 중' : '전체 실행'}</button></div>
+    </div>
+    <div class="ait-prog" id="ait-prog" ${_ait.running || live.length ? '' : 'hidden'}>
+      <div class="ait-pt"><b id="ait-pt">${_ait.running ? '이미지 준비 중' : 'AI 분류 대기 중'}</b><span id="ait-pn"></span>${_ait.running ? '<button type="button" class="pk-btn" id="ait-stop">멈추기</button>' : ''}</div>
+      <div class="ait-bar"><i id="ait-pb"></i></div>
+      <div class="ait-batches" id="ait-bl">${live.map(b => `<div>배치 ${b.id.slice(-6)} · ${b.n}장 · ${aitStatusKo(b)}</div>`).join('')}</div>
+      ${live.length ? '<div class="ait-row2"><button type="button" class="pk-btn" id="ait-poll">결과 확인</button><span>1분마다 자동으로 확인해요</span></div>' : ''}
+    </div>
+    <div id="ait-sample-out"></div>
+    <div class="ait-foot"><span>${[st.userDone ? `이 PC에서 분류한 화면 ${st.userDone.toLocaleString()}장` : '', st.devWritable ? '개발 폴더에서 실행 중이라 결과가 app\\ai_tags.json 에도 저장돼요 (업데이트로 배포됨)' : ''].filter(Boolean).join(' · ')}</span>${st.userDone && !st.devWritable ? '<button type="button" class="pk-btn" id="ait-exp">배포용 파일 저장</button>' : ''}</div>`
+  const $ = id => body.querySelector('#' + id)
+  if ($('ait-sample')) $('ait-sample').onclick = () => aitSample(todo)
+  if ($('ait-run')) $('ait-run').onclick = () => aitRunAll(todo)
+  if ($('ait-stop')) $('ait-stop').onclick = () => { _ait.stop = true; $('ait-stop').disabled = true; $('ait-stop').textContent = '멈추는 중…' }
+  if ($('ait-poll')) $('ait-poll').onclick = () => aitPoll(true)
+  if ($('ait-exp')) $('ait-exp').onclick = async () => { const ok = await window.api.aiTagExport(); if (ok) showToast('저장했어요 · bucci_base\\app 에 넣고 업데이트하면 다른 사람에게도 적용돼요') }
+  if (live.length) aitStartPolling()
+}
+function aitStatusKo(b) {
+  const c = b.counts || {}
+  if (b.status === 'ended') return '결과 받는 중'
+  if (b.status === 'canceling') return '취소 중'
+  return `AI 분류 중${c.processing != null ? ` (${(c.succeeded || 0) + (c.errored || 0)}/${(c.processing || 0) + (c.succeeded || 0) + (c.errored || 0)} 요청)` : ''}`
+}
+// 1) 샘플: 바로 응답받는 일반 요청 (출처가 골고루 섞이게)
+async function aitSample(todo) {
+  const out = document.getElementById('ait-sample-out'); if (!out) return
+  const by = {}; todo.forEach(x => { const k = x[0].includes('designus') ? 'd' : x[0].includes('wwit') ? 'w' : 'u'; (by[k] = by[k] || []).push(x) })
+  const pick = []; const ks = Object.keys(by)
+  for (let i = 0; pick.length < 40 && i < 400; i++) { const l = by[ks[i % ks.length]]; if (l && l.length) pick.push(l.splice(Math.floor(Math.random() * l.length), 1)[0]) }
+  out.innerHTML = '<div class="ait-busy"><i></i>샘플 40장을 분류하고 있어요…</div>'
+  const results = [], raws = []
+  for (let k = 0; k < pick.length; k += AIT_PER_REQ) {
+    const grp = pick.slice(k, k + AIT_PER_REQ)
+    const imgs = await Promise.all(grp.map(([u]) => aitShrink(u)))
+    const ok = grp.filter((_, i) => imgs[i]), okImgs = imgs.filter(Boolean)
+    if (!okImgs.length) continue
+    try {
+      const res = await window.api.claudeApi({ apiKey: aitKey(), content: aitContent(okImgs), prompt: aitPrompt(), model: AIT_MODEL, maxTokens: 900 })
+      const text = (res.content && res.content[0] && res.content[0].text) || ''
+      if (!text && res.error) throw new Error(res.error.message || 'API 오류')
+      const parsed = aitParse(text, ok.length)
+      raws.push(text)
+      ok.forEach(([u, app], i) => results.push({ u, app, tags: (parsed[i] || []).map(x => AIT_VOCAB[x]) }))
+    } catch (e) { out.innerHTML = `<div class="ait-note warn">샘플 분류에 실패했어요: ${pkEsc(String(e.message || e)).slice(0, 120)}</div>`; return }
+  }
+  const miss = results.filter(r => !r.tags.length).length
+  out.innerHTML = `<div class="ait-st">샘플 결과 ${results.length}장 <small>(저장하지 않아요 · 품질 확인용${miss ? ` · 태그를 못 읽은 화면 ${miss}장` : ''})</small></div><details class="ait-raw"><summary>AI 응답 원문 보기</summary><pre>${pkEsc(raws.join('\n\n────\n\n')).slice(0, 6000)}</pre></details><div class="ait-grid">${results.map(r => `<div class="ait-c"><img src="${pkEsc(r.u)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><div><b>${pkEsc(r.app || sqAppOf(r.u))}</b>${AIT_VOCAB_GROUPS.map(([g]) => { const t = r.tags.filter(x => aitGroupOf(x) === g); return t.length ? `<p><em>${g}</em>${t.map(x => `<span>${pkEsc(x)}</span>`).join('')}</p>` : '' }).join('')}${r.tags.length ? '' : '<p><em>결과 없음</em></p>'}</div></div>`).join('')}</div>`
+}
+// 2) 전체 실행: 이미지 준비 → 배치 제출 (1,000장씩)
+async function aitRunAll(todo) {
+  if (_ait.running) return
+  const est = aitCost(todo.length, true)
+  if (!confirm(`남은 화면 ${todo.length.toLocaleString()}장을 AI로 분류할까요?\n\n예상 비용: ${aitWon(est)} (등록한 API 키로 결제, 추정)\n준비하는 동안 부찌를 켜 두세요. 중간에 멈춰도 이어서 할 수 있어요.`)) return
+  _ait.running = true; _ait.stop = false
+  aitRender()
+  const total = todo.length; let prepared = 0, failed = 0, sent = 0
+  const setP = (t, n) => { const pt = document.getElementById('ait-pt'), pn = document.getElementById('ait-pn'), pb = document.getElementById('ait-pb'); if (pt) pt.textContent = t; if (pn) pn.textContent = n; if (pb) pb.style.width = Math.round(prepared / Math.max(total, 1) * 100) + '%' }
+  try {
+    for (let c = 0; c < todo.length && !_ait.stop; c += AIT_CHUNK) {
+      const chunk = todo.slice(c, c + AIT_CHUNK)
+      const imgs = new Array(chunk.length)
+      let next = 0
+      const worker = async () => { while (next < chunk.length && !_ait.stop) { const i = next++; imgs[i] = await aitShrink(chunk[i][0]); prepared++; if (!imgs[i]) failed++; if (prepared % 10 === 0) setP('이미지 준비 중', `${prepared.toLocaleString()} / ${total.toLocaleString()}장 · 보낸 배치 ${sent}개${failed ? ` · 못 불러온 이미지 ${failed}장` : ''}`) } }
+      await Promise.all(Array.from({ length: 8 }, worker))
+      if (_ait.stop) break
+      const requests = [], map = {}
+      const okList = chunk.map((x, i) => [x[0], imgs[i]]).filter(x => x[1])
+      for (let k = 0; k < okList.length; k += AIT_PER_REQ) {
+        const grp = okList.slice(k, k + AIT_PER_REQ)
+        const cid = 'r' + Date.now().toString(36) + '_' + c + '_' + k
+        map[cid] = grp.map(x => x[0])
+        requests.push({ custom_id: cid, params: { model: AIT_MODEL, max_tokens: 900, messages: [{ role: 'user', content: aitContent(grp.map(x => x[1])) }] } })
+      }
+      if (!requests.length) continue
+      setP('배치 보내는 중', `${prepared.toLocaleString()} / ${total.toLocaleString()}장`)
+      const r = await window.api.aiTagBatchCreate({ apiKey: aitKey(), requests, map })
+      if (!r || !r.ok) { showToast(`배치를 보내지 못했어요 · ${(r && (r.error || r.status)) || ''}`.slice(0, 120)); break }
+      sent++
+    }
+  } finally {
+    _ait.running = false
+    aitRender()
+    showToast(_ait.stop ? '멈췄어요 · 다시 누르면 남은 화면부터 이어서 해요' : '이미지를 모두 보냈어요 · 결과는 자동으로 받아요')
+  }
+}
+// 3) 결과 받기: 끝난 배치의 결과를 해석해 저장
+async function aitPoll(manual) {
+  if (_ait.polling) return
+  const key = aitKey(); if (!key) return
+  _ait.polling = true
+  try {
+    const list = await window.api.aiTagBatchPoll({ apiKey: key })
+    let saved = 0
+    for (const b of list) {
+      if (b.status !== 'ended') continue
+      const tags = {}
+      b.items.forEach(it => { if (!it.ok) return; const p = aitParse(it.text, it.urls.length); it.urls.forEach((u, i) => { if (p[i]) tags[u] = p[i] }) })
+      const r = await window.api.aiTagSave({ vocab: AIT_VOCAB, tags })
+      if (r && r.ok) { await window.api.aiTagBatchDone(b.id); saved += Object.keys(tags).length }
+    }
+    if (saved) {
+      _tagsLoaded = false; try { _sqTagCache = new Map() } catch {}; _sqAppLvl = null
+      await ensureTagsLoaded()
+      showToast(`AI 태그 ${saved.toLocaleString()}장을 저장했어요 · 검색에 바로 반영돼요`)
+    } else if (manual) showToast(list.length ? 'AI가 아직 분류 중이에요' : '받을 결과가 없어요')
+    if (document.getElementById('ait-body') && (saved || manual)) aitRender()
+    if (!list.some(b => b.status !== 'ended') && !list.length) aitStopPolling()
+  } catch (e) { if (manual) showToast('결과를 확인하지 못했어요') }
+  finally { _ait.polling = false }
+}
+function aitStartPolling() { if (!_ait.poll) _ait.poll = setInterval(() => aitPoll(false), 60000) }
+function aitStopPolling() { if (_ait.poll) { clearInterval(_ait.poll); _ait.poll = null } }
+// 부찌를 켤 때 보내 둔 배치가 있으면 결과를 받아 옴 (관리자 PC에서만)
+setTimeout(async () => {
+  try {
+    if (!window.api || !window.api.aiTagStatus || !aitKey()) return
+    const st = await window.api.aiTagStatus()
+    if (st.batches.some(b => b.status !== 'done' && b.status !== 'canceled')) { aitPoll(false); aitStartPolling() }
+  } catch {}
+}, 8000)
+// 관리자 메뉴: 한 번이라도 연 PC에서만 업데이트 메뉴 안에 보임
+try { if (localStorage.getItem('bucci_admin') === '1') { const b = document.getElementById('ait-open-btn'); if (b) b.style.display = '' } } catch {}
+// 단축키 Ctrl+Shift+T: 태그 고도화 창
+document.addEventListener('keydown', ev => {
+  if ((ev.ctrlKey || ev.metaKey) && ev.shiftKey && ev.key.toLowerCase() === 't') { ev.preventDefault(); openAiTagPanel() }
+})
 </script>
 </body>
 </html>

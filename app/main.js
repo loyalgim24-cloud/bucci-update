@@ -144,6 +144,56 @@ function loadTags() {
     if (fs.existsSync(p)) tagsDb = JSON.parse(fs.readFileSync(p, 'utf8'))
     console.log('[tags] loaded:', Object.keys(tagsDb).length)
   } catch (e) { console.log('[tags] error:', e.message) }
+  try { aiLoad(); aiMergeInto(tagsDb) } catch (e) { console.log('[ai-tags] error:', e.message) }
+}
+
+// ── AI 태그 (태그 고도화) ─────────────────────────────────────────────
+// 원본 태그(WWIT·UPA·디자이너스)는 그대로 두고, AI가 붙인 태그를 더함.
+// ai_tags.json = { vocab: [태그 문자열...], tags: { 이미지주소: [vocab 번호...] } }
+//   app/ai_tags.json      : 업데이트로 같이 배포되는 것
+//   BucciData/ai_tags.json: 이 PC에서 새로 만든 것 (같은 화면이면 이쪽이 우선)
+const AI_TAGS_APP = path.join(__dirname, 'ai_tags.json')
+const AI_TAGS_USER = path.join(APP_DATA, 'ai_tags.json')
+const AI_STATE = path.join(APP_DATA, 'ai_tag_state.json')
+let aiTagsMap = {}
+function aiReadFile(p) { try { if (fs.existsSync(p)) { const f = JSON.parse(fs.readFileSync(p, 'utf8')); if (f && Array.isArray(f.vocab) && f.tags) return f } } catch {} return null }
+function aiLoad() {
+  const out = {}
+  ;[aiReadFile(AI_TAGS_APP), aiReadFile(AI_TAGS_USER)].forEach(f => {
+    if (!f) return
+    Object.entries(f.tags).forEach(([u, ids]) => { if (Array.isArray(ids)) out[u] = ids.map(i => f.vocab[i]).filter(Boolean) })
+  })
+  aiTagsMap = out
+  console.log('[ai-tags] loaded:', Object.keys(out).length)
+}
+function aiMergeInto(db) {
+  Object.entries(aiTagsMap).forEach(([u, t]) => {
+    const cur = db[u]
+    if (Array.isArray(cur)) t.forEach(x => { if (!cur.includes(x)) cur.push(x) })
+    else db[u] = t.slice()
+  })
+}
+function aiState() { try { if (fs.existsSync(AI_STATE)) return JSON.parse(fs.readFileSync(AI_STATE, 'utf8')) } catch {} return { batches: [] } }
+function aiStateSave(st) { try { fs.writeFileSync(AI_STATE, JSON.stringify(st)) } catch (e) { console.log('[ai-state]', e.message) } }
+// Anthropic API 호출 (배치용). 키는 화면에서 받아 이 요청에만 씀
+function anthropicReq(method, url, apiKey, body, timeout) {
+  return new Promise(resolve => {
+    try {
+      const https = require('https')
+      const u = new URL(url.startsWith('http') ? url : 'https://api.anthropic.com' + url)
+      const data = body ? Buffer.from(JSON.stringify(body), 'utf8') : null
+      const req = https.request({ method, hostname: u.hostname, path: u.pathname + u.search, timeout: timeout || 120000,
+        headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', ...(data ? { 'content-length': data.length } : {}) } }, res => {
+        const chunks = []
+        res.on('data', c => chunks.push(c))
+        res.on('end', () => resolve({ status: res.statusCode, text: Buffer.concat(chunks).toString('utf8') }))
+      })
+      req.on('timeout', () => { req.destroy(); resolve({ status: 0, text: 'timeout' }) })
+      req.on('error', e => resolve({ status: 0, text: e.message }))
+      if (data) req.write(data)
+      req.end()
+    } catch (e) { resolve({ status: 0, text: e.message }) }
+  })
 }
 
 // ── 디자이너스 레퍼런스 (깃허브에 매달 자동 수집되는 목록을 받아 기존 자료에 합침) ──
@@ -165,6 +215,7 @@ function dzApply(data) {
     // 중복이라 숨긴 화면의 분류는 남아 있는 기존 화면에 합침
     Object.entries(r.extra).forEach(([u, t]) => { if (Array.isArray(tagsDb[u])) t.forEach(x => { if (!tagsDb[u].includes(x)) tagsDb[u].push(x) }) })
     dzUcs = r.ucs; dzAppByUrl = r.appByUrl; dzUpdated = data.updated || ''
+    try { aiMergeInto(tagsDb) } catch {}
     dzAttach()
     console.log('[designus] 앱', r.ucs.length, '화면', dzTagKeys.length, '중복으로 숨김', r.hidden)
     return true
@@ -2529,8 +2580,102 @@ ipcMain.handle('save-tag-progress', (_, progress) => {
 })
 
 ipcMain.handle('load-tags', () => {
-  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'tags.json'), 'utf8')) }
-  catch { return {} }
+  let o = {}
+  try { o = JSON.parse(fs.readFileSync(path.join(__dirname, 'tags.json'), 'utf8')) } catch {}
+  try { aiMergeInto(o) } catch {}
+  return o
+})
+// ── 태그 고도화 (관리자) ──
+// 대상 화면: 태그 DB의 모든 화면 + UPA·디자이너스 목록 + WWIT 캐시 화면
+ipcMain.handle('aitag-universe', () => {
+  const seen = new Set(), out = []
+  const add = (u, app) => { if (!u || !/^https?:\/\//.test(u) || u.toLowerCase().includes('/logo') || seen.has(u)) return; seen.add(u); out.push([u, app || '']) }
+  Object.keys(tagsDb).forEach(u => add(u, dzAppByUrl[u] || ''))
+  try { ucCache.forEach(uc => (uc.images || []).forEach(i => add(i.src, uc.appName))) } catch {}
+  try { Object.entries(urlCache.apps || {}).forEach(([slug, list]) => (list || []).forEach(u => add(u, slug))) } catch {}
+  return out
+})
+ipcMain.handle('aitag-status', () => {
+  const st = aiState()
+  const user = aiReadFile(AI_TAGS_USER)
+  return { done: Object.keys(aiTagsMap), userDone: user ? Object.keys(user.tags).length : 0, batches: (st.batches || []).map(b => ({ id: b.id, status: b.status, created: b.created, n: Object.values(b.map || {}).reduce((a, l) => a + l.length, 0), counts: b.counts || null })),
+    pending: (st.batches || []).filter(b => b.status !== 'done' && b.status !== 'canceled').flatMap(b => Object.values(b.map || {}).flat()),
+    devWritable: !app.isPackaged }
+})
+// 배치 제출: requests = [{ custom_id, params }], map = { custom_id: [이미지주소...] }
+ipcMain.handle('aitag-batch-create', async (_, { apiKey, requests, map }) => {
+  const r = await anthropicReq('POST', '/v1/messages/batches', apiKey, { requests }, 300000)
+  let j = null; try { j = JSON.parse(r.text) } catch {}
+  if (r.status !== 200 || !j || !j.id) return { ok: false, status: r.status, error: (j && j.error && j.error.message) || String(r.text).slice(0, 200) }
+  const st = aiState(); st.batches = st.batches || []
+  st.batches.push({ id: j.id, status: j.processing_status || 'in_progress', created: Date.now(), map, counts: j.request_counts || null })
+  aiStateSave(st)
+  return { ok: true, id: j.id }
+})
+// 진행 상황 확인. 끝난 배치는 결과(문자열)를 돌려줌 → 화면에서 해석해 aitag-save
+ipcMain.handle('aitag-batch-poll', async (_, { apiKey }) => {
+  const st = aiState(); const out = []
+  for (const b of (st.batches || [])) {
+    if (b.status === 'done' || b.status === 'canceled') continue
+    const r = await anthropicReq('GET', '/v1/messages/batches/' + b.id, apiKey)
+    let j = null; try { j = JSON.parse(r.text) } catch {}
+    if (r.status !== 200 || !j) { out.push({ id: b.id, status: 'error', error: r.status + ' ' + String(r.text).slice(0, 120) }); continue }
+    b.counts = j.request_counts || b.counts
+    if (j.processing_status !== 'ended') { b.status = j.processing_status; out.push({ id: b.id, status: b.status, counts: b.counts }); continue }
+    const rr = await anthropicReq('GET', j.results_url, apiKey, null, 300000)
+    if (rr.status !== 200) { out.push({ id: b.id, status: 'error', error: '결과 받기 실패 ' + rr.status }); continue }
+    const items = []
+    String(rr.text).split('\n').forEach(line => {
+      if (!line.trim()) return
+      try {
+        const x = JSON.parse(line)
+        const ok = x.result && x.result.type === 'succeeded'
+        const text = ok ? ((x.result.message.content || []).find(c => c.type === 'text') || {}).text || '' : ''
+        items.push({ cid: x.custom_id, ok, text, urls: b.map[x.custom_id] || [], usage: ok ? x.result.message.usage : null })
+      } catch {}
+    })
+    b.status = 'ended'
+    out.push({ id: b.id, status: 'ended', counts: b.counts, items })
+  }
+  aiStateSave(st)
+  return out
+})
+ipcMain.handle('aitag-batch-done', (_, id) => { const st = aiState(); (st.batches || []).forEach(b => { if (b.id === id) { b.status = 'done'; b.map = {} } }); aiStateSave(st); return true })
+ipcMain.handle('aitag-batch-cancel', async (_, { apiKey, id }) => {
+  const r = await anthropicReq('POST', '/v1/messages/batches/' + id + '/cancel', apiKey)
+  const st = aiState(); (st.batches || []).forEach(b => { if (b.id === id) { b.status = 'canceled'; b.map = {} } }); aiStateSave(st)
+  return r.status === 200
+})
+// 결과 저장: { vocab, tags: { url: [번호...] } } — 이 PC 파일에 합치고, 개발 폴더에서 실행 중이면 배포용 파일에도 씀
+ipcMain.handle('aitag-save', (_, { vocab, tags }) => {
+  try {
+    const merge = (p) => {
+      const cur = aiReadFile(p) || { v: 1, vocab, tags: {} }
+      // 어휘가 달라졌으면 문자열 기준으로 다시 맞춤
+      const idx = new Map(cur.vocab.map((t, i) => [t, i]))
+      vocab.forEach(t => { if (!idx.has(t)) { idx.set(t, cur.vocab.length); cur.vocab.push(t) } })
+      Object.entries(tags).forEach(([u, ids]) => { cur.tags[u] = [...new Set(ids.map(i => idx.get(vocab[i])).filter(x => x != null))] })
+      cur.updated = new Date().toISOString()
+      fs.writeFileSync(p, JSON.stringify(cur))
+      return Object.keys(cur.tags).length
+    }
+    const n = merge(AI_TAGS_USER)
+    let appN = 0
+    if (!app.isPackaged) { try { appN = merge(AI_TAGS_APP) } catch {} }
+    aiLoad(); aiMergeInto(tagsDb)
+    return { ok: true, n, appN }
+  } catch (e) { return { ok: false, error: e.message } }
+})
+// 배포용 파일로 내보내기 (설치된 부찌에서 만든 경우: bucci_base\app 에 저장하면 다음 업데이트에 같이 나감)
+ipcMain.handle('aitag-export', async () => {
+  try {
+    const f = aiReadFile(AI_TAGS_USER); if (!f) return false
+    const base = aiReadFile(AI_TAGS_APP)
+    if (base) { const idx = new Map(f.vocab.map((t, i) => [t, i])); base.vocab.forEach(t => { if (!idx.has(t)) { idx.set(t, f.vocab.length); f.vocab.push(t) } }); Object.entries(base.tags).forEach(([u, ids]) => { if (!f.tags[u]) f.tags[u] = ids.map(i => idx.get(base.vocab[i])) }) }
+    const res = await dialog.showSaveDialog(win, { defaultPath: 'ai_tags.json', filters: [{ name: 'JSON', extensions: ['json'] }] })
+    if (res.canceled || !res.filePath) return false
+    fs.writeFileSync(res.filePath, JSON.stringify(f)); return true
+  } catch (e) { console.log('[aitag-export]', e.message); return false }
 })
 
 // Claude API 프록시 (Electron CSP 우회)
@@ -2561,12 +2706,15 @@ ipcMain.handle('get-slug-names', () => {
   try { upa = upaAppMeta() } catch {}
   return { ...slug2name, __upa: upa }
 })
-ipcMain.handle('claude-api', async (_, { apiKey, base64Image, images, prompt, mediaType, model, maxTokens }) => {
+ipcMain.handle('claude-api', async (_, { apiKey, base64Image, images, prompt, mediaType, model, maxTokens, content: rawContent }) => {
   try {
     const https = require('https')
     let content
     const sniff = (b64, fb) => { const buf = Buffer.from(String(b64).slice(0, 16), 'base64'); return buf[0]===0x89 && buf[1]===0x50 ? 'image/png' : buf[0]===0xFF && buf[1]===0xD8 ? 'image/jpeg' : buf[0]===0x47 && buf[1]===0x49 ? 'image/gif' : buf[0]===0x52 && buf[1]===0x49 ? 'image/webp' : (fb || 'image/png') }
-    if (Array.isArray(images) && images.length) {
+    if (Array.isArray(rawContent) && rawContent.length) {
+      // 내용을 그대로 받음 (태그 고도화 샘플: 배치와 똑같은 형식으로 보내 확인)
+      content = rawContent
+    } else if (Array.isArray(images) && images.length) {
       // 여러 장 (와이어프레임 초안: 레퍼런스를 한 장씩)
       content = images.slice(0, 12).filter(x => x && x.data).map(x => ({ type: 'image', source: { type: 'base64', media_type: sniff(x.data, x.mediaType), data: x.data } }))
       content.push({ type: 'text', text: prompt })
