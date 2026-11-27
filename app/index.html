@@ -7082,6 +7082,15 @@ function closePasteSearch() {
   document.getElementById('paste-search-modal').style.display = 'none'
   _pasteImageFile = null; _pasteImageBase64 = null
 }
+// Esc로 닫기: AI 디자인분석(분석 중이 아닐 때) · 태그 고도화 · 와이어프레임 시작 창 — 크게 보기가 떠 있으면 그쪽이 먼저
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return
+  const pop = document.getElementById('pop-ov'); if (pop && pop.classList.contains('on')) return
+  const wf = document.querySelector('.wf-ov'); if (wf) { wf.remove(); return }
+  const ait = document.querySelector('.ait-ov'); if (ait && !_ait.running) { ait.remove(); return }
+  const m = document.getElementById('paste-search-modal'), prog = document.getElementById('paste-modal-progress')
+  if (m && m.style.display === 'flex' && !(prog && prog.style.display !== 'none')) closePasteSearch()
+})
 
 function switchPasteTab(tab) {
   _pasteCurrentTab = tab
@@ -9129,11 +9138,27 @@ const WF_PRIOR = {
 }
 const wfName = k => (WF_KINDS[k] || [k])[0]
 // 그리는 순서: 맨 앞의 상단 요소 → 본문(중간에 나온 탭·칩은 본문 안에) → 하단 → 플로팅 → 덮는 요소
+// 한 화면에 같이 있을 수 없는 조합을 걸러냄
+//  - 상단 바·하단 버튼·탭바·플로팅 버튼·바텀시트·팝업은 한 개만
+//  - 하단 고정 버튼이 있으면 탭바·플로팅 버튼은 없음 (진행 중인 작업 화면)
+//  - 바텀시트와 팝업은 동시에 뜨지 않음 (먼저 나온 것만)
+const WF_SINGLE = ['header', 'title', 'search', 'cta', 'tabbar', 'fab', 'sheet', 'modal']
+function wfValid(blocks) {
+  const seen = new Set(), list = blocks.filter(b => WF_KINDS[b.k])
+  const hasCta = list.some(b => b.k === 'cta')
+  const overFirst = (list.find(b => b.k === 'sheet' || b.k === 'modal') || {}).k
+  return list.filter(b => {
+    if (WF_SINGLE.includes(b.k)) { if (seen.has(b.k)) return false; seen.add(b.k) }
+    if (hasCta && (b.k === 'tabbar' || b.k === 'fab')) return false
+    if ((b.k === 'sheet' || b.k === 'modal') && b.k !== overFirst) return false
+    return true
+  })
+}
 function wfSeq(blocks) {
   const z = k => WF_KINDS[k][1]
   const top = [], body = [], bottom = [], fl = [], over = []
   let started = false
-  blocks.filter(b => WF_KINDS[b.k]).forEach(b => {
+  wfValid(blocks).forEach(b => {
     const zz = z(b.k)
     if (zz === 'top' && !started) top.push(b)
     else if (zz === 'top' || zz === 'body') { started = true; body.push(b) }
@@ -9229,7 +9254,7 @@ function wfSvg(blocks, opt) {
   const ci = (cx, cy, rr, fill, extra) => g.push(`<circle cx="${cx}" cy="${cy}" r="${rr}" fill="${fill || '#D5D8DE'}"${extra || ''}/>`)
   const tx = (x, y, s, size, fill, anchor, weight, key) => g.push(`<text${key ? ` data-e="${key}"` : ''} x="${x}" y="${y}" font-family="${F}" font-size="${size || 12}" font-weight="${weight || 600}" fill="${fill || C.txt}" text-anchor="${anchor || 'start'}">${pkEsc(s)}</text>`)
   const st = (x, y, w, h, rx) => r(x, y, w, h, rx, 'none', ` stroke="${C.line}" stroke-width="1.5"`)
-  const ks = blocks.map(b => b.k)
+  const ks = wfValid(blocks).map(b => b.k)
   const isHome = (opt.q || []).includes('홈화면')
   const pos = new Map()   // 블록 위치 (강조·이름표용)
   const D = {
@@ -9245,7 +9270,7 @@ function wfSvg(blocks, opt) {
     chart: y => { r(P, y + 6, W - P * 2, 172, 14, C.soft); ln(P + 16, y + 22, 100); const hs = [50, 80, 62, 104, 76, 118, 92]; hs.forEach((h, i) => r(P + 24 + i * 44, y + 162 - h, 22, h, 5, i === 5 ? C.btn : C.line)); return 186 },
     calendar: y => { ln(P, y + 12, 110, 12, C.dark); for (let i = 0; i < 7; i++) ln(P + 10 + i * 47, y + 40, 20, 7); for (let w = 0; w < 5; w++) for (let i = 0; i < 7; i++) ci(P + 20 + i * 47, y + 72 + w * 40, 13, w === 2 && i === 3 ? C.btn : C.soft); return 268 },
     form: (y, b) => { const n = Math.min(Math.max(b.rows || 3, 1), 5); for (let i = 0; i < n; i++) { ln(P, y + 10 + i * 78, 70, 8); r(P, y + 26 + i * 78, W - P * 2, 46, 10, 'none', ` stroke="${C.line}" stroke-width="1.5"`); ln(P + 14, y + 45 + i * 78, 110, 8, '#DEE1E6') } return 12 + n * 78 },
-    choice: (y, b) => { const n = Math.min(Math.max(b.rows || 4, 1), 6); for (let i = 0; i < n; i++) { r(P, y + 14 + i * 50, 22, 22, 6, i ? 'none' : C.btn, i ? ` stroke="${C.line}" stroke-width="1.5"` : ''); ln(P + 36, y + 21 + i * 50, i % 2 ? 150 : 200); r(0, y + 50 + i * 50, W, 1, 0, '#F0F1F3') } return 8 + n * 50 },
+    choice: (y, b) => { const n = Math.min(Math.max(b.rows || 4, 1), 6); for (let i = 0; i < n; i++) { r(P, y + 14 + i * 50, 22, 22, 6, i ? 'none' : C.btn, i ? ` stroke="${C.line}" stroke-width="1.5"` : ''); if (!i) g.push(`<path d="M ${P + 6} ${y + 25} l 4 4 l 7 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`); ln(P + 36, y + 21 + i * 50, i % 2 ? 150 : 200); r(0, y + 50 + i * 50, W, 1, 0, '#F0F1F3') } return 8 + n * 50 },
     list: (y, b) => { const n = Math.min(Math.max(b.rows || 6, 1), 9); for (let i = 0; i < n; i++) { ci(P + 22, y + 34 + i * 68, 22); ln(P + 56, y + 22 + i * 68, 150, 10, C.dark); ln(P + 56, y + 40 + i * 68, 210, 8); r(P + 56, y + 66 + i * 68, W - P * 2 - 56, 1, 0, '#F0F1F3') } return n * 68 + 4 },
     cards: (y, b) => { const n = Math.min(Math.max(b.rows || 4, 1), 6); for (let i = 0; i < n; i++) { r(P, y + 6 + i * 112, W - P * 2, 100, 14, C.soft); r(P + 12, y + 18 + i * 112, 76, 76, 10); ln(P + 102, y + 28 + i * 112, 140, 10, C.dark); ln(P + 102, y + 48 + i * 112, 180, 8); ln(P + 102, y + 76 + i * 112, 70, 10) } return 8 + n * 112 },
     grid: (y, b) => { const cw = (W - P * 2 - 12) / 2, n = Math.min(Math.max(b.rows || 3, 1), 4); for (let row = 0; row < n; row++) for (let c = 0; c < 2; c++) { const x = P + c * (cw + 12), yy = y + 6 + row * (cw + 62); r(x, yy, cw, cw, 12); ln(x, yy + cw + 12, cw - 30, 9, C.dark); ln(x, yy + cw + 30, 60, 9) } return 8 + n * (cw + 62) },
@@ -9286,10 +9311,13 @@ function wfSvg(blocks, opt) {
     }
     if (t === 'amount') { txt(ax, y + 32, v || '0원', 30, TC.strong, an, 800, w, K('v')); return 48 }
     if (t === 'kv') {
-      const big = e.s === 'xl' || e.s === 'l', vs = e.s === 'xl' ? 24 : e.s === 'l' ? 18 : 14, ks = big ? 15 : 13.5
+      const big = e.s === 'xl' || e.s === 'l', ks = big ? 15 : 13.5
+      let vs = e.s === 'xl' ? 24 : e.s === 'l' ? 18 : 14
+      { const room = w - Math.min(tw(e.k || '항목', ks) + 2, w * 0.6) - 12; while (vs > 13 && tw(v || '—', vs) > room) vs -= 1 }   // 값이 길면 글자를 줄여서 한 줄에
       const h = Math.max(vs, ks) + 14
-      txt(x, y + h / 2 + ks * 0.36, e.k || '항목', ks, big ? TC.strong : TC.mid, 'start', big ? 700 : 600, w * 0.5, K('k'))
-      txt(x + w, y + h / 2 + vs * 0.36, v || '—', vs, TC.strong, 'end', big ? 800 : 700, w * 0.5, K('v'))
+      const kw = Math.min(tw(e.k || '항목', ks) + 2, w * 0.6), vw = Math.max(w - kw - 12, w * 0.35)
+      txt(x, y + h / 2 + ks * 0.36, e.k || '항목', ks, big ? TC.strong : TC.mid, 'start', big ? 700 : 600, w - vw - 12, K('k'))
+      txt(x + w, y + h / 2 + vs * 0.36, v || '—', vs, TC.strong, 'end', big ? 800 : 700, vw, K('v'))
       return h + 2
     }
     if (t === 'btn') {
@@ -9306,8 +9334,10 @@ function wfSvg(blocks, opt) {
     }
     if (t === 'check' || t === 'radio' || t === 'toggle') {
       const on = !!e.on, cy = y + 22
-      if (t === 'check') r(x, cy - 11, 22, 22, 6, on ? C.btn : 'none', on ? '' : ` stroke="${C.line}" stroke-width="1.5"`)
-      if (t === 'check' && on) g.push(`<path d="M ${x + 6} ${cy} l 4 4 l 7 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`)
+      if (t === 'check') {
+        r(x, cy - 11, 22, 22, 6, on ? C.btn : 'none', on ? '' : ` stroke="${C.line}" stroke-width="1.5"`)
+        if (on) g.push(`<path d="M ${x + 6} ${cy} l 4 4 l 7 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`)
+      }
       else if (t === 'radio') { ci(x + 11, cy, 11, 'none', ` stroke="${on ? C.btn : C.line}" stroke-width="${on ? 6 : 1.5}"`) }
       else { r(x + w - 44, cy - 13, 44, 26, 13, on ? C.btn : C.line); ci(on ? x + w - 13 : x + w - 31, cy, 10, '#fff') }
       txt(t === 'toggle' ? x : x + 34, cy + 5, v || '선택 항목', 14, TC.mid, 'start', 600, w - 60, K('v'))
@@ -9359,8 +9389,9 @@ function wfSvg(blocks, opt) {
     if (t === 'img') { const h = Math.min(Math.max(+e.h || 160, 40), 360); r(x, y + 4, w, h, 12); ci(x + w / 2, y + 4 + h / 2, Math.min(18, h / 4), '#D5D8DE'); return h + 12 }
     if (t === 'icon') { const cx = e.a === 'l' ? x + 26 : e.a === 'r' ? x + w - 26 : x + w / 2; ci(cx, y + 30, 26, C.soft); ci(cx, y + 30, 11, C.dark); return 64 }
     if (t === 'li') {
-      ci(x + 20, y + 30, 20); txt(x + 52, y + 26, v || '', 14, TC.strong, 'start', 700, w - 150, K('v')); if (!v) ln(x + 52, y + 18, 130, 10, C.dark)
-      if (e.sub) txt(x + 52, y + 45, e.sub, 12, TC.weak, 'start', 500, w - 150, K('sub')); else ln(x + 52, y + 38, 170, 7)
+      const lw = Math.max(w - 52 - (e.r ? 100 : 8), 40)
+      ci(x + 20, y + 30, 20); txt(x + 52, y + 26, v || '', 14, TC.strong, 'start', 700, lw, K('v')); if (!v) ln(x + 52, y + 18, Math.min(130, lw), 10, C.dark)
+      if (e.sub) txt(x + 52, y + 45, e.sub, 12, TC.weak, 'start', 500, lw, K('sub')); else ln(x + 52, y + 38, Math.min(170, lw), 7)
       if (e.r) txt(x + w, y + 34, e.r, 13.5, TC.strong, 'end', 700, 100, K('r'))
       r(x + 52, y + 59, w - 52, 1, 0, '#F0F1F3'); return 62
     }
@@ -9448,7 +9479,7 @@ function wfSvg(blocks, opt) {
   }
   // 덮는 요소 (화면 기준 고정)
   g = L.over
-  const ov = k => blocks.find(b => b.k === k)
+  const ov = k => wfValid(blocks).find(b => b.k === k)
   if (ks.includes('fab')) { ci(W - P - 28, bodyEnd - 40, 28, C.btn); tx(W - P - 28, bodyEnd - 31, '+', 26, '#fff', 'middle', 400); pos.set(ov('fab'), ['over', W - P - 56, bodyEnd - 68, 56, 56]) }
   if (ks.includes('sheet')) {
     const b = ov('sheet'); r(0, 0, W, H, 0, '#111827', ' fill-opacity="0.38"')

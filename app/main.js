@@ -933,6 +933,10 @@ function normalizeQuery(kw) {
   let q = kw.toLowerCase().trim()
   q = EN_TO_KO[q] || q  // 영문 앱명 변환
   q = q.replace(/[·•·]/g, ' ').replace(/\s+/g, ' ').trim()
+  // "결제 화면", "송금화면" → "결제", "송금" (뒤에 붙은 '화면·페이지'는 뜻을 더하지 않음. '빈화면'처럼 한 글자만 남으면 그대로)
+  const cut = q.replace(/\s*(화면|페이지|ui|레퍼런스)$/, '').trim()
+  if (cut !== q && cut.replace(/\s/g, '').length >= 2) q = cut
+  else if (cut !== q) q = q.replace(/\s+(화면|페이지)$/, '$1')   // "홈 화면" → "홈화면"
   return q
 }
 
@@ -1753,6 +1757,14 @@ const PATTERN_TAGS = {
   'pattern/cart':         ['장바구니'],
   'pattern/password':     ['비밀번호'],
   'pattern/t&c':          ['약관'],
+  // 태그 고도화(AI 태그)로 디자이너스·UPA 화면도 함께
+  'pattern/search':       ['검색결과','필터'],
+  'pattern/list':         ['리스트형'],
+  'component/input':      ['입력폼','텍스트필드','입력'],
+  'component/tab':        ['탭바','탭','gnb'],
+  'component/bottomsheet':['바텀시트'],
+  'component/popup':      ['팝업','다이얼로그'],
+  'component/chart':      ['그래프','차트'],
 }
 function patternTagMerge(data, path) {
   try {
